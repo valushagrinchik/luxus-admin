@@ -1,5 +1,9 @@
 import React from 'react'
 
+import { LoginForm } from '../../components/LoginForm/LoginForm'
+
 export const LoginPage = () => {
-	return <div>LoginPage</div>
+	return <div>
+		<LoginForm />
+	</div>
 }
