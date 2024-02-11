@@ -13,6 +13,7 @@ import ErrorPage from "./pages/ErrorPage";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
 
 export const AppRouter = () => {
+
 	return <BrowserRouter>
 		<Routes>
 			<Route path={'/'} element={<DashboardPage />} errorElement={<ErrorPage />}>

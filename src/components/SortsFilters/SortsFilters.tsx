@@ -6,20 +6,26 @@ import { Button } from "@mui/base/Button";
 import { PlusIcon } from "../../controls/icons/PlusIcon";
 import { BinIcon } from "../../controls/icons/BinIcon";
 import { ExcelIcon } from "../../controls/icons/ExcelIcon";
+import { SortListGroup } from "../SortsList/SortsList";
 
-export const SortsFilters = () => {
+interface SortsFiltersProps {
+  onSortListGroupChange: (value: SortListGroup) => void
+}
+export const SortsFilters = ({
+  onSortListGroupChange
+}: SortsFiltersProps) => {
   const groupOptions = [
     {
       label: "Ocultar todo",
-      value: "showGroups",
+      value: SortListGroup.group,
     },
     {
       label: "Mostrar hasta categorias",
-      value: "showCategories",
+      value: SortListGroup.category,
     },
     {
       label: "Mostrar todo",
-      value: "showSorts",
+      value: SortListGroup.sort,
     },
   ];
 
@@ -40,7 +46,7 @@ export const SortsFilters = () => {
 
   return (
     <div className={styles.filter_row}>
-      <Select options={groupOptions} placeholder="Agrupar" />
+      <Select defaultValue={groupOptions[0].value} options={groupOptions} multiple={false} placeholder="Agrupar" onChange={(e, value)=>onSortListGroupChange(value as SortListGroup)}/>
 
       <div className={styles.right_group}>
         <div className={styles.search_group}>

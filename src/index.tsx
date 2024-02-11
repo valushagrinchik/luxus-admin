@@ -5,13 +5,16 @@ import reportWebVitals from './reportWebVitals';
 import { AppRouter } from './AppRouter';
 import { Provider } from 'react-redux'
 import { store } from './store';
+import { AuthProvider } from './lib/auth';
 
 ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 ).render(
   <React.StrictMode>
     <Provider store={store} >
-      <AppRouter />
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
     </Provider>
   </React.StrictMode>
 );

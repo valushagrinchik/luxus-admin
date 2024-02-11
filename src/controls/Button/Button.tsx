@@ -7,6 +7,7 @@ import { OkIcon } from "../icons/OkIcon";
 import { CloseIcon } from "../icons/CloseIcon";
 import styles from "./Button.module.css";
 
+
 interface ButtonProps extends BaseButtonProps {
   appearance: "approve" | "refuse";
 }

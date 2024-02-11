@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SortsFilters } from "../../components/SortsFilters/SortsFilters";
-import { SortsList } from "../../components/SortsList/SortsList";
+import { SortListGroup, SortsList } from "../../components/SortsList/SortsList";
 import { Category, Group, Sort } from "../../types";
 import { Modal } from "../../controls/Modal";
 import {  EditGroupForm } from "../../components/forms/EditGroupForm/EditGroupForm";
@@ -16,10 +16,11 @@ export const SortsListPage = () => {
     setContentData(data);
     setOpen(true);
   };
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const renderForm = () => {
-    console.log(contentData);
     if (!contentData) {
       return;
     }
@@ -45,17 +46,16 @@ export const SortsListPage = () => {
     
   };
 
+  const [sortListGroup, setSortListGroup] = useState(SortListGroup.group)
+
   return (
     <div className="container">
       <h1>Variedades</h1>
-      <SortsFilters />
+      <SortsFilters onSortListGroupChange={setSortListGroup}/>
       <div className="box">
-        <SortsList openModal={handleOpen} />
+        <SortsList openModal={handleOpen} group={sortListGroup} />
         <Modal open={open} onClose={handleClose}>
-          <div>
-            {JSON.stringify(contentData)}
-            {renderForm()}
-          </div>
+          {renderForm()}
         </Modal>
       </div>
     </div>

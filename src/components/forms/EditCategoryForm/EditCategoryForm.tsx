@@ -1,15 +1,15 @@
-import React from "react";
-
 import { SubmitHandler, useForm } from "react-hook-form";
 import { BaseInput } from "../../../controls/BaseInput";
 import { Button } from "../../../controls/Button/Button";
 import styles from "./EditCategoryForm.module.css";
 import { Category } from "../../../types";
-import { useGetGroupsQuery } from "../../../api/sortsApi";
+import { useGetGroupsQuery, useUpdateCategoryMutation } from "../../../api/sortsApi";
+import { Select } from "../../../controls/Select";
 
 type EditCategoryFormInputs = {
-  id: string;
+  id: number;
   name: string;
+  groupId: number;
 };
 
 interface EditCategoryFormProps {
@@ -23,8 +23,13 @@ export const EditCategoryForm = ({
   onReset,
   category,
 }: EditCategoryFormProps) => {
+  const { data } = useGetGroupsQuery()
+  const [update] = useUpdateCategoryMutation()
+  const groupOptions = data?.map (group => ({value: group.id.toString(), label: group.name})) || []
+
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<EditCategoryFormInputs>({
@@ -33,32 +38,47 @@ export const EditCategoryForm = ({
     },
   });
 
-  const submit: SubmitHandler<EditCategoryFormInputs> = (data) => {
-    console.log(data);
+  const submit: SubmitHandler<EditCategoryFormInputs> = async (data) => {
+    await update({
+      ...data,
+      id: category.id,
+    })
     onSubmit();
   };
 
-  const {data, isLoading, error} = useGetGroupsQuery()
-  console.log(data,'data')
 
+  const {onChange: onChangeGroupSelect, ...groupFieldsProps} = register("groupId")
   return (
-    <div className={styles.form_container}>
-      <form className={styles.form}>
-        <h2>Editar grupo</h2>
-        <div>
-          <label htmlFor="name">Nombre *</label>
-          <BaseInput {...register("name")} />
-          {errors.name && <span>{errors.name.message}</span>}
-        </div>
-        <div className={styles.actions}>
-          <Button appearance="refuse" onClick={() => onReset()}>
-            Salir
-          </Button>
-          <Button appearance="approve" onClick={handleSubmit(submit)}>
-            Guardar
-          </Button>
-        </div>
-      </form>
-    </div>
+    <form className={styles.form}>
+      <h2>Editar categoria</h2>
+      <div>
+        <label htmlFor="groupId">Grupo *</label>
+        <Select placeholder="Grupo" 
+          className={styles.select}
+          
+          multiple={false} 
+          onChange={(event, value)=>{
+          if(!event || !value){
+            return
+          }
+          setValue('groupId', +value )
+        }} {...groupFieldsProps} options={groupOptions} defaultValue={category.groupId.toString()} />
+        {errors.groupId && <span>{errors.groupId.message}</span>}
+      </div>
+      <div>
+        <label htmlFor="name">Nombre *</label>
+        <BaseInput {...register("name")} />
+        {errors.name && <span>{errors.name.message}</span>}
+      </div>
+      <div className={styles.actions}>
+        <Button appearance="refuse" onClick={() => onReset()}>
+          Salir
+        </Button>
+        <Button appearance="approve" onClick={handleSubmit(submit)}>
+          Guardar
+        </Button>
+      </div>
+    </form>
+
   );
 };

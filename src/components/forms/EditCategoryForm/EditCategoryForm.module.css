@@ -1,9 +1,13 @@
-.form{
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
 }
-.actions{
-	display: flex;
-	gap: 16px;
+.actions {
+  display: flex;
+  gap: 16px;
+}
+.select {
+  width: 100%;
 }

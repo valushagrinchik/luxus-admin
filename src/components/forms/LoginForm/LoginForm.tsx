@@ -1,9 +1,10 @@
-import React from "react";
-
-import { Button } from "@mui/base/Button";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { BaseInput } from "../../../controls/BaseInput";
 import styles from "./LoginForm.module.css";
+import { useAuth } from "../../../lib/auth";
+import { Button } from "../../../controls/Button/Button";
+import { useNavigate } from "react-router-dom";
 
 type LoginFromInputs = {
   email: string;
@@ -16,8 +17,22 @@ export const LoginForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFromInputs>();
+	let { signin } = useAuth();
 
-  const onSubmit: SubmitHandler<LoginFromInputs> = (data) => console.log(data);
+  const [submitError, setSubmitError] =  useState('')
+  let navigate = useNavigate();
+
+  const submit: SubmitHandler<LoginFromInputs> = async (data) => {
+    try{
+      await signin(data)
+    } catch(err: any) {
+      setSubmitError(err?.message[0])
+      return 
+    }
+
+    navigate("/")
+  }
+
 
   return (
     <div className={styles.form_container}>
@@ -33,10 +48,13 @@ export const LoginForm = () => {
           <BaseInput {...register("password")} />
           {errors.password && <span>Обязательное поле</span>}
         </div>
-        <Button className="ok_btn" onClick={handleSubmit(onSubmit)}>
+        {submitError && submitError}
+        <Button appearance="approve" onClick={handleSubmit(submit)}>
           Отправить
         </Button>
       </form>
     </div>
   );
 };
+
+

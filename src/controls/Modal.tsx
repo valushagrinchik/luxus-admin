@@ -2,7 +2,6 @@ import * as React from "react";
 import clsx from "clsx";
 import { styled, css } from "@mui/system";
 import { Modal as BaseModal } from "@mui/base/Modal";
-import classNames from "classnames";
 
 const Backdrop = React.forwardRef<
   HTMLDivElement,
@@ -20,7 +19,7 @@ const Backdrop = React.forwardRef<
 
 const StyledModal = styled("div")`
   position: fixed;
-  z-index: 1300;
+  z-index: 10;
   inset: 0;
   display: flex;
   align-items: center;
@@ -56,8 +55,7 @@ const ModalContent = styled("div")(
 		border-radius: 12px;
 		background: var(--Base-White, #FFF);
 		display: flex;
-		width: 412px;
-		padding: 24px 20px 16px 20px;
+		padding: 32px;
 		flex-direction: column;
 		align-items: flex-end;
 		gap: 24px;

@@ -1,14 +1,25 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
-import { Outlet } from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom"
 import { Header } from "../../components/Header/Header"
 import { Sidebar } from "../../components/Sidebar/Sidebar"
+import { useAuth } from '../../lib/auth'
 
 export const DashboardPage = () => {
+	let auth = useAuth();
 
 	const [isOpen, setIsOpen] = useState(false)
 	const onClose = () => {
 		setIsOpen(false)
+	}
+
+	if(!auth.user){
+		return <Navigate
+			to={{
+				pathname: "/login",
+				// state: { from: location }
+			}}
+		/>
 	}
 
 	return <div>
