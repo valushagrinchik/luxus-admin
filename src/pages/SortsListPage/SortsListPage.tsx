@@ -4,6 +4,7 @@ import { SortsList } from "../../components/SortsList/SortsList";
 import { Category, Group, Sort } from "../../types";
 import { Modal } from "../../controls/Modal";
 import {  EditGroupForm } from "../../components/forms/EditGroupForm/EditGroupForm";
+import { EditCategoryForm } from "../../components/forms/EditCategoryForm/EditCategoryForm";
 
 export const SortsListPage = () => {
   const [open, setOpen] = useState(false);
@@ -32,6 +33,16 @@ export const SortsListPage = () => {
         />
       );
     }
+    if ("sorts" in contentData) {
+      return (
+        <EditCategoryForm
+          onSubmit={handleClose}
+          onReset={handleClose}
+          category={contentData as Category}
+        />
+      );
+    }
+    
   };
 
   return (
