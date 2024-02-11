@@ -1,15 +1,16 @@
 import React from "react";
-import { Input } from "@mui/base/Input";
+import { Input, InputProps } from "@mui/base/Input";
 
 export const BaseInput = React.forwardRef(function MySelect(
-  props: any,
-  ref: React.ForwardedRef<HTMLButtonElement>
+  props: InputProps,
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   return (
     <Input
-      ref={ref}
+      onChange={(e) => {console.log(e, 'value')}}
       slotProps={{ input: { className: "base_input" } }}
       {...props}
+      ref={ref}
     ></Input>
   );
 });

@@ -1,5 +1,6 @@
-.ok_btn{
-  color: var(--Primary-800, #0040C1);
+.ok_btn,
+.add_btn {
+  color: var(--Primary-800, #0040c1);
   font-family: "Roboto Condensed";
   font-size: 14px;
   font-style: normal;
@@ -15,17 +16,17 @@
   border-radius: 6px;
   background: var(--Primary-100);
   cursor: pointer;
-  &:hover{
+  &:hover {
     background: var(--Primary-200);
-  };
-  &:disabled{
+  }
+  &:disabled {
     background: var(--Gray-200);
     color: var(--Gray-400);
     cursor: none;
   }
 }
 
-.refuse_btn{
+.refuse_btn {
   color: var(--Gray-500, #667085);
   /* Text sm/Medium */
   font-family: "Roboto Condensed";
@@ -41,18 +42,18 @@
   align-items: center;
   gap: 8px;
   border-radius: 6px;
-  background:  transparent;
-  border: 1px solid var(--Gray-300, #D0D5DD);
+  background: transparent;
+  border: 1px solid var(--Gray-300, #d0d5dd);
   cursor: pointer;
-  &:hover{
+  &:hover {
     color: var(--Gray-700, #344054);
     border-radius: 6px;
-    border: 1px solid var(--Gray-300, #D0D5DD);
-    background: var(--Gray-100, #F2F4F7);
-  };
-  &:disabled{
-    border: 1px solid var(--Gray-200, #EAECF0);
-    color: var(--Gray-300, #D0D5DD);
+    border: 1px solid var(--Gray-300, #d0d5dd);
+    background: var(--Gray-100, #f2f4f7);
+  }
+  &:disabled {
+    border: 1px solid var(--Gray-200, #eaecf0);
+    color: var(--Gray-300, #d0d5dd);
     cursor: none;
   }
 }

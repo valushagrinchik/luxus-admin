@@ -153,12 +153,15 @@ const defineRawConfig = (group: SortListGroup) => {
 
 interface SortsListProps {
 	openModal: (data: Group | Category | Sort) => void
-	group?: SortListGroup
+	group?: SortListGroup;
+	// TOOD: filter by name 
+	search: {search: string, type: SortListGroup}
 }
 
 export const SortsList = ({
 	openModal,
-	group = SortListGroup.sort
+	group = SortListGroup.sort,
+	search
 }: SortsListProps) =>{
 
 	const {data: groups} = useGetGroupsQuery()

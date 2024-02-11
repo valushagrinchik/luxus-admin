@@ -1,18 +1,19 @@
-import React from "react";
 import { Select } from "../../controls/Select";
 import { BaseInput } from "../../controls/BaseInput";
 import styles from "./SortsFilters.module.css";
-import { Button } from "@mui/base/Button";
-import { PlusIcon } from "../../controls/icons/PlusIcon";
 import { BinIcon } from "../../controls/icons/BinIcon";
 import { ExcelIcon } from "../../controls/icons/ExcelIcon";
 import { SortListGroup } from "../SortsList/SortsList";
+import { Button } from "../../controls/Button/Button";
+import { useState } from "react";
 
 interface SortsFiltersProps {
   onSortListGroupChange: (value: SortListGroup) => void
+  onSearchChange: (value: any) => void
 }
 export const SortsFilters = ({
-  onSortListGroupChange
+  onSortListGroupChange,
+  onSearchChange
 }: SortsFiltersProps) => {
   const groupOptions = [
     {
@@ -32,17 +33,19 @@ export const SortsFilters = ({
   const searchOptions = [
     {
       label: "Por variedad ",
-      value: "sort",
+      value: SortListGroup.sort
     },
     {
       label: "Por categoria",
-      value: "category",
+      value:  SortListGroup.category
     },
     {
       label: "Por grupo",
-      value: "group",
+      value:  SortListGroup.group
     },
   ];
+
+  const [search, setSearch] = useState<{search?: string , type: SortListGroup}>({type: SortListGroup.group })
 
   return (
     <div className={styles.filter_row}>
@@ -50,19 +53,28 @@ export const SortsFilters = ({
 
       <div className={styles.right_group}>
         <div className={styles.search_group}>
-          <BaseInput placeholder="Encontrar..." />
-          <Select options={searchOptions} placeholder="Por variedad" />
+          <BaseInput placeholder="Encontrar..." onChange={(e) => {
+            const state = {...search, search: (e?.target as any)?.value}
+            setSearch(state)
+            onSearchChange(state)
+          }}/>
+          <Select 
+            defaultValue={search.type} 
+            options={searchOptions}  
+            multiple={false} 
+            placeholder="Por variedad" 
+            onChange={(e) => {
+              const state = {...search, type:(e?.target as any)?.value}
+              setSearch(state)
+              onSearchChange(state)
+            }}/>
         </div>
 
-        <Button className="ok_btn">
-          <PlusIcon />
+        <Button appearance="add">
           Crear
         </Button>
-        <Button className="ok_btn" disabled>
-          <BinIcon />
-        </Button>
-
-        <ExcelIcon />
+        <Button appearance="base" disabled icon={<BinIcon />}/>
+        <Button appearance="base" disabled icon={<ExcelIcon />}/>
       </div>
     </div>
   );
