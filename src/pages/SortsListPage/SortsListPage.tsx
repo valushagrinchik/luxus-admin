@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { SortsFilters } from "../../components/SortsFilters/SortsFilters";
-import { SortListGroup, SortsList } from "../../components/SortsList/SortsList";
+import { SortsList } from "../../components/SortsList/SortsList";
 import { Category, Group, Sort } from "../../types";
 import { Modal } from "../../controls/Modal";
 import {  EditGroupForm } from "../../components/forms/EditGroupForm/EditGroupForm";
 import { EditCategoryForm } from "../../components/forms/EditCategoryForm/EditCategoryForm";
+import { SortListGroup } from "../../lib/constants";
 
 
 const renderForm = ({contentData, ...props}: {
@@ -52,20 +53,15 @@ export const SortsListPage = () => {
   }
 
   const [sortListGroup, setSortListGroup] = useState(SortListGroup.group)
-  const [search, setSearch] = useState<{search: string, type: SortListGroup}>({
-    search: '',
-    type: SortListGroup.group
-  })
 
   return (
     <div className="container">
       <h1>Variedades</h1>
       <SortsFilters 
         onSortListGroupChange={setSortListGroup}
-        onSearchChange={setSearch}
       />
       <div className="box">
-        <SortsList openModal={handleOpen} group={sortListGroup} search={search} />
+        <SortsList openModal={handleOpen} group={sortListGroup} />
         <Modal open={open} onClose={handleClose}>
           {renderForm({
              onSubmit:handleClose,

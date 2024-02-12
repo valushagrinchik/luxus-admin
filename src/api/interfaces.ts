@@ -7,3 +7,7 @@ export type CreateCategoryBody = {
   name: string;
   groupId: number;
 };
+
+export type SearchParams = {
+  name?: string;
+};

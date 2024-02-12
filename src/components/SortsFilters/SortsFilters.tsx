@@ -3,18 +3,21 @@ import { BaseInput } from "../../controls/BaseInput";
 import styles from "./SortsFilters.module.css";
 import { BinIcon } from "../../controls/icons/BinIcon";
 import { ExcelIcon } from "../../controls/icons/ExcelIcon";
-import { SortListGroup } from "../SortsList/SortsList";
 import { Button } from "../../controls/Button/Button";
-import { useState } from "react";
+import { SortListGroup } from "../../lib/constants";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { CatalogState, selectSortsSearch, setSearch } from "../../redux/reducer/catalogReducer";
 
 interface SortsFiltersProps {
   onSortListGroupChange: (value: SortListGroup) => void
-  onSearchChange: (value: any) => void
 }
 export const SortsFilters = ({
   onSortListGroupChange,
-  onSearchChange
 }: SortsFiltersProps) => {
+  const appDispatch = useAppDispatch();
+  const search: CatalogState["sortsSearch"] = useAppSelector(selectSortsSearch)
+
+
   const groupOptions = [
     {
       label: "Ocultar todo",
@@ -45,8 +48,6 @@ export const SortsFilters = ({
     },
   ];
 
-  const [search, setSearch] = useState<{search?: string , type: SortListGroup}>({type: SortListGroup.group })
-
   return (
     <div className={styles.filter_row}>
       <Select defaultValue={groupOptions[0].value} options={groupOptions} multiple={false} placeholder="Agrupar" onChange={(e, value)=>onSortListGroupChange(value as SortListGroup)}/>
@@ -54,19 +55,15 @@ export const SortsFilters = ({
       <div className={styles.right_group}>
         <div className={styles.search_group}>
           <BaseInput placeholder="Encontrar..." onChange={(e) => {
-            const state = {...search, search: (e?.target as any)?.value}
-            setSearch(state)
-            onSearchChange(state)
+            appDispatch(setSearch({search: (e?.target as any)?.value}))
           }}/>
           <Select 
             defaultValue={search.type} 
             options={searchOptions}  
             multiple={false} 
             placeholder="Por variedad" 
-            onChange={(e) => {
-              const state = {...search, type:(e?.target as any)?.value}
-              setSearch(state)
-              onSearchChange(state)
+            onChange={(e, value) => {
+              appDispatch(setSearch({type: value as SortListGroup}))
             }}/>
         </div>
 

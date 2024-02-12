@@ -1,30 +1,22 @@
-import { ChangeEvent, ReactNode, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
 import styles from './SortsList.module.css';
 import { ArrowUpIcon } from '../../controls/icons/ArrowUpIcon';
 import { ArrowRightIcon } from '../../controls/icons/ArrowRightIcon';
 import { EditIcon } from '../../controls/icons/EditIcon';
 import classNames from 'classnames';
 import { Category, Group, Sort } from '../../types';
-import { useGetCategoriesQuery, useGetGroupsQuery, useGetSortsQuery } from '../../api/sortsApi';
+import { useSearchGroupsQuery } from '../../api/sortsApi';
+import { CatalogState, selectSortsSearch } from '../../redux/reducer/catalogReducer';
+import { useAppSelector } from '../../store';
+import { SortListGroup } from '../../lib/constants';
 
-export enum SortListGroup {
-	group='group',
-	category='category',
-	sort='sort'
-}
 interface BaseRawProps  {
 	open: boolean,
 	children?: ReactNode,
 	onEditBtnClick: (data: any) => void;
 }
 
-interface RawProps extends BaseRawProps {
-	openable: boolean, 
-	data: any,
-	className?: string;
-	checkable?: boolean;
-	onCheck?: (e: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
-}
+
 
 interface SortRawProps extends BaseRawProps {
 	sort: Sort, 
@@ -40,6 +32,13 @@ interface GroupRawProps extends BaseRawProps {
 	onEditBtnClick: (data: Group | Category | Sort) => void
 }
 
+interface RawProps extends BaseRawProps {
+	openable: boolean, 
+	data: any,
+	className?: string;
+	checkable?: boolean;
+	onCheck?: (e: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
+}
 const Raw = ({ 
 	open,
 	children,
@@ -56,16 +55,21 @@ const Raw = ({
 		setIsOpen(open)
 	},[open])
 
+	const hasChildren = Array.isArray(children) && !!children.length
+
 	return <div className={classNames(styles.row, className)}>
 		<div className={styles.row_header}>
 
-			{ openable && <span className={styles.toggle_btn} onClick={() => setIsOpen(!isOpen)}>
-				{
-					isOpen ? 
-						<ArrowUpIcon color="#0040C1" width={16} height={16} /> : 
-						<ArrowRightIcon color="#0040C1" width={16} height={16} />  
-				}		
-			</span>}
+			<span className={styles.arrow_space}>
+				{ openable &&  hasChildren && <span className={styles.toggle_btn} onClick={() => setIsOpen(!isOpen)}>
+					{
+						isOpen  ? 
+							<ArrowUpIcon color="#0040C1" width={16} height={16} /> : 
+							<ArrowRightIcon color="#0040C1" width={16} height={16} />  
+					}		
+				</span>}
+			</span>
+
 			{checkable && <input type="checkbox" className={styles.checkbox}/>}
 			{checkable && <span className={styles.id}>{data.id}</span>}
 			<span className={styles.name}>{data.name}</span>
@@ -154,50 +158,27 @@ const defineRawConfig = (group: SortListGroup) => {
 interface SortsListProps {
 	openModal: (data: Group | Category | Sort) => void
 	group?: SortListGroup;
-	// TOOD: filter by name 
-	search: {search: string, type: SortListGroup}
 }
 
 export const SortsList = ({
 	openModal,
 	group = SortListGroup.sort,
-	search
 }: SortsListProps) =>{
 
-	const {data: groups} = useGetGroupsQuery()
-	const {data: categories} = useGetCategoriesQuery()
-	const {data: sorts} = useGetSortsQuery()
-
+	const search: CatalogState["sortsSearch"] = useAppSelector(selectSortsSearch)
 	const [config, setConfig] = useState(defineRawConfig(group))
+
+	const {data} = useSearchGroupsQuery(search)
 
 	useEffect(() => {
 		setConfig(defineRawConfig(group))
 	},[group])
 
-
-	const catMap = useMemo(() => sorts?.reduce<Record<number, any[]>>((sum, cur) => {
-		if(cur.categoryId in sum){
-			sum[cur.categoryId].push(cur);
-		}else{
-			sum[cur.categoryId] = [cur];
+	useEffect(() => {
+		if(search.search){
+			setConfig(defineRawConfig(search.type))
 		}
-		return sum;
-	}, {}) || {}, [sorts])
-
-	const groupMap = useMemo(() => categories?.reduce<Record<number, any[]>>((sum, cur) => {
-		if(cur.groupId in sum){
-			sum[cur.groupId].push(cur);
-		}else{
-			sum[cur.groupId] = [cur];
-		}
-		return sum;
-	}, {}) || {},[categories])
-
-	const groupedData = useMemo(()=> groups?.map(group => ({
-		...group,
-		categories: groupMap[group.id]?.map(cat => ({...cat, sorts: catMap[cat.id]}))
-	})),[groups, groupMap, catMap])
-
+	},[search])
 
 	return <div className={styles.sorts_list}>
 		<div className={styles.header}>
@@ -206,7 +187,7 @@ export const SortsList = ({
 			<span className={styles.name}>Variedad</span>
 		</div>
 		
-		{groupedData?.map(group => 
+		{data?.map(group => 
 			<GroupRaw 
 				open={config.group}
 				key={`group_${group.id}`} 

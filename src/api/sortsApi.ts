@@ -1,7 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Category, Group, Sort } from "../types";
 import { getToken } from "../lib/token";
-import { CreateCategoryBody, UpdateCategoryBody } from "./interfaces";
+import {
+  CreateCategoryBody,
+  SearchParams,
+  UpdateCategoryBody,
+} from "./interfaces";
+import { CatalogState } from "../redux/reducer/catalogReducer";
 
 // Define a service using a base URL and expected endpoints
 export const sortsApi = createApi({
@@ -14,11 +19,14 @@ export const sortsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getSorts: builder.query<Sort[], void>({
-      query: () => `/sorts`,
+    searchGroups: builder.query<Group[], CatalogState["sortsSearch"]>({
+      query: (params) => ({ url: `/groups/search`, params }),
     }),
     getCategories: builder.query<Category[], void>({
       query: () => `/categories`,
+    }),
+    getGroups: builder.query<Group[], void>({
+      query: () => `/groups`,
     }),
     createCategory: builder.mutation<Category, CreateCategoryBody>({
       query: (body) => ({
@@ -48,23 +56,18 @@ export const sortsApi = createApi({
         body: {},
       }),
     }),
-
-    getGroups: builder.query<Group[], void>({
-      query: () => `/groups`,
-    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useSearchGroupsQuery,
   useGetGroupsQuery,
-
   useGetCategoriesQuery,
+
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useCancelCategoryMutation,
   useDeleteCategoryMutation,
-
-  useGetSortsQuery,
 } = sortsApi;
