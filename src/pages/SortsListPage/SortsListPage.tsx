@@ -7,48 +7,62 @@ import {  EditGroupForm } from "../../components/forms/EditGroupForm/EditGroupFo
 import { EditCategoryForm } from "../../components/forms/EditCategoryForm/EditCategoryForm";
 import { SortListGroup } from "../../lib/constants";
 
+type ModalType = 'create' | 'update' 
 
 const renderForm = ({contentData, ...props}: {
-  contentData:  Group | Category | Sort | null,
+  contentData:  any,
   onSubmit: () => void , 
   onReset: () => void
-}) => {
+}, modalType: ModalType, type: SortListGroup) => {
   if (!contentData) {
     return;
   }
 
-  if ("categories" in contentData) {
-    return (
-      <EditGroupForm
-        {...props}
-        group={contentData as Group}
-      />
-    );
-  }
-  if ("sorts" in contentData) {
-    return (
-      <EditCategoryForm
-        {...props}
-        category={contentData as Category}
-      />
-    );
+  switch(type){
+    case SortListGroup.group: {
+      return (
+        <EditGroupForm
+          {...props}
+          action={modalType}
+          data={contentData}
+        />
+      );
+    }
+    case SortListGroup.category: {
+      return (
+        <EditCategoryForm
+          {...props}
+          // action={modalType}
+          category={contentData}
+        />
+      );
+    }
+    case SortListGroup.sort: {
+      
+    }
   }
 };
 
 
 
-
 export const SortsListPage = () => {
   const [open, setOpen] = useState(false);
-  const [contentData, setContentData] = useState<
-    Group | Category | Sort | null
-  >(null);
+  const [refetch, setRefetch] = useState(false);
 
-  const handleOpen = (data: Group | Category | Sort) => {
-    setContentData(data);
+  
+
+  const [modalConfig, setModalConfig] = useState<{modalType: ModalType, type: SortListGroup, data: any } | null>(null);
+
+  const handleOpen = (modalType: ModalType, type: SortListGroup, data: any ) => {
+    setModalConfig({
+      modalType, 
+      type,
+      data
+    })
     setOpen(true);
   };
   const handleClose = () => {
+    setRefetch(true);
     setOpen(false);
   }
 
@@ -59,15 +73,18 @@ export const SortsListPage = () => {
       <h1>Variedades</h1>
       <SortsFilters 
         onSortListGroupChange={setSortListGroup}
+        onCreateBtnClick={(type) => {
+          handleOpen('create', type, {})
+        }}
       />
       <div className="box">
-        <SortsList openModal={handleOpen} group={sortListGroup} />
+        <SortsList refetch={refetch} openModal={(data, type) => handleOpen('update', type, data)} group={sortListGroup} />
         <Modal open={open} onClose={handleClose}>
-          {renderForm({
+          {modalConfig && renderForm({
              onSubmit:handleClose,
              onReset:handleClose,
-             contentData
-          })}
+             contentData: modalConfig.data
+          }, modalConfig.modalType, modalConfig.type)}
         </Modal>
       </div>
     </div>

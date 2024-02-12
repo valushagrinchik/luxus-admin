@@ -156,19 +156,21 @@ const defineRawConfig = (group: SortListGroup) => {
 
 
 interface SortsListProps {
-	openModal: (data: Group | Category | Sort) => void
+	openModal: (data: Group | Category | Sort, type: SortListGroup) => void
 	group?: SortListGroup;
+	refetch?: boolean;
 }
 
 export const SortsList = ({
 	openModal,
 	group = SortListGroup.sort,
+	refetch = false
 }: SortsListProps) =>{
 
 	const search: CatalogState["sortsSearch"] = useAppSelector(selectSortsSearch)
 	const [config, setConfig] = useState(defineRawConfig(group))
 
-	const {data} = useSearchGroupsQuery(search)
+	const {data, refetch: searchGroups} = useSearchGroupsQuery(search)
 
 	useEffect(() => {
 		setConfig(defineRawConfig(group))
@@ -179,6 +181,12 @@ export const SortsList = ({
 			setConfig(defineRawConfig(search.type))
 		}
 	},[search])
+
+	useEffect(() => {
+		if(refetch){
+			searchGroups()
+		}
+	},[refetch, searchGroups])
 
 	return <div className={styles.sorts_list}>
 		<div className={styles.header}>
@@ -191,20 +199,20 @@ export const SortsList = ({
 			<GroupRaw 
 				open={config.group}
 				key={`group_${group.id}`} 
-				onEditBtnClick={(data: Group | Category | Sort) => openModal(data)}
+				onEditBtnClick={(data: Group | Category | Sort) => openModal(data, SortListGroup.group)}
 				group={group}
 			>{ group.categories?.map(cat => 
 					<CategoryRaw 
 						open={config.category}
 						key={`category_${cat.id}`} 
 						category={cat} 
-						onEditBtnClick={(data: Group | Category | Sort) => openModal(data)}>
+						onEditBtnClick={(data: Group | Category | Sort) => openModal(data,SortListGroup.category)}>
 							{cat.sorts?.map((sort: any) => 
 								<SortRaw 
 									open={config.sort}
 									sort={sort} 
 									key={`sort_${sort.id}`} 
-									onEditBtnClick={(data: Group | Category | Sort) => openModal(data)}></SortRaw>
+									onEditBtnClick={(data: Group | Category | Sort) => openModal(data, SortListGroup.sort)}></SortRaw>
 							)}
 						</CategoryRaw>
 			)}</GroupRaw>

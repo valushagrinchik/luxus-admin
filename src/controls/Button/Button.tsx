@@ -46,7 +46,7 @@ export const Button = React.forwardRef(function MyButton(
   })(appearance);
 
   return (
-    <BaseButton ref={ref} className={propsByAppearance?.className} {...props}>
+    <BaseButton ref={ref} {...props} className={propsByAppearance?.className}>
       {icon || propsByAppearance?.icon}
       {children}
     </BaseButton>

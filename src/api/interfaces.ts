@@ -8,6 +8,10 @@ export type CreateCategoryBody = {
   groupId: number;
 };
 
-export type SearchParams = {
-  name?: string;
+export type UpdateGroupBody = {
+  id: number;
+  name: string;
+};
+export type CreateGroupBody = {
+  name: string;
 };

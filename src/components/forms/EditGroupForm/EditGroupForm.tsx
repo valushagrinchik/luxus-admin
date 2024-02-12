@@ -1,10 +1,8 @@
-import React from "react";
-
 import { SubmitHandler, useForm } from "react-hook-form";
 import { BaseInput } from "../../../controls/BaseInput";
 import { Button } from "../../../controls/Button/Button";
 import styles from "./EditGroupForm.module.css";
-import { Group } from "../../../types";
+import { useCreateGroupMutation, useUpdateGroupMutation } from "../../../api/sortsApi";
 
 type EditGroupFormInputs = {
   id: string;
@@ -14,13 +12,15 @@ type EditGroupFormInputs = {
 interface EditGroupFormProps {
   onSubmit: () => void;
   onReset: () => void;
-  group: Group;
+  data: any;
+  action: 'create' | 'update'
 }
 
 export const EditGroupForm = ({
   onSubmit,
   onReset,
-  group,
+  data,
+  action
 }: EditGroupFormProps) => {
   const {
     register,
@@ -28,12 +28,20 @@ export const EditGroupForm = ({
     formState: { errors },
   } = useForm<EditGroupFormInputs>({
     defaultValues: {
-      name: group.name,
+      name: data?.name || '',
     },
   });
 
-  const submit: SubmitHandler<EditGroupFormInputs> = (data) => {
-    console.log(data);
+  const [create] = useCreateGroupMutation()
+  const [update] = useUpdateGroupMutation()
+
+  const submit: SubmitHandler<EditGroupFormInputs> = async(formData) => {
+    if(action === 'create'){
+      await create(formData)
+    }
+    if(action === 'update'){
+      await update({...formData, id: data.id })
+    }
     onSubmit();
   };
 

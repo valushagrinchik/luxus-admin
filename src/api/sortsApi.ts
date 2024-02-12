@@ -3,8 +3,9 @@ import { Category, Group, Sort } from "../types";
 import { getToken } from "../lib/token";
 import {
   CreateCategoryBody,
-  SearchParams,
+  CreateGroupBody,
   UpdateCategoryBody,
+  UpdateGroupBody,
 } from "./interfaces";
 import { CatalogState } from "../redux/reducer/catalogReducer";
 
@@ -18,9 +19,17 @@ export const sortsApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ["Sort"],
   endpoints: (builder) => ({
     searchGroups: builder.query<Group[], CatalogState["sortsSearch"]>({
       query: (params) => ({ url: `/groups/search`, params }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Sort" as const, id })),
+              { type: "Sort", id: "LIST" },
+            ]
+          : [{ type: "Sort", id: "LIST" }],
     }),
     getCategories: builder.query<Category[], void>({
       query: () => `/categories`,
@@ -28,6 +37,38 @@ export const sortsApi = createApi({
     getGroups: builder.query<Group[], void>({
       query: () => `/groups`,
     }),
+
+    updateGroup: builder.mutation<Group, UpdateGroupBody>({
+      query: (body) => ({
+        url: `/groups/${body.id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Sort", id }],
+    }),
+    createGroup: builder.mutation<Group, CreateGroupBody>({
+      query: (body) => ({
+        url: `/groups`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
+    }),
+    cancelGroup: builder.mutation<{ group: number }, number>({
+      query: (id) => ({
+        url: `/groups/${id}`,
+        method: "POST",
+        body: {},
+      }),
+    }),
+    deleteGroup: builder.mutation<{ group: number }, number>({
+      query: (id) => ({
+        url: `/groups/${id}`,
+        method: "DELETE",
+        body: {},
+      }),
+    }),
+
     createCategory: builder.mutation<Category, CreateCategoryBody>({
       query: (body) => ({
         url: `/categories`,
@@ -65,6 +106,11 @@ export const {
   useSearchGroupsQuery,
   useGetGroupsQuery,
   useGetCategoriesQuery,
+
+  useCreateGroupMutation,
+  useUpdateGroupMutation,
+  useCancelGroupMutation,
+  useDeleteGroupMutation,
 
   useCreateCategoryMutation,
   useUpdateCategoryMutation,

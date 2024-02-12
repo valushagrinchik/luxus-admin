@@ -4,28 +4,35 @@ import {
   selectClasses,
   SelectListboxSlotProps,
   SelectProps,
-  SelectRootSlotProps,
 } from "@mui/base/Select";
+import { Button as BaseButton, ButtonProps} from "@mui/base/Button";
 import { Option as BaseOption, optionClasses } from "@mui/base/Option";
 import { styled } from "@mui/system";
 import { CssTransition } from "@mui/base/Transitions";
 import { PopupContext } from "@mui/base/Unstable_Popup";
 import { ArrowDownIcon } from "./icons/ArrowDownIcon";
 import { ArrowUpIcon } from "./icons/ArrowUpIcon";
+import { prepareForSlot } from "@mui/base/utils";
+import { Dropdown } from "@mui/base/Dropdown";
+import { MenuButton } from "@mui/base/MenuButton";
+import { Menu } from "@mui/base/Menu";
+import { MenuItem as BaseMenuItem } from '@mui/base/MenuItem';
 
 export const Select = React.forwardRef(function MySelect<
   TValue extends {},
   Multiple extends boolean
 >(
   {
+    dropdown='select',
     options,
     ...props
   }: {
+    dropdown?: 'select' | 'menu',
     options: {
       label: string;
       value: string;
     }[];
-    placeholder: string;
+    placeholder?: string;
   } & SelectProps<TValue, Multiple>,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
@@ -35,6 +42,26 @@ export const Select = React.forwardRef(function MySelect<
     popup: Popup,
     ...props.slots,
   };
+
+  if(dropdown === 'menu'){
+    return (
+      <Dropdown>
+        <MenuButton slots={{ root: slots.root}}>
+        </MenuButton>
+        <Menu slots={{ listbox: slots.listbox }}>
+          {options.map((option) => (
+            <MenuItem key={option.value} value={option.value} onClick={(e) => {
+              if(props.onChange){
+                props.onChange(e, option.value as any)
+              }
+            }}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Menu>
+      </Dropdown>
+    );
+  }
 
   return (
     <BaseSelect {...props} ref={ref} slots={slots}>
@@ -47,22 +74,16 @@ export const Select = React.forwardRef(function MySelect<
   );
 });
 
-const Button = React.forwardRef(function Button<
-  TValue extends {},
-  Multiple extends boolean
->(
-  props: SelectRootSlotProps<TValue, Multiple>,
+const Button = prepareForSlot(React.forwardRef(function MyButton(
+  props: ButtonProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-  const { ownerState, ...other } = props;
-
-  return (
-    <button type="button" {...other} ref={ref}>
-      {other.children}
-      {props["aria-expanded"] ? <ArrowUpIcon /> : <ArrowDownIcon />}
-    </button>
-  );
-});
+  const { children, ...other } = props;
+  return <BaseButton {...other} ref={ref}>
+    {children}
+    {props["aria-expanded"] ? <ArrowUpIcon /> : <ArrowDownIcon />}
+  </BaseButton>
+}))
 
 const StyledButton = styled(Button, { shouldForwardProp: () => true })(
   () => `
@@ -150,7 +171,7 @@ const AnimatedListbox = React.forwardRef(function AnimatedListbox<
   props: SelectListboxSlotProps<Value, Multiple>,
   ref: React.ForwardedRef<HTMLUListElement>
 ) {
-  const { ownerState, ...other } = props;
+  const { ...other } = props;
   const popupContext = React.useContext(PopupContext);
 
   if (popupContext == null) {
@@ -177,7 +198,7 @@ const Option = styled(BaseOption)(
   list-style: none;
   padding: 8px;
   border-radius: 8px;
-  cursor: default;
+  cursor: pointer;
 
   color: var(--Gray-900);
   /* Text sm/Medium */
@@ -213,3 +234,36 @@ const Option = styled(BaseOption)(
 const Popup = styled("div")`
   z-index: 11;
 `;
+
+const MenuItem = styled(BaseMenuItem)(
+  () => `
+  list-style: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+
+  color: var(--Gray-900);
+  /* Text sm/Medium */
+  font-family: "Roboto Condensed";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  &:focus {
+    outline: 'none';
+    background-color: 'red';
+    color: 'white';
+  }
+
+  &:hover {
+    border-radius: 6px;
+    background: var(--Gray-100);
+  }
+  `,
+);
