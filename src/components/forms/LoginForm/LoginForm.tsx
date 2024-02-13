@@ -17,22 +17,21 @@ export const LoginForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFromInputs>();
-	let { signin } = useAuth();
+  let { signin } = useAuth();
 
-  const [submitError, setSubmitError] =  useState('')
+  const [submitError, setSubmitError] = useState("");
   let navigate = useNavigate();
 
   const submit: SubmitHandler<LoginFromInputs> = async (data) => {
-    try{
-      await signin(data)
-    } catch(err: any) {
-      setSubmitError(err?.message[0])
-      return 
+    try {
+      await signin(data);
+    } catch (err: any) {
+      setSubmitError(err?.message[0]);
+      return;
     }
 
-    navigate("/")
-  }
-
+    navigate("/");
+  };
 
   return (
     <div className={styles.form_container}>
@@ -56,5 +55,3 @@ export const LoginForm = () => {
     </div>
   );
 };
-
-

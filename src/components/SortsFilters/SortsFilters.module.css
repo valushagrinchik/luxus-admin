@@ -1,14 +1,17 @@
-.filter_row{
+.filter_row {
   display: flex;
   justify-content: space-between;
   width: 100%;
   margin-bottom: 16px;
   height: 36px;
 }
-.search_group{
+.search_group {
   display: flex;
 }
-.right_group{
+.right_group {
   display: flex;
   gap: 8px;
+}
+.input_width {
+  min-width: 250px;
 }

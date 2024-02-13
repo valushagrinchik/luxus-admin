@@ -1,31 +1,40 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { BaseInput } from "../../../controls/BaseInput";
 import { Button } from "../../../controls/Button/Button";
-import styles from "./EditCategoryForm.module.css";
-import { Category } from "../../../types";
-import { useGetGroupsQuery, useUpdateCategoryMutation } from "../../../api/sortsApi";
+import { Category, EditCategoryFormInputs } from "../../../lib/types";
+import {
+  useCreateCategoryMutation,
+  useGetGroupsQuery,
+  useUpdateCategoryMutation,
+} from "../../../api/sortsApi";
 import { Select } from "../../../controls/Select";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { schemaEditCategory } from "../../../lib/validation";
 
-type EditCategoryFormInputs = {
-  id: number;
-  name: string;
-  groupId: number;
-};
+import styles from "./EditCategoryForm.module.css";
 
 interface EditCategoryFormProps {
   onSubmit: () => void;
   onReset: () => void;
-  category: Category;
+  data: Category;
+  action: "create" | "update";
 }
 
 export const EditCategoryForm = ({
+  action,
   onSubmit,
   onReset,
-  category,
+  data,
 }: EditCategoryFormProps) => {
-  const { data } = useGetGroupsQuery()
-  const [update] = useUpdateCategoryMutation()
-  const groupOptions = data?.map (group => ({value: group.id.toString(), label: group.name})) || []
+  const { data: groups } = useGetGroupsQuery();
+  const [update] = useUpdateCategoryMutation();
+  const [create] = useCreateCategoryMutation();
+
+  const groupOptions =
+    groups?.map((group) => ({
+      value: group.id,
+      label: group.name,
+    })) || [];
 
   const {
     register,
@@ -33,36 +42,43 @@ export const EditCategoryForm = ({
     handleSubmit,
     formState: { errors },
   } = useForm<EditCategoryFormInputs>({
+    resolver: yupResolver(schemaEditCategory),
     defaultValues: {
-      name: category.name,
+      name: data?.name,
+      groupId: data.groupId,
     },
   });
 
-  const submit: SubmitHandler<EditCategoryFormInputs> = async (data) => {
-    await update({
-      ...data,
-      id: category.id,
-    })
+  const submit: SubmitHandler<EditCategoryFormInputs> = async (formData) => {
+    if (action === "create") {
+      await create(formData);
+    }
+    if (action === "update") {
+      await update({ ...formData, id: data.id });
+    }
     onSubmit();
   };
 
-
-  const {onChange: onChangeGroupSelect, ...groupFieldsProps} = register("groupId")
+  const { onChange: onChangeGroupSelect, ...groupFieldsProps } =
+    register("groupId");
   return (
     <form className={styles.form}>
-      <h2>Editar categoria</h2>
+      <h2>{action === "create" ? "Crear" : "Editar"} categoria</h2>
       <div>
         <label htmlFor="groupId">Grupo *</label>
-        <Select placeholder="Grupo" 
+        <Select
           className={styles.select}
-          
-          multiple={false} 
-          onChange={(event, value)=>{
-          if(!event || !value){
-            return
-          }
-          setValue('groupId', +value )
-        }} {...groupFieldsProps} options={groupOptions} defaultValue={category.groupId.toString()} />
+          multiple={false}
+          onChange={(event, value) => {
+            if (!event || !value) {
+              return;
+            }
+            setValue("groupId", +value);
+          }}
+          {...groupFieldsProps}
+          options={groupOptions}
+          defaultValue={data.groupId}
+        />
         {errors.groupId && <span>{errors.groupId.message}</span>}
       </div>
       <div>
@@ -79,6 +95,5 @@ export const EditCategoryForm = ({
         </Button>
       </div>
     </form>
-
   );
 };

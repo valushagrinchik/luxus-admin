@@ -9,6 +9,7 @@ export interface CatalogState {
     search?: string;
     type: SortListGroup;
   };
+  selectedSorts: number[];
 }
 
 // Define the initial state using that type
@@ -17,6 +18,7 @@ const initialState: CatalogState = {
     search: undefined,
     type: SortListGroup.sort,
   },
+  selectedSorts: [],
 };
 
 export const catalogSlice = createSlice({
@@ -28,13 +30,20 @@ export const catalogSlice = createSlice({
       action: PayloadAction<Partial<CatalogState["sortsSearch"]>>
     ) => {
       state.sortsSearch = { ...state.sortsSearch, ...action.payload };
+      
+    },
+    setSelectedSorts: (state, action: PayloadAction<number[]>) => {
+      state.selectedSorts = [...action.payload];
     },
   },
 });
 
-export const { setSearch } = catalogSlice.actions;
+export const { setSearch, setSelectedSorts } = catalogSlice.actions;
 
 export const selectSortsSearch = (state: RootState) =>
   state.catalog.sortsSearch;
+
+export const selectSelectedSorts = (state: RootState) =>
+  state.catalog.selectedSorts;
 
 export default catalogSlice.reducer;

@@ -1,11 +1,16 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { BaseInput } from "../../../controls/BaseInput";
 import { Button } from "../../../controls/Button/Button";
+import {
+  useCreateGroupMutation,
+  useUpdateGroupMutation,
+} from "../../../api/sortsApi";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { schemaEditGroup } from "../../../lib/validation";
+
 import styles from "./EditGroupForm.module.css";
-import { useCreateGroupMutation, useUpdateGroupMutation } from "../../../api/sortsApi";
 
 type EditGroupFormInputs = {
-  id: string;
   name: string;
 };
 
@@ -13,34 +18,35 @@ interface EditGroupFormProps {
   onSubmit: () => void;
   onReset: () => void;
   data: any;
-  action: 'create' | 'update'
+  action: "create" | "update";
 }
 
 export const EditGroupForm = ({
   onSubmit,
   onReset,
   data,
-  action
+  action,
 }: EditGroupFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<EditGroupFormInputs>({
+    resolver: yupResolver(schemaEditGroup),
     defaultValues: {
-      name: data?.name || '',
+      name: data?.name || "",
     },
   });
 
-  const [create] = useCreateGroupMutation()
-  const [update] = useUpdateGroupMutation()
+  const [create] = useCreateGroupMutation();
+  const [update] = useUpdateGroupMutation();
 
-  const submit: SubmitHandler<EditGroupFormInputs> = async(formData) => {
-    if(action === 'create'){
-      await create(formData)
+  const submit: SubmitHandler<EditGroupFormInputs> = async (formData) => {
+    if (action === "create") {
+      await create(formData);
     }
-    if(action === 'update'){
-      await update({...formData, id: data.id })
+    if (action === "update") {
+      await update({ ...formData, id: data.id });
     }
     onSubmit();
   };
@@ -48,7 +54,7 @@ export const EditGroupForm = ({
   return (
     <div className={styles.form_container}>
       <form className={styles.form}>
-        <h2>Editar grupo</h2>
+        <h2>{action === "create" ? "Crear" : "Editar"} grupo</h2>
         <div>
           <label htmlFor="name">Nombre *</label>
           <BaseInput {...register("name")} />

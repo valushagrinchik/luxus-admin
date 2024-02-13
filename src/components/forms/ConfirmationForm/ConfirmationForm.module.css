@@ -1,0 +1,20 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+.btn {
+  align-self: flex-end;
+  width: 100px;
+}
+.close_btn {
+  align-self: flex-end;
+  position: absolute;
+  right: 0;
+  top: 2px;
+  cursor: pointer;
+}
+.title {
+  position: relative;
+}

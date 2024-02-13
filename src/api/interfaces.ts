@@ -15,3 +15,13 @@ export type UpdateGroupBody = {
 export type CreateGroupBody = {
   name: string;
 };
+
+export type CreateSortBody = {
+  name: string;
+  categoryId: number;
+};
+export type UpdateSortBody = {
+  id: number;
+  name: string;
+  categoryId: number;
+};

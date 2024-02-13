@@ -7,14 +7,14 @@ import { OkIcon } from "../icons/OkIcon";
 import { CloseIcon } from "../icons/CloseIcon";
 import styles from "./Button.module.css";
 import { PlusIcon } from "../icons/PlusIcon";
-
+import classNames from "classnames";
 
 interface ButtonProps extends BaseButtonProps {
-  appearance: "approve" | "refuse" | "add" | "base";
-  icon?: ReactNode
+  appearance: "approve" | "refuse" | "add" | "base" | "cancel" | "transparent";
+  icon?: ReactNode;
 }
 export const Button = React.forwardRef(function MyButton(
-  {icon, children, appearance, ...props }: ButtonProps,
+  { icon, children, appearance, className, ...props }: ButtonProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
   const propsByAppearance = ((appearance) => {
@@ -42,11 +42,29 @@ export const Button = React.forwardRef(function MyButton(
           className: styles.add_btn,
         };
       }
+      case "cancel": {
+        return {
+          className: styles.cancel_btn,
+        };
+      }
+      case "transparent": {
+        return {
+          className: styles.transparent_btn,
+        };
+      }
     }
   })(appearance);
 
   return (
-    <BaseButton ref={ref} {...props} className={propsByAppearance?.className}>
+    <BaseButton
+      ref={ref}
+      {...props}
+      className={classNames(
+        styles.btn,
+        propsByAppearance?.className,
+        className
+      )}
+    >
       {icon || propsByAppearance?.icon}
       {children}
     </BaseButton>

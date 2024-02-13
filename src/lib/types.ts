@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type Sort = {
   id: number;
   name: string;
@@ -21,4 +23,21 @@ export type User = {
   id: number;
   email: string;
   access_token: string;
+};
+
+export type EditCategoryFormInputs = {
+  name: string;
+  groupId: number;
+};
+export type EditSortFormInputs = {
+  name: string;
+  groupId: number;
+  categoryId: number;
+};
+
+export type MenuItem = {
+  icon?: ReactNode;
+  link: string;
+  label: string;
+  children?: MenuItem[];
 };

@@ -23,7 +23,7 @@ export const DashboardPage = () => {
 	}
 
 	return <div>
-		<Header onMenuToggle={() => setIsOpen(!isOpen) }/>
+		<Header isOpen={isOpen} onMenuToggle={() => setIsOpen(!isOpen) }/>
 		<Sidebar isOpen={isOpen} onClose={onClose} />
 		<Outlet />
 	</div>

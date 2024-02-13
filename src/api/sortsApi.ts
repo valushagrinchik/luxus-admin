@@ -1,27 +1,61 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Category, Group, Sort } from "../types";
+import {
+  BaseQueryFn,
+  FetchArgs,
+  FetchBaseQueryError,
+  createApi,
+  fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
+import { Category, Group, Sort } from "../lib/types";
 import { getToken } from "../lib/token";
 import {
   CreateCategoryBody,
   CreateGroupBody,
+  CreateSortBody,
   UpdateCategoryBody,
   UpdateGroupBody,
+  UpdateSortBody,
 } from "./interfaces";
 import { CatalogState } from "../redux/reducer/catalogReducer";
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: "/",
+  prepareHeaders: (headers) => {
+    headers.set("Authorization", `Bearer ${getToken()}`);
+    return headers;
+  },
+});
+
+const baseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+  if (result.error && result.error.status === 401) {
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  }
+  return result;
+};
 
 // Define a service using a base URL and expected endpoints
 export const sortsApi = createApi({
   reducerPath: "sortsApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/",
-    prepareHeaders: (headers) => {
-      headers.set("Authorization", `Bearer ${getToken()}`);
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Sort"],
   endpoints: (builder) => ({
-    searchGroups: builder.query<Group[], CatalogState["sortsSearch"]>({
+    searchGroupsTotal: builder.query<
+      { total: number },
+      CatalogState["sortsSearch"]
+    >({
+      query: (params) => ({ url: `/groups/search/total`, params }),
+      providesTags: () => [{ type: "Sort", id: "LIST" }],
+    }),
+
+    searchGroups: builder.query<
+      Group[],
+      { offset: number; limit: number } & CatalogState["sortsSearch"]
+    >({
       query: (params) => ({ url: `/groups/search`, params }),
       providesTags: (result) =>
         result
@@ -31,8 +65,8 @@ export const sortsApi = createApi({
             ]
           : [{ type: "Sort", id: "LIST" }],
     }),
-    getCategories: builder.query<Category[], void>({
-      query: () => `/categories`,
+    getCategories: builder.query<Category[], { groupId: number } | undefined>({
+      query: (params) => ({ url: `/categories`, params }),
     }),
     getGroups: builder.query<Group[], void>({
       query: () => `/groups`,
@@ -60,6 +94,7 @@ export const sortsApi = createApi({
         method: "POST",
         body: {},
       }),
+      invalidatesTags: (result, error, id) => [{ type: "Sort", id }],
     }),
     deleteGroup: builder.mutation<{ group: number }, number>({
       query: (id) => ({
@@ -67,6 +102,7 @@ export const sortsApi = createApi({
         method: "DELETE",
         body: {},
       }),
+      invalidatesTags: (result, error, id) => [{ type: "Sort", id }],
     }),
 
     createCategory: builder.mutation<Category, CreateCategoryBody>({
@@ -75,6 +111,7 @@ export const sortsApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
     }),
     updateCategory: builder.mutation<Category, UpdateCategoryBody>({
       query: (body) => ({
@@ -82,6 +119,9 @@ export const sortsApi = createApi({
         method: "PATCH",
         body,
       }),
+      invalidatesTags: (result, error, { groupId }) => [
+        { type: "Sort", id: groupId },
+      ],
     }),
     cancelCategory: builder.mutation<{ category: number }, number>({
       query: (id) => ({
@@ -89,6 +129,7 @@ export const sortsApi = createApi({
         method: "POST",
         body: {},
       }),
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
     }),
     deleteCategory: builder.mutation<{ category: number }, number>({
       query: (id) => ({
@@ -96,6 +137,42 @@ export const sortsApi = createApi({
         method: "DELETE",
         body: {},
       }),
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
+    }),
+
+    createSort: builder.mutation<Sort, CreateSortBody>({
+      query: (body) => ({
+        url: `/sorts`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
+    }),
+    updateSort: builder.mutation<Sort, UpdateSortBody>({
+      query: (body) => ({
+        url: `/sorts/${body.id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result, error, { categoryId }) => [
+        { type: "Sort", id: categoryId },
+      ],
+    }),
+    cancelSort: builder.mutation<{ sort: number }, number>({
+      query: (id) => ({
+        url: `/sorts/${id}`,
+        method: "POST",
+        body: {},
+      }),
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
+    }),
+    deleteSort: builder.mutation<{ sort: number }, number>({
+      query: (id) => ({
+        url: `/sorts/${id}`,
+        method: "DELETE",
+        body: {},
+      }),
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
     }),
   }),
 });
@@ -104,6 +181,7 @@ export const sortsApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useSearchGroupsQuery,
+  useSearchGroupsTotalQuery,
   useGetGroupsQuery,
   useGetCategoriesQuery,
 
@@ -116,4 +194,9 @@ export const {
   useUpdateCategoryMutation,
   useCancelCategoryMutation,
   useDeleteCategoryMutation,
+
+  useCreateSortMutation,
+  useUpdateSortMutation,
+  useCancelSortMutation,
+  useDeleteSortMutation,
 } = sortsApi;

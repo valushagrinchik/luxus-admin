@@ -5,7 +5,7 @@ import {
   SelectListboxSlotProps,
   SelectProps,
 } from "@mui/base/Select";
-import { Button as BaseButton, ButtonProps} from "@mui/base/Button";
+import { Button as BaseButton, ButtonProps } from "@mui/base/Button";
 import { Option as BaseOption, optionClasses } from "@mui/base/Option";
 import { styled } from "@mui/system";
 import { CssTransition } from "@mui/base/Transitions";
@@ -16,45 +16,49 @@ import { prepareForSlot } from "@mui/base/utils";
 import { Dropdown } from "@mui/base/Dropdown";
 import { MenuButton } from "@mui/base/MenuButton";
 import { Menu } from "@mui/base/Menu";
-import { MenuItem as BaseMenuItem } from '@mui/base/MenuItem';
+import { MenuItem as BaseMenuItem } from "@mui/base/MenuItem";
 
 export const Select = React.forwardRef(function MySelect<
   TValue extends {},
   Multiple extends boolean
 >(
   {
-    dropdown='select',
+    dropdown = "select",
     options,
+    placeholder,
     ...props
   }: {
-    dropdown?: 'select' | 'menu',
+    dropdown?: "select" | "menu";
     options: {
       label: string;
-      value: string;
+      value: string | number;
     }[];
     placeholder?: string;
   } & SelectProps<TValue, Multiple>,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
   const slots = {
-    root: StyledButton,
+    root: prepareForSlot(StyledButton),
     listbox: AnimatedListbox,
     popup: Popup,
     ...props.slots,
   };
 
-  if(dropdown === 'menu'){
+  if (dropdown === "menu") {
     return (
       <Dropdown>
-        <MenuButton slots={{ root: slots.root}}>
-        </MenuButton>
+        <MenuButton slots={{ root: slots.root }}></MenuButton>
         <Menu slots={{ listbox: slots.listbox }}>
           {options.map((option) => (
-            <MenuItem key={option.value} value={option.value} onClick={(e) => {
-              if(props.onChange){
-                props.onChange(e, option.value as any)
-              }
-            }}>
+            <MenuItem
+              key={option.value}
+              value={option.value}
+              onClick={(e) => {
+                if (props.onChange) {
+                  props.onChange(e, option.value as any);
+                }
+              }}
+            >
               {option.label}
             </MenuItem>
           ))}
@@ -64,29 +68,57 @@ export const Select = React.forwardRef(function MySelect<
   }
 
   return (
-    <BaseSelect {...props} ref={ref} slots={slots}>
+    <BaseSelect
+      {...props}
+      placeholder={<Placeholder placeholder={placeholder} />}
+      ref={ref}
+      slots={slots}
+    >
       {options.map((option) => (
         <Option key={option.value} value={option.value}>
           {option.label}
         </Option>
       ))}
+      {!options.length && (
+        <Option disabled key="no_data" value={0}>
+          Sin datos
+        </Option>
+      )}
     </BaseSelect>
   );
 });
 
-const Button = prepareForSlot(React.forwardRef(function MyButton(
+const Placeholder = ({ placeholder }: { placeholder?: string }) => {
+  if (!placeholder) {
+    return null;
+  }
+  return (
+    <span
+      style={{
+        color: "var(--Gray-500)",
+      }}
+    >
+      {placeholder}
+    </span>
+  );
+};
+
+const Button = React.forwardRef(function MyButton(
   props: ButtonProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
   const { children, ...other } = props;
-  return <BaseButton {...other} ref={ref}>
-    {children}
-    {props["aria-expanded"] ? <ArrowUpIcon /> : <ArrowDownIcon />}
-  </BaseButton>
-}))
+  return (
+    <BaseButton {...other} ref={ref}>
+      {children}
+      {props["aria-expanded"] ? <ArrowUpIcon /> : <ArrowDownIcon />}
+    </BaseButton>
+  );
+});
 
 const StyledButton = styled(Button, { shouldForwardProp: () => true })(
   () => `
+  height: 36px;
   cursor: pointer;
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 0.875rem;
@@ -102,7 +134,7 @@ const StyledButton = styled(Button, { shouldForwardProp: () => true })(
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 120ms;
-  color: var(--Gray-500, #667085);
+  color: var(--Gray-900, #667085);
   /* Text md/Regular */
   font-family: "Roboto Condensed";
   font-size: 16px;
@@ -135,6 +167,8 @@ const Listbox = styled("ul")(
   padding: 2px;
   margin: 12px 0;
   min-width: 200px;
+  max-height: 200px;
+  overflow: scroll;
   border-radius: 12px;
   overflow: auto;
   outline: 0px;
@@ -219,6 +253,11 @@ const Option = styled(BaseOption)(
     /* Shadow */
     box-shadow: 0px 0px 16px 0px rgba(0, 20, 61, 0.08);
   }
+
+  &.${optionClasses.disabled} {
+    background: var(--Gray-100);
+    color: var(--Gray-500);
+  }
   
   &.${optionClasses.highlighted}.${optionClasses.selected} {
     background: var(--Primary-100);
@@ -265,5 +304,5 @@ const MenuItem = styled(BaseMenuItem)(
     border-radius: 6px;
     background: var(--Gray-100);
   }
-  `,
+  `
 );

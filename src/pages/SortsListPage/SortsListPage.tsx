@@ -1,92 +1,125 @@
 import { useState } from "react";
 import { SortsFilters } from "../../components/SortsFilters/SortsFilters";
 import { SortsList } from "../../components/SortsList/SortsList";
-import { Category, Group, Sort } from "../../types";
 import { Modal } from "../../controls/Modal";
-import {  EditGroupForm } from "../../components/forms/EditGroupForm/EditGroupForm";
+import { EditGroupForm } from "../../components/forms/EditGroupForm/EditGroupForm";
 import { EditCategoryForm } from "../../components/forms/EditCategoryForm/EditCategoryForm";
 import { SortListGroup } from "../../lib/constants";
+import { EditSortForm } from "../../components/forms/EditSortForm/EditSortForm";
+import Box from "../../controls/Box";
+import { ConfirmationForm } from "../../components/forms/ConfirmationForm/ConfirmationForm";
+import { useDeleteSortMutation } from "../../api/sortsApi";
+import { useAppDispatch, useAppSelector } from "../../store";
+import {
+  selectSelectedSorts,
+  setSelectedSorts,
+} from "../../redux/reducer/catalogReducer";
 
-type ModalType = 'create' | 'update' 
+type ModalType = "create" | "update" | "delete";
 
-const renderForm = ({contentData, ...props}: {
-  contentData:  any,
-  onSubmit: () => void , 
-  onReset: () => void
-}, modalType: ModalType, type: SortListGroup) => {
-  if (!contentData) {
-    return;
-  }
-
-  switch(type){
+const renderForm = (
+  {
+    contentData,
+    ...props
+  }: {
+    contentData: any;
+    onSubmit: () => void;
+    onReset: () => void;
+  },
+  modalType: "create" | "update",
+  type: SortListGroup
+) => {
+  switch (type) {
     case SortListGroup.group: {
-      return (
-        <EditGroupForm
-          {...props}
-          action={modalType}
-          data={contentData}
-        />
-      );
+      return <EditGroupForm {...props} action={modalType} data={contentData} />;
     }
     case SortListGroup.category: {
       return (
-        <EditCategoryForm
-          {...props}
-          // action={modalType}
-          category={contentData}
-        />
+        <EditCategoryForm {...props} action={modalType} data={contentData} />
       );
     }
     case SortListGroup.sort: {
-      
+      return <EditSortForm {...props} action={modalType} data={contentData} />;
     }
   }
 };
 
-
-
 export const SortsListPage = () => {
   const [open, setOpen] = useState(false);
   const [refetch, setRefetch] = useState(false);
+  const appDispatch = useAppDispatch();
 
-  
+  const [modalConfig, setModalConfig] = useState<{
+    modalType: ModalType;
+    type: SortListGroup;
+    data: any;
+  } | null>(null);
 
-  const [modalConfig, setModalConfig] = useState<{modalType: ModalType, type: SortListGroup, data: any } | null>(null);
-
-  const handleOpen = (modalType: ModalType, type: SortListGroup, data: any ) => {
+  const handleOpen = (modalType: ModalType, type: SortListGroup, data: any) => {
     setModalConfig({
-      modalType, 
+      modalType,
       type,
-      data
-    })
+      data,
+    });
     setOpen(true);
   };
   const handleClose = () => {
     setRefetch(true);
     setOpen(false);
-  }
+  };
 
-  const [sortListGroup, setSortListGroup] = useState(SortListGroup.group)
+  const [sortListGroup, setSortListGroup] = useState(SortListGroup.sort);
+
+  const selectedSorts = useAppSelector(selectSelectedSorts);
+  const [deleteSort] = useDeleteSortMutation();
+
+  const handleDelete = async () => {
+    await deleteSort(selectedSorts[0]);
+    appDispatch(setSelectedSorts([]));
+    handleClose();
+  };
+
+  const renderActionForm = () => {
+    if (!modalConfig) {
+      return;
+    }
+    if (modalConfig?.modalType === "delete") {
+      return <ConfirmationForm onReset={handleClose} onSubmit={handleDelete} />;
+    }
+
+    return renderForm(
+      {
+        onSubmit: handleClose,
+        onReset: handleClose,
+        contentData: modalConfig.data,
+      },
+      modalConfig.modalType,
+      modalConfig.type
+    );
+  };
 
   return (
     <div className="container">
       <h1>Variedades</h1>
-      <SortsFilters 
+      <SortsFilters
         onSortListGroupChange={setSortListGroup}
         onCreateBtnClick={(type) => {
-          handleOpen('create', type, {})
+          handleOpen("create", type, {});
+        }}
+        onDeleteBtnClick={() => {
+          handleOpen("delete", SortListGroup.sort, {});
         }}
       />
-      <div className="box">
-        <SortsList refetch={refetch} openModal={(data, type) => handleOpen('update', type, data)} group={sortListGroup} />
+      <Box>
+        <SortsList
+          refetch={refetch}
+          openModal={(data, type) => handleOpen("update", type, data)}
+          group={sortListGroup}
+        />
         <Modal open={open} onClose={handleClose}>
-          {modalConfig && renderForm({
-             onSubmit:handleClose,
-             onReset:handleClose,
-             contentData: modalConfig.data
-          }, modalConfig.modalType, modalConfig.type)}
+          {renderActionForm()}
         </Modal>
-      </div>
+      </Box>
     </div>
   );
 };
