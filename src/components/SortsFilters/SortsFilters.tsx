@@ -96,11 +96,16 @@ export const SortsFilters = ({
         />
 
         <Button
-          appearance="base"
+          appearance="red"
           disabled={!selectedSorts.length}
-          icon={<BinIcon />}
           onClick={() => onDeleteBtnClick()}
-        />
+        >
+          <BinIcon
+            color={
+              !selectedSorts.length ? "var(--Gray-400)" : "var(--Base-White)"
+            }
+          />
+        </Button>
         <Button appearance="base" disabled icon={<ExcelIcon />} />
       </div>
     </div>

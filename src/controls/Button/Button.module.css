@@ -55,7 +55,7 @@
   }
 }
 
-.cancel_btn {
+.red_btn {
   color: var(--Base-White, #fff);
   background: var(--Red-500, #f04438);
   border: 1px solid var(--Red-500, #f04438);
@@ -64,8 +64,10 @@
     background: var(--Red-600, #d92d20);
   }
   &:disabled {
-    border: 1px solid var(--Gray-200, #eaecf0);
-    color: var(--Gray-300, #d0d5dd);
+    border: 1px solid var(--Gray-200);
+    background: var(--Gray-200);
+    color: var(--Gray-400);
+    cursor: initial;
   }
 }
 

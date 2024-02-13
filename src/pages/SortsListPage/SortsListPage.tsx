@@ -8,7 +8,11 @@ import { SortListGroup } from "../../lib/constants";
 import { EditSortForm } from "../../components/forms/EditSortForm/EditSortForm";
 import Box from "../../controls/Box";
 import { ConfirmationForm } from "../../components/forms/ConfirmationForm/ConfirmationForm";
-import { useDeleteSortMutation } from "../../api/sortsApi";
+import {
+  useDeleteCategoryMutation,
+  useDeleteGroupMutation,
+  useDeleteSortMutation,
+} from "../../api/sortsApi";
 import { useAppDispatch, useAppSelector } from "../../store";
 import {
   selectSelectedSorts,
@@ -72,10 +76,26 @@ export const SortsListPage = () => {
 
   const selectedSorts = useAppSelector(selectSelectedSorts);
   const [deleteSort] = useDeleteSortMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
+  const [deleteGroup] = useDeleteGroupMutation();
 
   const handleDelete = async () => {
-    await deleteSort(selectedSorts[0]);
-    appDispatch(setSelectedSorts([]));
+    switch (modalConfig?.type) {
+      case SortListGroup.sort: {
+        await deleteSort(selectedSorts[0]);
+        appDispatch(setSelectedSorts([]));
+        break;
+      }
+      case SortListGroup.category: {
+        await deleteCategory(modalConfig.data.id);
+        break;
+      }
+      case SortListGroup.group: {
+        await deleteGroup(modalConfig.data.id);
+        break;
+      }
+    }
+
     handleClose();
   };
 
@@ -113,7 +133,7 @@ export const SortsListPage = () => {
       <Box>
         <SortsList
           refetch={refetch}
-          openModal={(data, type) => handleOpen("update", type, data)}
+          openModal={(action, type, data) => handleOpen(action, type, data)}
           group={sortListGroup}
         />
         <Modal open={open} onClose={handleClose}>

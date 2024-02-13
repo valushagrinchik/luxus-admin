@@ -1,6 +1,4 @@
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import { ArrowUpIcon } from "../../controls/icons/ArrowUpIcon";
-import { ArrowRightIcon } from "../../controls/icons/ArrowRightIcon";
 import { EditIcon } from "../../controls/icons/EditIcon";
 import classNames from "classnames";
 import { Category, Group, Sort } from "../../lib/types";
@@ -24,11 +22,14 @@ import { Checkbox } from "../../controls/Checkbox";
 
 import styles from "./SortsList.module.css";
 import { Button } from "../../controls/Button/Button";
+import { ArrowDownSortsIcon } from "../../controls/icons/ArrowDownSortsIcon";
+import { ArrowRightSortsIcon } from "../../controls/icons/ArrowRightSortsIcon";
+import { BinIcon } from "../../controls/icons/BinIcon";
 
 interface BaseRawProps {
   open: boolean;
   children?: ReactNode;
-  onActionBtnClick: (action: "edit" | "cancel", data: any) => void;
+  onActionBtnClick: (action: "update" | "cancel" | "delete", data: any) => void;
 }
 
 interface SortRawProps extends BaseRawProps {
@@ -64,6 +65,7 @@ const Raw = ({
   const selectedSorts = useAppSelector(selectSelectedSorts);
 
   const [isOpen, setIsOpen] = useState(open);
+  const [showDeleteBtn, setShowDeleteBtn] = useState(false);
 
   useEffect(() => {
     setIsOpen(open);
@@ -73,14 +75,18 @@ const Raw = ({
 
   return (
     <div className={classNames(styles.row, className)}>
-      <div className={classNames(styles.row_header)}>
+      <div
+        className={classNames(styles.row_header)}
+        onMouseOver={() => openable && setShowDeleteBtn(true)}
+        onMouseLeave={() => openable && setShowDeleteBtn(false)}
+      >
         {!!data.deletedAt && (
           <div className={styles.row_marked_as_deleted}>
             <span>PARA ELIMINAR</span>
             <div className={styles.actions}>
               <Button
                 className={styles.cancel_btn}
-                appearance="cancel"
+                appearance="red"
                 onClick={() => onActionBtnClick("cancel", data)}
               >
                 Cancelar
@@ -89,20 +95,22 @@ const Raw = ({
           </div>
         )}
 
-        <span className={styles.arrow_space}>
-          {openable && hasChildren && (
-            <span
-              className={styles.toggle_btn}
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? (
-                <ArrowUpIcon color="#0040C1" width={16} height={16} />
-              ) : (
-                <ArrowRightIcon color="#0040C1" width={16} height={16} />
-              )}
-            </span>
-          )}
-        </span>
+        {openable && (
+          <span className={styles.arrow_space}>
+            {hasChildren && (
+              <span
+                className={styles.toggle_btn}
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                {isOpen ? (
+                  <ArrowDownSortsIcon color="#0040C1" />
+                ) : (
+                  <ArrowRightSortsIcon color="var(--Gray-900)" />
+                )}
+              </span>
+            )}
+          </span>
+        )}
         {checkable && (
           <Checkbox
             onChange={(e, checked) => {
@@ -121,9 +129,16 @@ const Raw = ({
         {checkable && <span className={styles.id}>{data.id}</span>}
         <span className={styles.name}>{data.name}</span>
         <span className={styles.actions}>
+          {showDeleteBtn && (
+            <BinIcon
+              className={styles.bin_icon}
+              onClick={() => onActionBtnClick("delete", data)}
+            />
+          )}
+
           <EditIcon
             className="clickable"
-            onClick={() => onActionBtnClick("edit", data)}
+            onClick={() => onActionBtnClick("update", data)}
           />
         </span>
       </div>
@@ -215,7 +230,11 @@ const defineRawConfig = (group: SortListGroup) => {
 };
 
 interface SortsListProps {
-  openModal: (data: Group | Category | Sort, type: SortListGroup) => void;
+  openModal: (
+    action: "update" | "delete",
+    type: SortListGroup,
+    data: Group | Category | Sort
+  ) => void;
   group?: SortListGroup;
   refetch?: boolean;
 }
@@ -262,8 +281,8 @@ export const SortsList = ({
     data: any,
     type: SortListGroup
   ) => {
-    if (action === "edit") {
-      return openModal(data, type);
+    if (action === "update" || action === "delete") {
+      return openModal(action, type, data);
     }
     if (action === "cancel") {
       switch (type) {
@@ -287,7 +306,7 @@ export const SortsList = ({
     <>
       <div className={styles.sorts_list}>
         <div className={styles.header}>
-          <input type="checkbox" className={styles.checkbox} />
+          <Checkbox disabled />
           <span className={styles.id}>N°</span>
           <span className={styles.name}>Variedad</span>
         </div>

@@ -10,7 +10,7 @@
   .header {
     border-bottom: 1px solid var(--Gray-300, #d0d5dd);
     display: flex;
-    gap: 8px;
+    gap: 16px;
     padding: 8px 2px 8px 8px;
     color: var(--Primary-800, #0040c1);
     /* Text xs/Medium */
@@ -34,7 +34,7 @@
 .row_header {
   height: var(--row-height);
   display: flex;
-  gap: 8px;
+  gap: 16px;
   width: 100%;
   border-bottom: 1px solid var(--Gray-300, #d0d5dd);
   padding: 8px 2px 8px 8px;
@@ -44,6 +44,9 @@
   & .actions {
     margin-left: auto;
     margin-right: 12px;
+    display: flex;
+    gap: 8px;
+    color: var(--Gray-500);
   }
 }
 
@@ -128,4 +131,8 @@
 
 .pagination {
   align-self: flex-end;
+}
+
+.bin_icon:hover {
+  color: var(--Red-500);
 }

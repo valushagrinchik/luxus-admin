@@ -10,7 +10,7 @@ import { PlusIcon } from "../icons/PlusIcon";
 import classNames from "classnames";
 
 interface ButtonProps extends BaseButtonProps {
-  appearance: "approve" | "refuse" | "add" | "base" | "cancel" | "transparent";
+  appearance: "approve" | "refuse" | "add" | "base" | "red" | "transparent";
   icon?: ReactNode;
 }
 export const Button = React.forwardRef(function MyButton(
@@ -42,9 +42,9 @@ export const Button = React.forwardRef(function MyButton(
           className: styles.add_btn,
         };
       }
-      case "cancel": {
+      case "red": {
         return {
-          className: styles.cancel_btn,
+          className: styles.red_btn,
         };
       }
       case "transparent": {
