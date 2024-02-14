@@ -25,8 +25,7 @@
   }
 }
 
-.ok_btn,
-.add_btn {
+.base {
   color: var(--Primary-800, #0040c1);
   background: var(--Primary-100);
 
@@ -39,7 +38,7 @@
   }
 }
 
-.refuse_btn {
+.gray {
   color: var(--Gray-500, #667085);
   background: transparent;
   border: 1px solid var(--Gray-300, #d0d5dd);
@@ -55,7 +54,7 @@
   }
 }
 
-.red_btn {
+.red {
   color: var(--Base-White, #fff);
   background: var(--Red-500, #f04438);
   border: 1px solid var(--Red-500, #f04438);
@@ -71,7 +70,23 @@
   }
 }
 
-.transparent_btn {
+.green {
+  color: var(--Base-White, #fff);
+  background: var(--Green-500);
+  border: 1px solid var(--Green-500);
+  &:hover {
+    border: 1px solid var(--Green-700);
+    background: var(--Green-700);
+  }
+  &:disabled {
+    border: 1px solid var(--Gray-200);
+    background: var(--Gray-200);
+    color: var(--Gray-400);
+    cursor: initial;
+  }
+}
+
+.transparent {
   color: var(--Gray-900, #101828);
   background: transparent;
   border: 1px solid transparent;

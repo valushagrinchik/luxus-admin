@@ -23,14 +23,7 @@ export const schemaEditSort = yup
   .object()
   .shape({
     name: yup.string().required(ErrorMessages.reqiuredField),
-    groupId: yup
-      .number()
-      .typeError(ErrorMessages.reqiuredField)
-      .required(ErrorMessages.reqiuredField),
-    categoryId: yup
-      .number()
-      .min(1, ErrorMessages.reqiuredField)
-      .typeError(ErrorMessages.reqiuredField)
-      .required(ErrorMessages.reqiuredField),
+    groupId: yup.string().required(ErrorMessages.reqiuredField),
+    categoryId: yup.string().required(ErrorMessages.reqiuredField),
   })
   .required();

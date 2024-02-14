@@ -1,5 +1,6 @@
 import { useState, useContext, createContext } from "react";
 import { useLoginMutation } from "../api/loginApi";
+import { jwtDecode } from "jwt-decode";
 import { User } from "./types";
 
 export const AuthContext = createContext<any>({});
@@ -41,10 +42,19 @@ export const useProvideAuth = () => {
     setUser(null);
   };
 
+  const isAdmin = (data: User | null = user) => {
+    if (!data?.access_token) {
+      return;
+    }
+    const role = jwtDecode<{ role: string }>(data?.access_token).role;
+    return role === "Admin";
+  };
+
   return {
     user,
     loading,
     signin,
     signout,
+    isAdmin: isAdmin(user),
   };
 };

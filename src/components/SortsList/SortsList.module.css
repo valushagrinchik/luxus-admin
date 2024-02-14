@@ -45,14 +45,14 @@
     margin-left: auto;
     margin-right: 12px;
     display: flex;
-    gap: 8px;
+    gap: 4px;
     color: var(--Gray-500);
   }
 }
 
-.row_marked_as_deleted {
+.pre_deleted {
   height: var(--row-height);
-  z-index: 12;
+  z-index: 10;
   position: absolute;
   top: 0;
   left: 0;
@@ -80,6 +80,10 @@
       height: 100%;
     }
   }
+}
+
+.pre_deleted_admin_view {
+  background: var(--Red-50, #fef3f2);
 }
 
 .group {
@@ -135,4 +139,9 @@
 
 .bin_icon:hover {
   color: var(--Red-500);
+}
+.admin_action_btn {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
 }

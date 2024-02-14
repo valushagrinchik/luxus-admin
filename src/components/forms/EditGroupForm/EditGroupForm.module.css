@@ -1,9 +1,19 @@
-.form{
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
-.actions{
-	display: flex;
-	gap: 16px;
+.actions {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+.required {
+  color: var(--Red-400, #f97066);
+  /* Text sm/Medium */
+  font-family: "Roboto Condensed";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
 }

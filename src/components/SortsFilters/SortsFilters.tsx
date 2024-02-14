@@ -1,23 +1,21 @@
 import { Select } from "../../controls/Select";
-import { BaseInput } from "../../controls/BaseInput";
 import { BinIcon } from "../../controls/icons/BinIcon";
 import { ExcelIcon } from "../../controls/icons/ExcelIcon";
 import { Button } from "../../controls/Button/Button";
 import {
   SortListGroup,
   SortsFiltersCreateOptions,
-  SortsFiltersGroupByOptions,
-  SortsFiltersSearchByOptions,
+  SortsFiltersGroupByMap,
+  SortsFiltersSearchByMap,
 } from "../../lib/constants";
 import { useAppDispatch, useAppSelector } from "../../store";
 import {
   selectSelectedSorts,
-  selectSortsSearch,
   setSearch,
 } from "../../redux/reducer/catalogReducer";
-import React from "react";
-import { prepareForSlot } from "@mui/base/utils";
-
+import { Dropdown } from "../../controls/Dropdown";
+import { SearchIcon } from "../../controls/icons/SearchIcon";
+import { TextField } from "../../controls/TextField";
 import styles from "./SortsFilters.module.css";
 
 interface SortsFiltersProps {
@@ -32,71 +30,51 @@ export const SortsFilters = ({
   onDeleteBtnClick,
 }: SortsFiltersProps) => {
   const appDispatch = useAppDispatch();
-  const search = useAppSelector(selectSortsSearch);
   const selectedSorts = useAppSelector(selectSelectedSorts);
 
   return (
     <div className={styles.filter_row}>
       <Select
-        style={{ minWidth: 250 }}
-        slotProps={{
-          root: {
-            className: styles.input_width,
-          },
-          listbox: {
-            className: styles.input_width,
-          },
-        }}
-        options={SortsFiltersGroupByOptions}
-        multiple={false}
+        style={{ width: "210px" }}
+        options={SortsFiltersGroupByMap}
         placeholder="Agrupar"
-        onChange={(e, value) => onSortListGroupChange(value as SortListGroup)}
+        onChange={(event) => {
+          onSortListGroupChange(event.target.value as SortListGroup);
+        }}
       />
 
       <div className={styles.right_group}>
         <div className={styles.search_group}>
-          <BaseInput
+          <TextField
+            style={{ width: "200px" }}
             placeholder="Encontrar..."
             onChange={(e) => {
-              appDispatch(setSearch({ search: (e?.target as any)?.value }));
+              appDispatch(setSearch({ search: e.target.value }));
             }}
+            icon={<SearchIcon color="var(--Gray-400)" />}
           />
+
           <Select
-            defaultValue={search.type}
-            options={SortsFiltersSearchByOptions}
-            multiple={false}
+            style={{ width: "160px" }}
+            options={SortsFiltersSearchByMap}
             placeholder="Por variedad"
-            onChange={(e, value) => {
-              appDispatch(setSearch({ type: value as SortListGroup }));
+            onChange={(event) => {
+              appDispatch(
+                setSearch({ type: event.target.value as SortListGroup })
+              );
             }}
           />
         </div>
 
-        <Select
-          slots={{
-            root: prepareForSlot(
-              React.forwardRef(function MyButton(
-                props: any,
-                ref: React.ForwardedRef<HTMLButtonElement>
-              ) {
-                return (
-                  <Button {...props} ref={ref} appearance="add">
-                    Crear
-                  </Button>
-                );
-              })
-            ),
-          }}
+        <Dropdown
           options={SortsFiltersCreateOptions}
-          dropdown="menu"
-          multiple={false}
-          onChange={(e, value) => {
+          onChange={(value) => {
             onCreateBtnClick(value as SortListGroup);
           }}
         />
 
         <Button
-          appearance="red"
+          color="red"
           disabled={!selectedSorts.length}
           onClick={() => onDeleteBtnClick()}
         >
@@ -106,7 +84,9 @@ export const SortsFilters = ({
             }
           />
         </Button>
-        <Button appearance="base" disabled icon={<ExcelIcon />} />
+        <Button color="transparent">
+          <ExcelIcon width={24} height={24} color="var(--Primary-800)" />
+        </Button>
       </div>
     </div>
   );

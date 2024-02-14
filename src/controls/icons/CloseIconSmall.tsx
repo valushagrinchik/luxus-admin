@@ -1,14 +1,14 @@
-export const OkIcon = (props: any) => (
+export const CloseIconSmall = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
     fill="none"
     {...props}
   >
     <path
-      d="M20 6L9 17L4 12"
+      d="M4.70016 4.70017L11.2998 11.2998M4.70016 11.2998L11.2998 4.70017"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"

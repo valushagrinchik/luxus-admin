@@ -1,7 +1,6 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { BaseInput } from "../../../controls/BaseInput";
 import { Button } from "../../../controls/Button/Button";
-import { EditSortFormInputs, Sort } from "../../../lib/types";
+import { EditSortFormInputs } from "../../../lib/types";
 import {
   useCreateSortMutation,
   useGetCategoriesQuery,
@@ -11,17 +10,21 @@ import {
 import { Select } from "../../../controls/Select";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaEditSort } from "../../../lib/validation";
-import { useEffect } from "react";
+import { CloseIcon } from "../../../controls/icons/CloseIcon";
+import { OkIcon } from "../../../controls/icons/OkIcon";
+import { TextField } from "../../../controls/TextField";
 
 import styles from "./EditSortForm.module.css";
-import TextField from "@mui/material/TextField";
-import { Autocomplete } from "../../../controls/Autocomplete";
-// import Autocomplete from "@mui/material/Autocomplete";
 
 interface EditSortFormProps {
   onSubmit: () => void;
   onReset: () => void;
-  data: Sort & { groupId: number };
+  data: {
+    id: number;
+    name?: string;
+    groupId?: number;
+    categoryId?: number;
+  };
   action: "create" | "update";
 }
 
@@ -36,19 +39,19 @@ export const EditSortForm = ({
 
   const {
     register,
-    setValue,
     handleSubmit,
-    getValues,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
   } = useForm<EditSortFormInputs>({
     resolver: yupResolver(schemaEditSort),
     defaultValues: {
-      name: data.name,
-      groupId: data.groupId,
-      categoryId: data.categoryId,
+      name: data.name || "",
+      groupId: data?.groupId?.toString() || "",
+      categoryId: data?.categoryId?.toString() || "",
     },
   });
+  const categoryId = watch("categoryId");
+
   const groupId = watch("groupId");
 
   const { data: groups } = useGetGroupsQuery();
@@ -60,132 +63,96 @@ export const EditSortForm = ({
       : undefined
   );
 
-  useEffect(() => {
-    setValue("categoryId", 0);
-  }, [groupId, setValue]);
+  const groupsMap = Object.fromEntries(
+    groups?.map((group: any) => [group.id, group.name + "_" + group.id]) || []
+  );
 
-  const groupOptions =
-    groups?.map((group) => ({
-      value: group.id,
-      label: group.name,
-    })) || [];
-
-  const categoryOptions =
-    categories?.map((cat) => ({
-      value: cat.id,
-      label: cat.name,
-    })) || [];
-
-  console.log(categoryOptions, getValues(), "categoryOptions");
-  if (categoryOptions.length === 1) {
-    setValue("categoryId", categoryOptions[0].value);
-  }
+  const categoriesMap = Object.fromEntries(
+    categories?.map((cat) => [cat.id, cat.name + "_" + cat.id]) || []
+  );
 
   const submit: SubmitHandler<EditSortFormInputs> = async (formData) => {
     if (action === "create") {
-      await create(formData);
+      await create({
+        name: formData.name,
+        categoryId: +formData.categoryId,
+      });
     }
     if (action === "update") {
-      await update({ ...formData, id: data.id });
+      await update({
+        id: data.id,
+        name: formData.name,
+        categoryId: +formData.categoryId,
+      });
     }
     onSubmit();
   };
 
-  const { onChange: onChangeGroupSelect, ...groupFieldsProps } =
-    register("groupId");
-  console.log(groupFieldsProps, "groupFieldsProps");
-  const { onChange: onChangeCategorySelect, ...categoryFieldsProps } =
-    register("categoryId");
   return (
     <form className={styles.form}>
       <h2>{action === "create" ? "Crear" : "Editar"} variedad</h2>
-
-      {action === "update" && (
+      <div className={styles.fields}>
         <div>
           <label htmlFor="id">Número</label>
-          <BaseInput disabled value={data.id} />
+          <TextField disabled value={data.id} style={{ width: "100%" }} />
         </div>
-      )}
 
-      <div>
-        <label htmlFor="groupId">Grupo *</label>
-        <Autocomplete
-          name="groupId"
-          onChange={(event: any, value: any) => {
-            console.log(value, "value");
-            setValue("groupId", value.value);
-          }}
-          disablePortal
-          options={groupOptions}
-          sx={{ width: 300 }}
-          renderInput={(params: any) => <TextField {...params} label="Movie" />}
-        />
-        {/* <TextField
-          select
-          fullWidth
-          label="Select"
-          defaultValue=""
-          inputProps={register("groupId", {
-            required: "Please enter currency",
-          })}
-          // error={errors.currency}
-          // helperText={errors.currency?.message}
-        >
-          {groupOptions.map((option: any) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField> */}
-        {/* <Select
-          // dropdown="menu"
-          // slotProps={{
-          //   root: (ref) => {
-          //     if (!ref) return;
-          //     return register("groupId");
-          //   },
-          // }}
-          className={styles.select}
-          multiple={false}
-          // onChange={(event, value) => {
-          //   if (!event || !value) {
-          //     return;
-          //   }
-          //   setValue("groupId", +value);
-          // }}
-          // {...groupFieldsProps}
-          options={groupOptions}
-          defaultValue={data.groupId}
-        /> */}
-        {errors.groupId && <span>{errors.groupId.message}</span>}
-      </div>
-      <div>
-        <label htmlFor="categoryId">Categoria *</label>
-        <Select
-          className={styles.select}
-          multiple={false}
-          onChange={(event, value) => {
-            if (!event || !value) {
-              return;
+        <div>
+          <label htmlFor="groupId">
+            Grupo <span className={styles.required}>*</span>
+          </label>
+          <Select
+            className={styles.select}
+            {...register("groupId")}
+            options={groupsMap}
+            placeholder="Seleccionar grupo"
+          />
+          {errors.groupId && (
+            <span className={styles.required}>{errors.groupId.message}</span>
+          )}
+        </div>
+        <div>
+          <label htmlFor="categoryId">
+            Categoria <span className={styles.required}>*</span>
+          </label>
+          <Select
+            disabled={!groupId}
+            placeholder="Seleccionar categoria"
+            value={
+              categoryId && Object.keys(categoriesMap).includes(categoryId)
+                ? categoryId
+                : ""
             }
-            setValue("categoryId", +value);
-          }}
-          {...categoryFieldsProps}
-          options={categoryOptions}
-          defaultValue={data.categoryId}
-        />
-        {errors.categoryId && <span>{errors.categoryId.message}</span>}
-      </div>
-      <div>
-        <label htmlFor="name">Nombre *</label>
-        <BaseInput {...register("name")} />
-        {errors.name && <span>{errors.name.message}</span>}
+            className={styles.select}
+            {...register("categoryId")}
+            options={categoriesMap}
+          />
+          {errors.categoryId && (
+            <span className={styles.required}>{errors.categoryId.message}</span>
+          )}
+        </div>
+        <div>
+          <label htmlFor="name">
+            Nombre <span className={styles.required}>*</span>
+          </label>
+          <TextField
+            {...register("name")}
+            style={{ width: "100%" }}
+            placeholder="Indicar Nombre"
+          />
+
+          {errors.name && (
+            <span className={styles.required}>{errors.name.message}</span>
+          )}
+        </div>
       </div>
       <div className={styles.actions}>
-        <Button appearance="refuse" onClick={() => onReset()}>
+        <Button color="gray" onClick={() => onReset()}>
+          <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button appearance="approve" onClick={handleSubmit(submit)}>
+        <Button color="base" onClick={handleSubmit(submit)} disabled={!isValid}>
+          <OkIcon width={16} height={16} />
           Guardar
         </Button>
       </div>

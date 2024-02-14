@@ -57,13 +57,7 @@ export const sortsApi = createApi({
       { offset: number; limit: number } & CatalogState["sortsSearch"]
     >({
       query: (params) => ({ url: `/groups/search`, params }),
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({ type: "Sort" as const, id })),
-              { type: "Sort", id: "LIST" },
-            ]
-          : [{ type: "Sort", id: "LIST" }],
+      providesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
     getCategories: builder.query<Category[], { groupId: number } | undefined>({
       query: (params) => ({ url: `/categories`, params }),
@@ -78,7 +72,7 @@ export const sortsApi = createApi({
         method: "PATCH",
         body,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Sort", id }],
+      invalidatesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
     createGroup: builder.mutation<Group, CreateGroupBody>({
       query: (body) => ({
@@ -94,7 +88,7 @@ export const sortsApi = createApi({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Sort", id }],
+      invalidatesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
     deleteGroup: builder.mutation<{ group: number }, number>({
       query: (id) => ({
@@ -102,7 +96,7 @@ export const sortsApi = createApi({
         method: "DELETE",
         body: {},
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Sort", id }],
+      invalidatesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
 
     createCategory: builder.mutation<Category, CreateCategoryBody>({
@@ -119,9 +113,7 @@ export const sortsApi = createApi({
         method: "PATCH",
         body,
       }),
-      invalidatesTags: (result, error, { groupId }) => [
-        { type: "Sort", id: groupId },
-      ],
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
     }),
     cancelCategory: builder.mutation<{ category: number }, number>({
       query: (id) => ({
@@ -154,9 +146,7 @@ export const sortsApi = createApi({
         method: "PATCH",
         body,
       }),
-      invalidatesTags: (result, error, { categoryId }) => [
-        { type: "Sort", id: categoryId },
-      ],
+      invalidatesTags: [{ type: "Sort", id: "LIST" }],
     }),
     cancelSort: builder.mutation<{ sort: number }, number>({
       query: (id) => ({

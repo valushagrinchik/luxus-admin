@@ -8,35 +8,17 @@ export const ErrorMessages = {
   reqiuredField: "Campo obligatorio",
 };
 
-export const SortsFiltersGroupByOptions = [
-  {
-    label: "Ocultar todo",
-    value: SortListGroup.group,
-  },
-  {
-    label: "Mostrar hasta categorias",
-    value: SortListGroup.category,
-  },
-  {
-    label: "Mostrar todo",
-    value: SortListGroup.sort,
-  },
-];
+export const SortsFiltersGroupByMap = {
+  [SortListGroup.group]: "Ocultar todo",
+  [SortListGroup.category]: "Mostrar hasta categorias",
+  [SortListGroup.sort]: "Mostrar todo",
+};
 
-export const SortsFiltersSearchByOptions = [
-  {
-    label: "Por variedad ",
-    value: SortListGroup.sort,
-  },
-  {
-    label: "Por categoria",
-    value: SortListGroup.category,
-  },
-  {
-    label: "Por grupo",
-    value: SortListGroup.group,
-  },
-];
+export const SortsFiltersSearchByMap = {
+  [SortListGroup.group]: "Por grupo",
+  [SortListGroup.category]: "Por categoria",
+  [SortListGroup.sort]: "Por variedad",
+};
 
 export const SortsFiltersCreateOptions = [
   {

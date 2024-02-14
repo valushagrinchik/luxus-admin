@@ -18,8 +18,9 @@ import {
   selectSelectedSorts,
   setSelectedSorts,
 } from "../../redux/reducer/catalogReducer";
+import { AdminConfirmationForm } from "../../components/forms/AdminConfirmationForm/AdminConfirmationForm";
 
-type ModalType = "create" | "update" | "delete";
+type ModalType = "create" | "update" | "delete" | "admin_approve";
 
 const renderForm = (
   {
@@ -82,7 +83,15 @@ export const SortsListPage = () => {
   const handleDelete = async () => {
     switch (modalConfig?.type) {
       case SortListGroup.sort: {
-        await deleteSort(selectedSorts[0]);
+        if (modalConfig.data?.id) {
+          // aprove from admin
+          await deleteSort(modalConfig.data.id);
+          break;
+        }
+
+        for (let id of selectedSorts) {
+          await deleteSort(id);
+        }
         appDispatch(setSelectedSorts([]));
         break;
       }
@@ -105,6 +114,16 @@ export const SortsListPage = () => {
     }
     if (modalConfig?.modalType === "delete") {
       return <ConfirmationForm onReset={handleClose} onSubmit={handleDelete} />;
+    }
+
+    if (modalConfig?.modalType === "admin_approve") {
+      return (
+        <AdminConfirmationForm
+          type={modalConfig.type}
+          onReset={handleClose}
+          onSubmit={handleDelete}
+        />
+      );
     }
 
     return renderForm(

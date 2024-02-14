@@ -1,5 +1,4 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { BaseInput } from "../../../controls/BaseInput";
 import { Button } from "../../../controls/Button/Button";
 import {
   useCreateGroupMutation,
@@ -9,6 +8,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaEditGroup } from "../../../lib/validation";
 
 import styles from "./EditGroupForm.module.css";
+import { OkIcon } from "../../../controls/icons/OkIcon";
+import { CloseIcon } from "../../../controls/icons/CloseIcon";
+import { TextField } from "../../../controls/TextField";
 
 type EditGroupFormInputs = {
   name: string;
@@ -30,7 +32,7 @@ export const EditGroupForm = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<EditGroupFormInputs>({
     resolver: yupResolver(schemaEditGroup),
     defaultValues: {
@@ -56,15 +58,29 @@ export const EditGroupForm = ({
       <form className={styles.form}>
         <h2>{action === "create" ? "Crear" : "Editar"} grupo</h2>
         <div>
-          <label htmlFor="name">Nombre *</label>
-          <BaseInput {...register("name")} />
-          {errors.name && <span>{errors.name.message}</span>}
+          <label htmlFor="name">
+            Nombre <span className={styles.required}>*</span>
+          </label>
+          <TextField
+            {...register("name")}
+            style={{ width: "100%" }}
+            placeholder="Indicar Nombre"
+          />
+          {errors.name && (
+            <span className={styles.required}>{errors.name.message}</span>
+          )}
         </div>
         <div className={styles.actions}>
-          <Button appearance="refuse" onClick={() => onReset()}>
+          <Button color="gray" onClick={() => onReset()}>
+            <CloseIcon width={16} height={16} />
             Salir
           </Button>
-          <Button appearance="approve" onClick={handleSubmit(submit)}>
+          <Button
+            color="base"
+            onClick={handleSubmit(submit)}
+            disabled={!isValid}
+          >
+            <OkIcon width={16} height={16} />
             Guardar
           </Button>
         </div>

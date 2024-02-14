@@ -31,8 +31,8 @@ export type EditCategoryFormInputs = {
 };
 export type EditSortFormInputs = {
   name: string;
-  groupId: number;
-  categoryId: number;
+  groupId: string;
+  categoryId: string;
 };
 
 export type MenuItem = {

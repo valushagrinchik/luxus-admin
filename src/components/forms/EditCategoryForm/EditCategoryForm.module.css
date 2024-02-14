@@ -11,3 +11,12 @@
 .select {
   width: 100%;
 }
+.required {
+  color: var(--Red-400, #f97066);
+  /* Text sm/Medium */
+  font-family: "Roboto Condensed";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+}

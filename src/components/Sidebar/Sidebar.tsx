@@ -126,7 +126,7 @@ export const Sidebar = ({
 
           <Button
             className={styles.signout_btn}
-            appearance="transparent"
+            color="transparent"
             onClick={async () => {
               await signout();
             }}

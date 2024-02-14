@@ -1,5 +1,4 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { BaseInput } from "../../../controls/BaseInput";
 import { Button } from "../../../controls/Button/Button";
 import { Category, EditCategoryFormInputs } from "../../../lib/types";
 import {
@@ -7,9 +6,13 @@ import {
   useGetGroupsQuery,
   useUpdateCategoryMutation,
 } from "../../../api/sortsApi";
-import { Select } from "../../../controls/Select";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaEditCategory } from "../../../lib/validation";
+
+import { CloseIcon } from "../../../controls/icons/CloseIcon";
+import { OkIcon } from "../../../controls/icons/OkIcon";
+import { Select } from "../../../controls/Select";
+import { TextField } from "../../../controls/TextField";
 
 import styles from "./EditCategoryForm.module.css";
 
@@ -30,17 +33,14 @@ export const EditCategoryForm = ({
   const [update] = useUpdateCategoryMutation();
   const [create] = useCreateCategoryMutation();
 
-  const groupOptions =
-    groups?.map((group) => ({
-      value: group.id,
-      label: group.name,
-    })) || [];
+  const groupsMap = Object.fromEntries(
+    groups?.map((group: any) => [group.id, group.name]) || []
+  );
 
   const {
     register,
-    setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<EditCategoryFormInputs>({
     resolver: yupResolver(schemaEditCategory),
     defaultValues: {
@@ -59,38 +59,43 @@ export const EditCategoryForm = ({
     onSubmit();
   };
 
-  const { onChange: onChangeGroupSelect, ...groupFieldsProps } =
-    register("groupId");
   return (
     <form className={styles.form}>
       <h2>{action === "create" ? "Crear" : "Editar"} categoria</h2>
       <div>
-        <label htmlFor="groupId">Grupo *</label>
+        <label htmlFor="groupId">
+          Grupo <span className={styles.required}>*</span>
+        </label>
         <Select
-          className={styles.select}
-          multiple={false}
-          onChange={(event, value) => {
-            if (!event || !value) {
-              return;
-            }
-            setValue("groupId", +value);
-          }}
-          {...groupFieldsProps}
-          options={groupOptions}
-          defaultValue={data.groupId}
+          defaultValue={data.groupId || ""}
+          {...register("groupId")}
+          options={groupsMap}
+          placeholder="Seleccionar grupo"
         />
-        {errors.groupId && <span>{errors.groupId.message}</span>}
+        {errors.groupId && (
+          <span className={styles.required}>{errors.groupId.message}</span>
+        )}
       </div>
       <div>
-        <label htmlFor="name">Nombre *</label>
-        <BaseInput {...register("name")} />
-        {errors.name && <span>{errors.name.message}</span>}
+        <label htmlFor="name">
+          Nombre <span className={styles.required}>*</span>
+        </label>
+        <TextField
+          {...register("name")}
+          style={{ width: "100%" }}
+          placeholder="Indicar Nombre"
+        />
+        {errors.name && (
+          <span className={styles.required}>{errors.name.message}</span>
+        )}
       </div>
       <div className={styles.actions}>
-        <Button appearance="refuse" onClick={() => onReset()}>
+        <Button color="gray" onClick={() => onReset()}>
+          <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button appearance="approve" onClick={handleSubmit(submit)}>
+        <Button color="base" onClick={handleSubmit(submit)} disabled={!isValid}>
+          <OkIcon width={16} height={16} />
           Guardar
         </Button>
       </div>

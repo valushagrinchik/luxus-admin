@@ -10,50 +10,51 @@ import { PlusIcon } from "../icons/PlusIcon";
 import classNames from "classnames";
 
 interface ButtonProps extends BaseButtonProps {
-  appearance: "approve" | "refuse" | "add" | "base" | "red" | "transparent";
+  color: "base" | "red" | "green" | "gray" | "transparent";
+
   icon?: ReactNode;
 }
 export const Button = React.forwardRef(function MyButton(
-  { icon, children, appearance, className, ...props }: ButtonProps,
+  { icon, children, color, className, ...props }: ButtonProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-  const propsByAppearance = ((appearance) => {
-    switch (appearance) {
-      case "approve": {
-        return {
-          className: styles.ok_btn,
-          icon: <OkIcon width={16} height={16} />,
-        };
-      }
-      case "refuse": {
-        return {
-          className: styles.refuse_btn,
-          icon: <CloseIcon width={16} height={16} />,
-        };
-      }
-      case "add": {
-        return {
-          className: styles.add_btn,
-          icon: <PlusIcon width={16} height={16} />,
-        };
-      }
-      case "base": {
-        return {
-          className: styles.add_btn,
-        };
-      }
-      case "red": {
-        return {
-          className: styles.red_btn,
-        };
-      }
-      case "transparent": {
-        return {
-          className: styles.transparent_btn,
-        };
-      }
-    }
-  })(appearance);
+  // const propsByAppearance = ((appearance) => {
+  //   switch (appearance) {
+  //     case "approve": {
+  //       return {
+  //         className: styles.ok_btn,
+  //         icon: <OkIcon width={16} height={16} />,
+  //       };
+  //     }
+  //     case "refuse": {
+  //       return {
+  //         className: styles.refuse_btn,
+  //         icon: <CloseIcon width={16} height={16} />,
+  //       };
+  //     }
+  //     case "add": {
+  //       return {
+  //         className: styles.add_btn,
+  //         icon: <PlusIcon width={16} height={16} />,
+  //       };
+  //     }
+  //     case "base": {
+  //       return {
+  //         className: styles.add_btn,
+  //       };
+  //     }
+  //     case "red": {
+  //       return {
+  //         className: styles.red_btn,
+  //       };
+  //     }
+  //     case "transparent": {
+  //       return {
+  //         className: styles.transparent_btn,
+  //       };
+  //     }
+  //   }
+  // })(color);
 
   return (
     <BaseButton
@@ -61,11 +62,12 @@ export const Button = React.forwardRef(function MyButton(
       {...props}
       className={classNames(
         styles.btn,
-        propsByAppearance?.className,
+        styles[color],
+        // propsByAppearance?.className,
         className
       )}
     >
-      {icon || propsByAppearance?.icon}
+      {icon}
       {children}
     </BaseButton>
   );

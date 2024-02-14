@@ -17,7 +17,7 @@ export const ConfirmationForm = ({
         <CloseIcon className={styles.close_btn} onClick={onReset} />
       </h2>
       <p>Los cambios se registrarán después de la aprobación del supervisor</p>
-      <Button appearance="base" className={styles.btn} onClick={onSubmit}>
+      <Button color="base" className={styles.btn} onClick={onSubmit}>
         Ok
       </Button>
     </form>

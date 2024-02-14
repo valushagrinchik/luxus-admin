@@ -25,11 +25,20 @@ import { Button } from "../../controls/Button/Button";
 import { ArrowDownSortsIcon } from "../../controls/icons/ArrowDownSortsIcon";
 import { ArrowRightSortsIcon } from "../../controls/icons/ArrowRightSortsIcon";
 import { BinIcon } from "../../controls/icons/BinIcon";
+import { useAuth } from "../../lib/auth";
+import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
+import { OkIconSmall } from "../../controls/icons/OkIconSmall";
 
+type ActionType =
+  | "update"
+  | "cancel"
+  | "delete"
+  | "admin_refuse"
+  | "admin_approve";
 interface BaseRawProps {
   open: boolean;
   children?: ReactNode;
-  onActionBtnClick: (action: "update" | "cancel" | "delete", data: any) => void;
+  onActionBtnClick: (action: ActionType, data: any) => void;
 }
 
 interface SortRawProps extends BaseRawProps {
@@ -61,6 +70,7 @@ const Raw = ({
   onActionBtnClick,
 }: RawProps) => {
   const appDispatch = useAppDispatch();
+  const { user, isAdmin } = useAuth();
 
   const selectedSorts = useAppSelector(selectSelectedSorts);
 
@@ -73,24 +83,69 @@ const Raw = ({
 
   const hasChildren = Array.isArray(children) && !!children.length;
 
+  const requiresAdminApprove = user && isAdmin && !!data.deletedAt;
+
+  const renderRowActions = () => {
+    if (requiresAdminApprove) {
+      return (
+        <>
+          <Button
+            color="red"
+            className={styles.admin_action_btn}
+            onClick={() => onActionBtnClick("admin_refuse", data)}
+          >
+            <CloseIconSmall width={12} height={12} />
+          </Button>
+          <Button
+            color="green"
+            className={styles.admin_action_btn}
+            onClick={() => onActionBtnClick("admin_approve", data)}
+          >
+            <OkIconSmall width={12} height={12} />
+          </Button>
+        </>
+      );
+    }
+
+    return (
+      <>
+        {showDeleteBtn && (
+          <BinIcon
+            key=""
+            className={styles.bin_icon}
+            onClick={() => onActionBtnClick("delete", data)}
+          />
+        )}
+        <EditIcon
+          className="clickable"
+          onClick={() => onActionBtnClick("update", data)}
+        />
+      </>
+    );
+  };
+
   return (
     <div className={classNames(styles.row, className)}>
       <div
-        className={classNames(styles.row_header)}
+        className={classNames(styles.row_header, {
+          [styles.pre_deleted_admin_view]: requiresAdminApprove,
+        })}
         onMouseOver={() => openable && setShowDeleteBtn(true)}
         onMouseLeave={() => openable && setShowDeleteBtn(false)}
       >
-        {!!data.deletedAt && (
-          <div className={styles.row_marked_as_deleted}>
+        {!!data.deletedAt && !isAdmin && (
+          <div className={styles.pre_deleted}>
             <span>PARA ELIMINAR</span>
             <div className={styles.actions}>
-              <Button
-                className={styles.cancel_btn}
-                appearance="red"
-                onClick={() => onActionBtnClick("cancel", data)}
-              >
-                Cancelar
-              </Button>
+              {data.deletedBy === user.id && (
+                <Button
+                  className={styles.cancel_btn}
+                  color="red"
+                  onClick={() => onActionBtnClick("cancel", data)}
+                >
+                  Cancelar
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -128,22 +183,10 @@ const Raw = ({
         )}
         {checkable && <span className={styles.id}>{data.id}</span>}
         <span className={styles.name}>{data.name}</span>
-        <span className={styles.actions}>
-          {showDeleteBtn && (
-            <BinIcon
-              className={styles.bin_icon}
-              onClick={() => onActionBtnClick("delete", data)}
-            />
-          )}
-
-          <EditIcon
-            className="clickable"
-            onClick={() => onActionBtnClick("update", data)}
-          />
-        </span>
+        <span className={styles.actions}>{renderRowActions()}</span>
       </div>
 
-      {openable && (
+      {openable && children && (
         <div className={openable && isOpen ? styles.visible : styles.hidden}>
           {children}
         </div>
@@ -281,10 +324,14 @@ export const SortsList = ({
     data: any,
     type: SortListGroup
   ) => {
-    if (action === "update" || action === "delete") {
+    if (
+      action === "update" ||
+      action === "delete" ||
+      action === "admin_approve"
+    ) {
       return openModal(action, type, data);
     }
-    if (action === "cancel") {
+    if (action === "admin_refuse" || action === "cancel") {
       switch (type) {
         case SortListGroup.sort: {
           await cancelSort(data.id);
@@ -349,7 +396,7 @@ export const SortsList = ({
         ))}
       </div>
       <Pagination
-        count={total?.total ? Math.round(total.total / limit) : 0}
+        count={total?.total ? Math.ceil(total.total / limit) : 0}
         page={page}
         onChange={(event, page) => {
           setPage(page);
