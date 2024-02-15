@@ -1,4 +1,4 @@
-import { SortsPlantations } from "../../components/SortsPlantations/SortsPlantations";
+import { PlantationsFilters } from "../../components/PlantationsFilters/PlantationsFilters";
 import Box from "../../controls/Box";
 
 export const PlantationsListPage = () => {
@@ -6,8 +6,11 @@ export const PlantationsListPage = () => {
     <div className="container">
       <h1>Fincas</h1>
 
-      <SortsPlantations />
-      <Box></Box>
+      <PlantationsFilters />
+      <Box>
+
+        
+      </Box>
     </div>
   );
 };

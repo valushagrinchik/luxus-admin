@@ -13,8 +13,10 @@ import { schemaEditSort } from "../../../lib/validation";
 import { CloseIcon } from "../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../controls/icons/OkIcon";
 import { TextField } from "../../../controls/TextField";
+import { Controller } from "react-hook-form";
 
 import styles from "./EditSortForm.module.css";
+import { useEffect } from "react";
 
 interface EditSortFormProps {
   onSubmit: () => void;
@@ -36,16 +38,20 @@ export const EditSortForm = ({
 }: EditSortFormProps) => {
   const [update] = useUpdateSortMutation();
   const [create] = useCreateSortMutation();
-
+  console.log(data, "data");
   const {
     register,
     handleSubmit,
+    getValues,
+    control,
+    resetField,
+    reset,
     formState: { errors, isValid },
     watch,
   } = useForm<EditSortFormInputs>({
     resolver: yupResolver(schemaEditSort),
     defaultValues: {
-      name: data.name || "",
+      name: data?.name || "",
       groupId: data?.groupId?.toString() || "",
       categoryId: data?.categoryId?.toString() || "",
     },
@@ -54,21 +60,26 @@ export const EditSortForm = ({
 
   const groupId = watch("groupId");
 
+  useEffect(() => {
+    resetField("categoryId");
+  }, [groupId]);
+
   const { data: groups } = useGetGroupsQuery();
   const { data: categories } = useGetCategoriesQuery(
     groupId
       ? {
           groupId: +groupId,
         }
-      : undefined
+      : undefined,
+    { skip: !groupId }
   );
 
   const groupsMap = Object.fromEntries(
-    groups?.map((group: any) => [group.id, group.name + "_" + group.id]) || []
+    groups?.map((group: any) => [group.id, group.name]) || []
   );
 
   const categoriesMap = Object.fromEntries(
-    categories?.map((cat) => [cat.id, cat.name + "_" + cat.id]) || []
+    categories?.map((cat) => [cat.id, cat.name]) || []
   );
 
   const submit: SubmitHandler<EditSortFormInputs> = async (formData) => {
@@ -88,6 +99,12 @@ export const EditSortForm = ({
     onSubmit();
   };
 
+  if (!categories?.length && !groups?.length) {
+    return <></>;
+  }
+
+  console.log(groupId, categoryId, "$$$");
+
   return (
     <form className={styles.form}>
       <h2>{action === "create" ? "Crear" : "Editar"} variedad</h2>
@@ -101,12 +118,26 @@ export const EditSortForm = ({
           <label htmlFor="groupId">
             Grupo <span className={styles.required}>*</span>
           </label>
-          <Select
-            className={styles.select}
-            {...register("groupId")}
-            options={groupsMap}
-            placeholder="Seleccionar grupo"
+          <Controller
+            render={({ field }) => (
+              <Select
+                {...field}
+                disabled={!groups?.length}
+                placeholder="Seleccionar grupo"
+                defaultValue={data.groupId}
+                className={styles.select}
+                {...register("groupId")}
+                options={groupsMap}
+
+                // value={
+                //   groupId && Object.keys(groupsMap).includes(groupId) ? groupId : ""
+                // }
+              />
+            )}
+            name="groupId"
+            control={control}
           />
+
           {errors.groupId && (
             <span className={styles.required}>{errors.groupId.message}</span>
           )}
@@ -115,17 +146,27 @@ export const EditSortForm = ({
           <label htmlFor="categoryId">
             Categoria <span className={styles.required}>*</span>
           </label>
-          <Select
-            disabled={!groupId}
-            placeholder="Seleccionar categoria"
-            value={
-              categoryId && Object.keys(categoriesMap).includes(categoryId)
-                ? categoryId
-                : ""
-            }
-            className={styles.select}
-            {...register("categoryId")}
-            options={categoriesMap}
+
+          <Controller
+            render={({ field }) => (
+              <Select
+                {...field}
+                disabled={!groupId || !categories?.length}
+                placeholder="Seleccionar categoria"
+                defaultValue={data.categoryId}
+                // value={
+                //   categoryId && Object.keys(categoriesMap).includes(categoryId)
+                //     ? categoryId
+                //     : ""
+                // }
+
+                className={styles.select}
+                {...register("categoryId")}
+                options={categoriesMap}
+              />
+            )}
+            name="categoryId"
+            control={control}
           />
           {errors.categoryId && (
             <span className={styles.required}>{errors.categoryId.message}</span>
@@ -139,6 +180,7 @@ export const EditSortForm = ({
             {...register("name")}
             style={{ width: "100%" }}
             placeholder="Indicar Nombre"
+            defaultValue={data.name}
           />
 
           {errors.name && (

@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import styles from "./LoginForm.module.css";
 import { useAuth } from "../../../lib/auth";
 import { Button } from "../../../controls/Button/Button";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "../../../controls/TextField";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { schemaLogin } from "../../../lib/validation";
+import { ErrorMessages } from "../../../lib/constants";
 
 type LoginFromInputs = {
   email: string;
@@ -13,10 +16,16 @@ type LoginFromInputs = {
 
 export const LoginForm = () => {
   const {
-    register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<LoginFromInputs>();
+  } = useForm<LoginFromInputs>({
+    resolver: yupResolver(schemaLogin),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   let { signin } = useAuth();
 
   const [submitError, setSubmitError] = useState("");
@@ -26,7 +35,10 @@ export const LoginForm = () => {
     try {
       await signin(data);
     } catch (err: any) {
-      setSubmitError(err?.message[0]);
+      setSubmitError(
+        ErrorMessages[err?.error as keyof typeof ErrorMessages] ||
+          ErrorMessages.somethingWentWrong
+      );
       return;
     }
 
@@ -36,20 +48,48 @@ export const LoginForm = () => {
   return (
     <div className={styles.form_container}>
       <form className={styles.form}>
-        <h1>Войти на сайт</h1>
+        <h1>Inicie sesión en el sitio</h1>
         <div>
-          <label htmlFor="email">Email</label>
-          <TextField {...register("email")} style={{ width: "100%" }} />
-          {errors.email && <span>Обязательное поле</span>}
+          <label htmlFor="email">
+            Email<span className={styles.required}>*</span>
+          </label>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <TextField
+                helperText={error ? error.message : null}
+                size="small"
+                error={!!error}
+                onChange={onChange}
+                value={value}
+                fullWidth
+              />
+            )}
+          />
         </div>
         <div>
-          <label htmlFor="password">Password</label>
-          <TextField {...register("password")} style={{ width: "100%" }} />
-          {errors.password && <span>Обязательное поле</span>}
+          <label htmlFor="password">
+            Contraseña<span className={styles.required}>*</span>
+          </label>
+          <Controller
+            name="password"
+            control={control}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <TextField
+                helperText={error ? error.message : null}
+                size="small"
+                error={!!error}
+                onChange={onChange}
+                value={value}
+                fullWidth
+              />
+            )}
+          />
         </div>
-        {submitError && submitError}
-        <Button color="base" onClick={handleSubmit(submit)}>
-          Отправить
+        <div className={styles.required}>{submitError && submitError}</div>
+        <Button color="base" onClick={handleSubmit(submit)} >
+          Enviar
         </Button>
       </form>
     </div>

@@ -16,13 +16,14 @@ export const Select = React.forwardRef(function MySelect(
   } & SelectProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
+  console.log(options, "options");
   return (
     <MUISelect
       displayEmpty
       defaultValue=""
       renderValue={(value) => {
         return value ? (
-          <>{options[value as any] || ""}</>
+          <>{options[value as any]}</>
         ) : (
           <span
             style={{

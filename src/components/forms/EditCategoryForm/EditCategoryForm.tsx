@@ -19,7 +19,11 @@ import styles from "./EditCategoryForm.module.css";
 interface EditCategoryFormProps {
   onSubmit: () => void;
   onReset: () => void;
-  data: Category;
+  data: {
+    id: number;
+    name?: string;
+    groupId?: number;
+  };
   action: "create" | "update";
 }
 
@@ -40,24 +44,35 @@ export const EditCategoryForm = ({
   const {
     register,
     handleSubmit,
+    getValues,
+    watch,
     formState: { errors, isValid },
   } = useForm<EditCategoryFormInputs>({
     resolver: yupResolver(schemaEditCategory),
     defaultValues: {
       name: data?.name,
-      groupId: data.groupId,
+      groupId: data?.groupId?.toString() || "",
     },
   });
+  console.log(getValues(), data);
 
   const submit: SubmitHandler<EditCategoryFormInputs> = async (formData) => {
     if (action === "create") {
-      await create(formData);
+      await create({
+        name: formData.name,
+        groupId: +formData.groupId,
+      });
     }
     if (action === "update") {
-      await update({ ...formData, id: data.id });
+      await update({
+        id: data.id,
+        name: formData.name,
+        groupId: +formData.groupId,
+      });
     }
     onSubmit();
   };
+  const groupId = watch("groupId");
 
   return (
     <form className={styles.form}>
@@ -67,10 +82,12 @@ export const EditCategoryForm = ({
           Grupo <span className={styles.required}>*</span>
         </label>
         <Select
-          defaultValue={data.groupId || ""}
           {...register("groupId")}
           options={groupsMap}
           placeholder="Seleccionar grupo"
+          value={
+            groupId && Object.keys(groupsMap).includes(groupId) ? groupId : ""
+          }
         />
         {errors.groupId && (
           <span className={styles.required}>{errors.groupId.message}</span>

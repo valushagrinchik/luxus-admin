@@ -1,14 +1,22 @@
-.form_container{
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 100vh;
+.form_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
-
-
-.form{
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	width: 300px;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+}
+.required {
+  color: var(--Red-400, #f97066);
+  /* Text sm/Medium */
+  font-family: "Roboto Condensed";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  margin-left: 5px;
 }

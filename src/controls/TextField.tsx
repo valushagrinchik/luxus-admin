@@ -47,6 +47,9 @@ export const TextField = React.forwardRef(function MyTextField(
           opacity: "0.5",
           background: "var(--Primary-50, #EFF4FF) !important",
         },
+        ".MuiFormHelperText-root": {
+          marginLeft: 0,
+        },
       }}
     />
   );

@@ -35,31 +35,31 @@ type ActionType =
   | "delete"
   | "admin_refuse"
   | "admin_approve";
-interface BaseRawProps {
+interface BaseRowProps {
   open: boolean;
   children?: ReactNode;
   onActionBtnClick: (action: ActionType, data: any) => void;
 }
 
-interface SortRawProps extends BaseRawProps {
+interface SortRowProps extends BaseRowProps {
   sort: Sort;
 }
 
-interface CategoryRawProps extends BaseRawProps {
+interface CategoryRowProps extends BaseRowProps {
   category: Category;
 }
-interface GroupRawProps extends BaseRawProps {
+interface GroupRowProps extends BaseRowProps {
   group: Group;
 }
 
-interface RawProps extends BaseRawProps {
+interface RowProps extends BaseRowProps {
   openable: boolean;
   data: any;
   className?: string;
   checkable?: boolean;
   onCheck?: (e: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 }
-const Raw = ({
+const Row = ({
   open,
   children,
   openable,
@@ -68,7 +68,7 @@ const Raw = ({
   checkable,
   onCheck,
   onActionBtnClick,
-}: RawProps) => {
+}: RowProps) => {
   const appDispatch = useAppDispatch();
   const { user, isAdmin } = useAuth();
 
@@ -195,9 +195,9 @@ const Raw = ({
   );
 };
 
-const SortRaw = ({ open, children, sort, onActionBtnClick }: SortRawProps) => {
+const SortRow = ({ open, children, sort, onActionBtnClick }: SortRowProps) => {
   return (
-    <Raw
+    <Row
       open={open}
       className={styles.sort}
       openable={false}
@@ -206,17 +206,17 @@ const SortRaw = ({ open, children, sort, onActionBtnClick }: SortRawProps) => {
       onActionBtnClick={onActionBtnClick}
     >
       {children}
-    </Raw>
+    </Row>
   );
 };
-const CategoryRaw = ({
+const CategoryRow = ({
   open,
   children,
   category,
   onActionBtnClick,
-}: CategoryRawProps) => {
+}: CategoryRowProps) => {
   return (
-    <Raw
+    <Row
       open={open}
       className={styles.category}
       openable={true}
@@ -224,17 +224,17 @@ const CategoryRaw = ({
       onActionBtnClick={onActionBtnClick}
     >
       {children}
-    </Raw>
+    </Row>
   );
 };
-const GroupRaw = ({
+const GroupRow = ({
   open,
   group,
   onActionBtnClick,
   children,
-}: GroupRawProps) => {
+}: GroupRowProps) => {
   return (
-    <Raw
+    <Row
       open={open}
       className={styles.group}
       openable={true}
@@ -242,11 +242,11 @@ const GroupRaw = ({
       onActionBtnClick={onActionBtnClick}
     >
       {children}
-    </Raw>
+    </Row>
   );
 };
 
-const defineRawConfig = (group: SortListGroup) => {
+const defineRowConfig = (group: SortListGroup) => {
   switch (group) {
     case SortListGroup.group: {
       return {
@@ -289,7 +289,7 @@ export const SortsList = ({
 }: SortsListProps) => {
   const limit = 10;
   const search: CatalogState["sortsSearch"] = useAppSelector(selectSortsSearch);
-  const [config, setConfig] = useState(defineRawConfig(group));
+  const [config, setConfig] = useState(defineRowConfig(group));
   const [page, setPage] = useState(1);
 
   const [cancelSort] = useCancelSortMutation();
@@ -304,12 +304,12 @@ export const SortsList = ({
   const { data: total } = useSearchGroupsTotalQuery({ ...search });
 
   useEffect(() => {
-    setConfig(defineRawConfig(group));
+    setConfig(defineRowConfig(group));
   }, [group]);
 
   useEffect(() => {
     if (search.search) {
-      setConfig(defineRawConfig(search.type));
+      setConfig(defineRowConfig(search.type));
     }
   }, [search]);
 
@@ -359,7 +359,7 @@ export const SortsList = ({
         </div>
 
         {data?.map((group) => (
-          <GroupRaw
+          <GroupRow
             open={config.group}
             key={`group_${group.id}`}
             onActionBtnClick={(action, data) =>
@@ -368,7 +368,7 @@ export const SortsList = ({
             group={group}
           >
             {group.categories?.map((cat) => (
-              <CategoryRaw
+              <CategoryRow
                 open={config.category}
                 key={`category_${cat.id}`}
                 category={cat}
@@ -377,7 +377,7 @@ export const SortsList = ({
                 }
               >
                 {cat.sorts?.map((sort: any) => (
-                  <SortRaw
+                  <SortRow
                     open={config.sort}
                     sort={sort}
                     key={`sort_${sort.id}`}
@@ -388,11 +388,11 @@ export const SortsList = ({
                         SortListGroup.sort
                       )
                     }
-                  ></SortRaw>
+                  ></SortRow>
                 ))}
-              </CategoryRaw>
+              </CategoryRow>
             ))}
-          </GroupRaw>
+          </GroupRow>
         ))}
       </div>
       <Pagination

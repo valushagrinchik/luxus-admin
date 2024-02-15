@@ -27,7 +27,7 @@ export type User = {
 
 export type EditCategoryFormInputs = {
   name: string;
-  groupId: number;
+  groupId: string;
 };
 export type EditSortFormInputs = {
   name: string;

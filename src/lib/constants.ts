@@ -6,6 +6,9 @@ export enum SortListGroup {
 
 export const ErrorMessages = {
   reqiuredField: "Campo obligatorio",
+  invalidEmail: "El correo electrónico debe ser un correo electrónico válido",
+  somethingWentWrong: "Algo salió mal",
+  USER_NOT_FOUND: "Usuario o contraseña incorrectos",
 };
 
 export const SortsFiltersGroupByMap = {
