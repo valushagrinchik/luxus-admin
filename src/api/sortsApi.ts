@@ -1,12 +1,5 @@
-import {
-  BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
-  createApi,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { Category, Group, Sort } from "../lib/types";
-import { getToken } from "../lib/token";
 import {
   CreateCategoryBody,
   CreateGroupBody,
@@ -16,27 +9,7 @@ import {
   UpdateSortBody,
 } from "./interfaces";
 import { CatalogState } from "../redux/reducer/catalogReducer";
-
-const baseQuery = fetchBaseQuery({
-  baseUrl: "/",
-  prepareHeaders: (headers) => {
-    headers.set("Authorization", `Bearer ${getToken()}`);
-    return headers;
-  },
-});
-
-const baseQueryWithReauth: BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
-> = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
-  if (result.error && result.error.status === 401) {
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-  }
-  return result;
-};
+import { baseQueryWithReauth } from "./utils";
 
 // Define a service using a base URL and expected endpoints
 export const sortsApi = createApi({

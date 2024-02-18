@@ -1,4 +1,3 @@
-import { Select } from "../../controls/Select";
 import { BinIcon } from "../../controls/icons/BinIcon";
 import { ExcelIcon } from "../../controls/icons/ExcelIcon";
 import { Button } from "../../controls/Button/Button";
@@ -17,6 +16,7 @@ import { Dropdown } from "../../controls/Dropdown";
 import { SearchIcon } from "../../controls/icons/SearchIcon";
 import { TextField } from "../../controls/TextField";
 import styles from "./SortsFilters.module.css";
+import { useState } from "react";
 
 interface SortsFiltersProps {
   onSortListGroupChange: (value: SortListGroup) => void;
@@ -32,13 +32,22 @@ export const SortsFilters = ({
   const appDispatch = useAppDispatch();
   const selectedSorts = useAppSelector(selectSelectedSorts);
 
+  // workaround to display text field select placeholder
+  const [groupBy, setGroupBy] = useState("");
+
+  // workaround to display text field select placeholder
+  const [searchBy, setSearchBy] = useState("");
+
   return (
     <div className={styles.filter_row}>
-      <Select
+      <TextField
+        select
         style={{ width: "210px" }}
         options={SortsFiltersGroupByMap}
+        value={groupBy}
         placeholder="Agrupar"
         onChange={(event) => {
+          setGroupBy(event.target.value as SortListGroup);
           onSortListGroupChange(event.target.value as SortListGroup);
         }}
       />
@@ -48,17 +57,21 @@ export const SortsFilters = ({
           <TextField
             style={{ width: "200px" }}
             placeholder="Encontrar..."
+            defaultValue=""
             onChange={(e) => {
               appDispatch(setSearch({ search: e.target.value }));
             }}
             icon={<SearchIcon color="var(--Gray-400)" />}
           />
 
-          <Select
+          <TextField
+            value={searchBy}
+            select
             style={{ width: "160px" }}
             options={SortsFiltersSearchByMap}
             placeholder="Por variedad"
             onChange={(event) => {
+              setSearchBy(event.target.value as SortListGroup);
               appDispatch(
                 setSearch({ type: event.target.value as SortListGroup })
               );

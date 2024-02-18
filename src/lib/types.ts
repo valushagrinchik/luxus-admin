@@ -25,6 +25,28 @@ export type User = {
   access_token: string;
 };
 
+export type LegalEntity = {
+  actualAddress: string;
+  code: string;
+  id: number;
+  legalAddress: string;
+  name: string;
+  plantationId: number;
+};
+export type Plantation = {
+  id: number;
+  name: string;
+  country: CountryCode;
+  comments: string;
+
+  deletedAt: string;
+  deletedBy: number;
+  deliveryMethod: ChecksDeliveryMethod;
+  legalEntities: LegalEntity[];
+  postpaidCredit: number;
+  postpaidDays: number;
+  termsOfPayment: TermsOfPayment;
+};
 export type EditCategoryFormInputs = {
   name: string;
   groupId: string;
@@ -40,4 +62,31 @@ export type MenuItem = {
   link: string;
   label: string;
   children?: MenuItem[];
+};
+
+export type ListActionType =
+  | "update"
+  | "cancel"
+  | "delete"
+  | "admin_refuse"
+  | "admin_approve";
+
+export enum CountryCode {
+  co = "co",
+  ec = "ec",
+}
+
+export enum TermsOfPayment {
+  PREPAID = "PREPAID",
+  PAIDUPONACTUAL = "PAIDUPONACTUAL",
+  POSTPAID = "POSTPAID",
+}
+export enum ChecksDeliveryMethod {
+  PERSONALLY = "PERSONALLY",
+  SERVIENTREGA = "SERVIENTREGA",
+}
+
+export type PlantationFilters = {
+  country?: string;
+  termsOfPayment?: string[];
 };

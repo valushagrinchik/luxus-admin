@@ -1,6 +1,6 @@
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "../../../controls/Button/Button";
-import { Category, EditCategoryFormInputs } from "../../../lib/types";
+import { EditCategoryFormInputs } from "../../../lib/types";
 import {
   useCreateCategoryMutation,
   useGetGroupsQuery,
@@ -11,7 +11,6 @@ import { schemaEditCategory } from "../../../lib/validation";
 
 import { CloseIcon } from "../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../controls/icons/OkIcon";
-import { Select } from "../../../controls/Select";
 import { TextField } from "../../../controls/TextField";
 
 import styles from "./EditCategoryForm.module.css";
@@ -42,19 +41,16 @@ export const EditCategoryForm = ({
   );
 
   const {
-    register,
+    control,
     handleSubmit,
-    getValues,
-    watch,
-    formState: { errors, isValid },
+    formState: { isValid },
   } = useForm<EditCategoryFormInputs>({
     resolver: yupResolver(schemaEditCategory),
     defaultValues: {
-      name: data?.name,
       groupId: data?.groupId?.toString() || "",
+      name: data?.name || "",
     },
   });
-  console.log(getValues(), data);
 
   const submit: SubmitHandler<EditCategoryFormInputs> = async (formData) => {
     if (action === "create") {
@@ -72,40 +68,53 @@ export const EditCategoryForm = ({
     }
     onSubmit();
   };
-  const groupId = watch("groupId");
 
   return (
     <form className={styles.form}>
       <h2>{action === "create" ? "Crear" : "Editar"} categoria</h2>
-      <div>
-        <label htmlFor="groupId">
-          Grupo <span className={styles.required}>*</span>
-        </label>
-        <Select
-          {...register("groupId")}
-          options={groupsMap}
-          placeholder="Seleccionar grupo"
-          value={
-            groupId && Object.keys(groupsMap).includes(groupId) ? groupId : ""
-          }
-        />
-        {errors.groupId && (
-          <span className={styles.required}>{errors.groupId.message}</span>
+
+      <Controller
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <TextField
+            select
+            label={
+              <>
+                Grupo <span className={styles.required}>*</span>
+              </>
+            }
+            placeholder="Seleccionar grupo"
+            helperText={error ? error.message : null}
+            error={!!error}
+            onChange={onChange}
+            value={value}
+            options={groupsMap}
+            fullWidth
+          />
         )}
-      </div>
-      <div>
-        <label htmlFor="name">
-          Nombre <span className={styles.required}>*</span>
-        </label>
-        <TextField
-          {...register("name")}
-          style={{ width: "100%" }}
-          placeholder="Indicar Nombre"
-        />
-        {errors.name && (
-          <span className={styles.required}>{errors.name.message}</span>
+        name="groupId"
+        control={control}
+      />
+
+      <Controller
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <TextField
+            label={
+              <>
+                Nombre <span className={styles.required}>*</span>
+              </>
+            }
+            placeholder="Indicar Nombre"
+            helperText={error ? error.message : null}
+            error={!!error}
+            onChange={onChange}
+            value={value}
+            fullWidth
+          />
         )}
-      </div>
+        name="name"
+        control={control}
+      />
+
       <div className={styles.actions}>
         <Button color="gray" onClick={() => onReset()}>
           <CloseIcon width={16} height={16} />

@@ -1,4 +1,4 @@
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "../../../controls/Button/Button";
 import {
   useCreateGroupMutation,
@@ -6,11 +6,11 @@ import {
 } from "../../../api/sortsApi";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaEditGroup } from "../../../lib/validation";
-
-import styles from "./EditGroupForm.module.css";
 import { OkIcon } from "../../../controls/icons/OkIcon";
 import { CloseIcon } from "../../../controls/icons/CloseIcon";
 import { TextField } from "../../../controls/TextField";
+
+import styles from "./EditGroupForm.module.css";
 
 type EditGroupFormInputs = {
   name: string;
@@ -30,7 +30,7 @@ export const EditGroupForm = ({
   action,
 }: EditGroupFormProps) => {
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<EditGroupFormInputs>({
@@ -57,19 +57,27 @@ export const EditGroupForm = ({
     <div className={styles.form_container}>
       <form className={styles.form}>
         <h2>{action === "create" ? "Crear" : "Editar"} grupo</h2>
-        <div>
-          <label htmlFor="name">
-            Nombre <span className={styles.required}>*</span>
-          </label>
-          <TextField
-            {...register("name")}
-            style={{ width: "100%" }}
-            placeholder="Indicar Nombre"
-          />
-          {errors.name && (
-            <span className={styles.required}>{errors.name.message}</span>
+
+        <Controller
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <TextField
+              label={
+                <>
+                  Nombre <span className={styles.required}>*</span>
+                </>
+              }
+              placeholder="Indicar Nombre"
+              helperText={error ? error.message : null}
+              error={!!error}
+              onChange={onChange}
+              value={value}
+              fullWidth
+            />
           )}
-        </div>
+          name="name"
+          control={control}
+        />
+
         <div className={styles.actions}>
           <Button color="gray" onClick={() => onReset()}>
             <CloseIcon width={16} height={16} />

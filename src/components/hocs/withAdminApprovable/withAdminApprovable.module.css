@@ -1,0 +1,45 @@
+.container {
+  position: relative;
+}
+.not_approved_yet {
+  height: var(--row-height);
+  z-index: 10;
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0.9;
+  background: var(--Red-50, #fef3f2);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--Gray-300, #d0d5dd);
+  & span {
+    color: var(--Red-600, #d92d20);
+    /* Text sm/Medium */
+    font-family: "Roboto Condensed";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 142.857% */
+  }
+
+  .actions {
+    padding: 6px 0;
+    height: 100%;
+    .cancel_btn {
+      height: 100%;
+    }
+  }
+}
+.admin_actions {
+  display: flex;
+  gap: 4px;
+}
+.admin_action_btn {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+}

@@ -1,0 +1,26 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 500px;
+}
+.actions {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+.required {
+  color: var(--Red-400, #f97066);
+  /* Text sm/Medium */
+  font-family: "Roboto Condensed";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  margin-left: 5px;
+}

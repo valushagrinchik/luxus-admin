@@ -1,0 +1,10 @@
+.title {
+  display: flex;
+  flex: 1;
+}
+.actions {
+  display: flex;
+  align-self: center;
+  gap: 16px;
+  margin-left: auto;
+}

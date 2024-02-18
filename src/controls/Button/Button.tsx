@@ -3,10 +3,7 @@ import {
   ButtonProps as BaseButtonProps,
 } from "@mui/base/Button";
 import React, { ReactNode } from "react";
-import { OkIcon } from "../icons/OkIcon";
-import { CloseIcon } from "../icons/CloseIcon";
 import styles from "./Button.module.css";
-import { PlusIcon } from "../icons/PlusIcon";
 import classNames from "classnames";
 
 interface ButtonProps extends BaseButtonProps {
@@ -63,7 +60,6 @@ export const Button = React.forwardRef(function MyButton(
       className={classNames(
         styles.btn,
         styles[color],
-        // propsByAppearance?.className,
         className
       )}
     >

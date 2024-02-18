@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "../../../controls/Button/Button";
 import { EditSortFormInputs } from "../../../lib/types";
@@ -7,7 +8,6 @@ import {
   useGetGroupsQuery,
   useUpdateSortMutation,
 } from "../../../api/sortsApi";
-import { Select } from "../../../controls/Select";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaEditSort } from "../../../lib/validation";
 import { CloseIcon } from "../../../controls/icons/CloseIcon";
@@ -16,7 +16,6 @@ import { TextField } from "../../../controls/TextField";
 import { Controller } from "react-hook-form";
 
 import styles from "./EditSortForm.module.css";
-import { useEffect } from "react";
 
 interface EditSortFormProps {
   onSubmit: () => void;
@@ -38,15 +37,11 @@ export const EditSortForm = ({
 }: EditSortFormProps) => {
   const [update] = useUpdateSortMutation();
   const [create] = useCreateSortMutation();
-  console.log(data, "data");
   const {
-    register,
     handleSubmit,
-    getValues,
     control,
     resetField,
-    reset,
-    formState: { errors, isValid },
+    formState: { isValid },
     watch,
   } = useForm<EditSortFormInputs>({
     resolver: yupResolver(schemaEditSort),
@@ -56,7 +51,6 @@ export const EditSortForm = ({
       categoryId: data?.categoryId?.toString() || "",
     },
   });
-  const categoryId = watch("categoryId");
 
   const groupId = watch("groupId");
 
@@ -103,90 +97,75 @@ export const EditSortForm = ({
     return <></>;
   }
 
-  console.log(groupId, categoryId, "$$$");
-
   return (
     <form className={styles.form}>
       <h2>{action === "create" ? "Crear" : "Editar"} variedad</h2>
       <div className={styles.fields}>
-        <div>
-          <label htmlFor="id">Número</label>
-          <TextField disabled value={data.id} style={{ width: "100%" }} />
-        </div>
+        <TextField label="Número" disabled value={data.id} fullWidth />
 
-        <div>
-          <label htmlFor="groupId">
-            Grupo <span className={styles.required}>*</span>
-          </label>
-          <Controller
-            render={({ field }) => (
-              <Select
-                {...field}
-                disabled={!groups?.length}
-                placeholder="Seleccionar grupo"
-                defaultValue={data.groupId}
-                className={styles.select}
-                {...register("groupId")}
-                options={groupsMap}
-
-                // value={
-                //   groupId && Object.keys(groupsMap).includes(groupId) ? groupId : ""
-                // }
-              />
-            )}
-            name="groupId"
-            control={control}
-          />
-
-          {errors.groupId && (
-            <span className={styles.required}>{errors.groupId.message}</span>
+        <Controller
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <TextField
+              select
+              label={
+                <>
+                  Grupo <span className={styles.required}>*</span>
+                </>
+              }
+              placeholder="Seleccionar grupo"
+              helperText={error ? error.message : null}
+              error={!!error}
+              onChange={onChange}
+              value={value}
+              options={groupsMap}
+              fullWidth
+            />
           )}
-        </div>
-        <div>
-          <label htmlFor="categoryId">
-            Categoria <span className={styles.required}>*</span>
-          </label>
+          name="groupId"
+          control={control}
+        />
 
-          <Controller
-            render={({ field }) => (
-              <Select
-                {...field}
-                disabled={!groupId || !categories?.length}
-                placeholder="Seleccionar categoria"
-                defaultValue={data.categoryId}
-                // value={
-                //   categoryId && Object.keys(categoriesMap).includes(categoryId)
-                //     ? categoryId
-                //     : ""
-                // }
-
-                className={styles.select}
-                {...register("categoryId")}
-                options={categoriesMap}
-              />
-            )}
-            name="categoryId"
-            control={control}
-          />
-          {errors.categoryId && (
-            <span className={styles.required}>{errors.categoryId.message}</span>
+        <Controller
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <TextField
+              select
+              label={
+                <>
+                  Categoria <span className={styles.required}>*</span>
+                </>
+              }
+              placeholder="Seleccionar categoria"
+              helperText={error ? error.message : null}
+              error={!!error}
+              onChange={onChange}
+              value={value}
+              disabled={!groupId}
+              options={categoriesMap}
+              fullWidth
+            />
           )}
-        </div>
-        <div>
-          <label htmlFor="name">
-            Nombre <span className={styles.required}>*</span>
-          </label>
-          <TextField
-            {...register("name")}
-            style={{ width: "100%" }}
-            placeholder="Indicar Nombre"
-            defaultValue={data.name}
-          />
+          name="categoryId"
+          control={control}
+        />
 
-          {errors.name && (
-            <span className={styles.required}>{errors.name.message}</span>
+        <Controller
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <TextField
+              label={
+                <>
+                  Nombre <span className={styles.required}>*</span>
+                </>
+              }
+              placeholder="Indicar Nombre"
+              fullWidth
+              error={!!error}
+              onChange={onChange}
+              value={value}
+            />
           )}
-        </div>
+          name="name"
+          control={control}
+        />
       </div>
       <div className={styles.actions}>
         <Button color="gray" onClick={() => onReset()}>

@@ -1,24 +1,24 @@
 import { useState } from "react";
-import { SortsFilters } from "../../components/SortsFilters/SortsFilters";
-import { SortsList } from "../../components/SortsList/SortsList";
-import { Modal } from "../../controls/Modal";
-import { EditGroupForm } from "../../components/forms/EditGroupForm/EditGroupForm";
-import { EditCategoryForm } from "../../components/forms/EditCategoryForm/EditCategoryForm";
-import { SortListGroup } from "../../lib/constants";
-import { EditSortForm } from "../../components/forms/EditSortForm/EditSortForm";
-import Box from "../../controls/Box";
-import { ConfirmationForm } from "../../components/forms/ConfirmationForm/ConfirmationForm";
+import { SortsFilters } from "../components/SortsFilters/SortsFilters";
+import { SortsList } from "../components/SortsList/SortsList";
+import { Modal } from "../controls/Modal";
+import { EditGroupForm } from "../components/forms/EditGroupForm/EditGroupForm";
+import { EditCategoryForm } from "../components/forms/EditCategoryForm/EditCategoryForm";
+import { AdminConfirmationFormTitles, SortListGroup } from "../lib/constants";
+import { EditSortForm } from "../components/forms/EditSortForm/EditSortForm";
+import Box from "../controls/Box";
+import { ConfirmationForm } from "../components/forms/ConfirmationForm/ConfirmationForm";
 import {
   useDeleteCategoryMutation,
   useDeleteGroupMutation,
   useDeleteSortMutation,
-} from "../../api/sortsApi";
-import { useAppDispatch, useAppSelector } from "../../store";
+} from "../api/sortsApi";
+import { useAppDispatch, useAppSelector } from "../store";
 import {
   selectSelectedSorts,
   setSelectedSorts,
-} from "../../redux/reducer/catalogReducer";
-import { AdminConfirmationForm } from "../../components/forms/AdminConfirmationForm/AdminConfirmationForm";
+} from "../redux/reducer/catalogReducer";
+import { AdminConfirmationForm } from "../components/forms/AdminConfirmationForm/AdminConfirmationForm";
 
 type ModalType = "create" | "update" | "delete" | "admin_approve";
 
@@ -49,7 +49,7 @@ const renderForm = (
   }
 };
 
-export const SortsListPage = () => {
+const SortsListPage = () => {
   const [open, setOpen] = useState(false);
   const [refetch, setRefetch] = useState(false);
   const appDispatch = useAppDispatch();
@@ -68,6 +68,7 @@ export const SortsListPage = () => {
     });
     setOpen(true);
   };
+
   const handleClose = () => {
     setRefetch(true);
     setOpen(false);
@@ -89,9 +90,8 @@ export const SortsListPage = () => {
           break;
         }
 
-        for (let id of selectedSorts) {
-          await deleteSort(id);
-        }
+        const deletePromises = selectedSorts.map((id) => deleteSort(id));
+        await Promise.allSettled(deletePromises);
         appDispatch(setSelectedSorts([]));
         break;
       }
@@ -119,7 +119,7 @@ export const SortsListPage = () => {
     if (modalConfig?.modalType === "admin_approve") {
       return (
         <AdminConfirmationForm
-          type={modalConfig.type}
+          title={AdminConfirmationFormTitles[modalConfig.type]}
           onReset={handleClose}
           onSubmit={handleDelete}
         />
@@ -162,3 +162,5 @@ export const SortsListPage = () => {
     </div>
   );
 };
+
+export default SortsListPage;

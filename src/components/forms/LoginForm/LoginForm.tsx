@@ -26,10 +26,10 @@ export const LoginForm = () => {
       password: "",
     },
   });
-  let { signin } = useAuth();
+  const { signin } = useAuth();
 
   const [submitError, setSubmitError] = useState("");
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const submit: SubmitHandler<LoginFromInputs> = async (data) => {
     try {
@@ -59,7 +59,6 @@ export const LoginForm = () => {
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <TextField
                 helperText={error ? error.message : null}
-                size="small"
                 error={!!error}
                 onChange={onChange}
                 value={value}
@@ -78,7 +77,6 @@ export const LoginForm = () => {
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <TextField
                 helperText={error ? error.message : null}
-                size="small"
                 error={!!error}
                 onChange={onChange}
                 value={value}
@@ -88,7 +86,7 @@ export const LoginForm = () => {
           />
         </div>
         <div className={styles.required}>{submitError && submitError}</div>
-        <Button color="base" onClick={handleSubmit(submit)} >
+        <Button color="base" onClick={handleSubmit(submit)}>
           Enviar
         </Button>
       </form>

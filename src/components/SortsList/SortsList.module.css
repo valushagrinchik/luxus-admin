@@ -145,3 +145,9 @@
   height: 24px;
   padding: 4px;
 }
+.edit_btn {
+  &:hover {
+    color: var(--Primary-800, #0040c1);
+    cursor: pointer;
+  }
+}

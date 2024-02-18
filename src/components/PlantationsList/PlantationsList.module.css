@@ -1,0 +1,90 @@
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: grid;
+  gap: 8px;
+  border-radius: 8px;
+  background: var(--Base-White, #fff);
+  /* Shadow */
+  box-shadow: 0px 0px 16px 0px rgba(0, 20, 61, 0.08);
+  height: 48px;
+  padding: 4px 8px;
+  align-items: center;
+  & .actions_area {
+    margin-left: auto;
+    margin-right: 12px;
+    display: flex;
+    gap: 4px;
+    color: var(--Gray-500);
+  }
+}
+.headers {
+  color: var(--Primary-800, #0040c1);
+  /* Text xs/Medium */
+  font-family: "Roboto Condensed";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px; /* 133.333% */
+}
+.actions_area {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+.tag {
+  border-radius: 4px;
+  padding: 4px 8px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+  flex-shrink: 0;
+  /* Text xs/Medium */
+  font-family: "Roboto Condensed";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+}
+.tag.PREPAID {
+  background: var(--Green-100, #d1fadf);
+  color: var(--Green-700, #027a48);
+}
+.tag.PAIDUPONACTUAL {
+  background: var(--Primary-100, #d1e0ff);
+  color: var(--Primary-700, #004eeb);
+}
+.tag.POSTPAID {
+  background: var(--Red-100, #fee4e2);
+  color: var(--Red-700, #b42318);
+}
+
+.bin_icon:hover {
+  color: var(--Red-500);
+}
+.admin_action_btn {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+}
+.edit_btn {
+  width: 24px;
+  &:hover {
+    color: var(--Primary-800, #0040c1);
+    cursor: pointer;
+  }
+}
+
+.pre_deleted_admin_view {
+  background: var(--Red-50, #fef3f2);
+}

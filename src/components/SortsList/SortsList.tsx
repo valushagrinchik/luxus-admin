@@ -1,7 +1,7 @@
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import { EditIcon } from "../../controls/icons/EditIcon";
 import classNames from "classnames";
-import { Category, Group, Sort } from "../../lib/types";
+import { Category, Group, ListActionType, Sort } from "../../lib/types";
 import {
   useCancelCategoryMutation,
   useCancelGroupMutation,
@@ -19,8 +19,7 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { SortListGroup } from "../../lib/constants";
 import Pagination from "@mui/material/Pagination";
 import { Checkbox } from "../../controls/Checkbox";
-
-import styles from "./SortsList.module.css";
+import uniq from "lodash/uniq";
 import { Button } from "../../controls/Button/Button";
 import { ArrowDownSortsIcon } from "../../controls/icons/ArrowDownSortsIcon";
 import { ArrowRightSortsIcon } from "../../controls/icons/ArrowRightSortsIcon";
@@ -29,16 +28,13 @@ import { useAuth } from "../../lib/auth";
 import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
 import { OkIconSmall } from "../../controls/icons/OkIconSmall";
 
-type ActionType =
-  | "update"
-  | "cancel"
-  | "delete"
-  | "admin_refuse"
-  | "admin_approve";
+import styles from "./SortsList.module.css";
+
+
 interface BaseRowProps {
   open: boolean;
   children?: ReactNode;
-  onActionBtnClick: (action: ActionType, data: any) => void;
+  onActionBtnClick: (action: ListActionType, data: any) => void;
 }
 
 interface SortRowProps extends BaseRowProps {
@@ -117,7 +113,7 @@ const Row = ({
           />
         )}
         <EditIcon
-          className="clickable"
+          className={styles.edit_btn}
           onClick={() => onActionBtnClick("update", data)}
         />
       </>
@@ -152,6 +148,8 @@ const Row = ({
 
         {openable && (
           <span className={styles.arrow_space}>
+            {!hasChildren && <ArrowRightSortsIcon color="var(--Gray-300)" />}
+
             {hasChildren && (
               <span
                 className={styles.toggle_btn}
@@ -168,9 +166,12 @@ const Row = ({
         )}
         {checkable && (
           <Checkbox
+            checked={selectedSorts.includes(data.id)}
             onChange={(e, checked) => {
               if (checked) {
-                appDispatch(setSelectedSorts([...selectedSorts, data.id]));
+                appDispatch(
+                  setSelectedSorts(uniq(selectedSorts.concat(data.id)))
+                );
               } else {
                 appDispatch(
                   setSelectedSorts([
@@ -296,7 +297,11 @@ export const SortsList = ({
   const [cancelCategory] = useCancelCategoryMutation();
   const [cancelGroup] = useCancelGroupMutation();
 
-  const { data, refetch: searchGroups } = useSearchGroupsQuery({
+  const {
+    data,
+    refetch: searchGroups,
+    isLoading,
+  } = useSearchGroupsQuery({
     ...search,
     offset: (page - 1) * limit,
     limit,
@@ -348,6 +353,14 @@ export const SortsList = ({
       }
     }
   };
+
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!data?.length) {
+    return <div>Sin datos</div>;
+  }
 
   return (
     <>

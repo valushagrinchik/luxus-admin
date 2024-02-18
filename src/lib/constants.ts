@@ -42,3 +42,20 @@ export const HEADER_TITLES = {
   sorts: "Variedades",
   plantations: "Fincas",
 };
+
+export const PlantationDepartmanet = {
+  FINANCIAL: "FINANCIAL",
+  SALES: "SALES",
+};
+
+export const AdminConfirmationFormTitles: Record<SortListGroup, string> = {
+  [SortListGroup.group]:
+    "¿Estás seguro de que deseas eliminar de forma permanente el grupo de la plataforma?",
+  [SortListGroup.category]:
+    "¿Estás seguro de que deseas eliminar de forma permanente la categoría de la plataforma?",
+  [SortListGroup.sort]:
+    "¿Estás seguro de que deseas eliminar de forma permanente la variedad de la plataforma?",
+};
+
+export const AdminConfirmationFormPlantationTitle =
+  "¿Estás seguro de que deseas eliminar de forma permanente a la finca  de la plataforma?";
