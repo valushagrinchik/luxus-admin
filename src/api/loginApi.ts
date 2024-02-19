@@ -4,7 +4,7 @@ import { User } from "../lib/types";
 // Define a service using a base URL and expected endpoints
 export const loginApi = createApi({
   reducerPath: "loginApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/" }),
   endpoints: (builder) => ({
     login: builder.mutation<User, void>({
       query: (body) => ({

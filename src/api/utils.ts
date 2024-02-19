@@ -7,7 +7,7 @@ import {
 import { getToken } from "../lib/token";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "/",
+  baseUrl: "/api/",
   prepareHeaders: (headers) => {
     headers.set("Authorization", `Bearer ${getToken()}`);
     return headers;
