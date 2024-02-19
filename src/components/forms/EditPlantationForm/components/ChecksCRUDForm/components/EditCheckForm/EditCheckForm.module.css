@@ -12,7 +12,7 @@
 .row {
   display: flex;
   justify-content: space-between;
-  gap: 24px;
+  gap: 8px;
 }
 .required {
   color: var(--Red-400, #f97066);
@@ -23,4 +23,9 @@
   font-weight: 500;
   line-height: 20px;
   margin-left: 5px;
+}
+
+.clear_btn {
+  cursor: pointer;
+  margin-right: 5px;
 }

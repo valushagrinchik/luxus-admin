@@ -62,11 +62,11 @@ export const schemaAddTransferDetails = yup
     id: yup.string().required(ErrorMessages.reqiuredField),
     name: yup.string().required(ErrorMessages.reqiuredField),
     beneficiary: yup.string().required(ErrorMessages.reqiuredField),
-    beneficiaryAddress: yup.string().required(ErrorMessages.reqiuredField),
+    beneficiaryAddress: yup.string().default(""),
     documentPath: yup.string().default(""),
     favourite: yup.boolean().default(false),
     bank: yup.string().required(ErrorMessages.reqiuredField),
-    bankAddress: yup.string().required(ErrorMessages.reqiuredField),
+    bankAddress: yup.string().default(""),
     bankAccountNumber: yup.string().required(ErrorMessages.reqiuredField),
     bankAccountType: yup.string().required(ErrorMessages.reqiuredField),
     bankSwift: yup.string().default(""),
@@ -84,7 +84,7 @@ export const schemaAddCheck = yup
     name: yup.string().required(ErrorMessages.reqiuredField),
     beneficiary: yup.string().required(ErrorMessages.reqiuredField),
     favourite: yup.boolean().default(false),
-    documentPath: yup.string().default(""),
+    documentPath: yup.mixed().optional(),
   })
   .required();
 

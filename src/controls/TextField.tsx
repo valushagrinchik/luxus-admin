@@ -33,15 +33,16 @@ export const TextField = React.forwardRef(function MyTextField(
         ),
         ...props.SelectProps,
       }}
-      InputProps={
-        icon
+      InputProps={{
+        ...(icon
           ? {
               startAdornment: (
                 <InputAdornment position="start">{icon}</InputAdornment>
               ),
             }
-          : {}
-      }
+          : {}),
+        ...props.InputProps,
+      }}
       InputLabelProps={{ shrink: true }}
       sx={{
         minWidth: "200px",

@@ -1,12 +1,12 @@
 import Box from "../../../../../controls/Box";
 import styles from "./FinancialDataForm.module.css";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { TextField } from "../../../../../controls/TextField";
 import { ContactsCRUDForm } from "../ContactsCRUDForm/ContactsCRUDForm";
 import { ChecksCRUDForm } from "../ChecksCRUDForm/ChecksCRUDForm";
 import { TransferDetailsCRUDForm } from "../TransferDetailsCRUDForm/TransferDetailsCRUDForm";
 import L18nEs from "../../../../../lib/l18n";
-import { EditPlantationFormMode } from "../../interfaces";
+import { EditLegalEntityInput, EditPlantationFormMode } from "../../interfaces";
 
 export const FinancialDataForm = ({
   mode,
@@ -19,6 +19,18 @@ export const FinancialDataForm = ({
   const termsOfPayment = watch("generalInfo.termsOfPayment");
   const deliveryMethod = watch("generalInfo.deliveryMethod");
 
+  const legalEntities = useFieldArray({
+    control,
+    name: "legalEntities",
+  });
+
+  const legalEntitiesMap = Object.fromEntries(
+    (legalEntities.fields as EditLegalEntityInput[]).map((entity) => [
+      entity.name,
+      entity.name,
+    ])
+  );
+
   return (
     <div className={styles.container}>
       <ContactsCRUDForm
@@ -27,12 +39,15 @@ export const FinancialDataForm = ({
         positions={L18nEs.constants.financialPositions}
       />
       <Box>
-        <TransferDetailsCRUDForm mode={mode} />
+        <TransferDetailsCRUDForm
+          mode={mode}
+          legalEntitiesMap={legalEntitiesMap}
+        />
       </Box>
       <Box>
         <div className={styles.columns}>
           <div className={styles.checks_block}>
-            <ChecksCRUDForm mode={mode} />
+            <ChecksCRUDForm mode={mode} legalEntitiesMap={legalEntitiesMap} />
           </div>
           <div className={styles.delivery_method_block}>
             <h2>Forma de entrega del cheque</h2>
@@ -92,7 +107,7 @@ export const FinancialDataForm = ({
               />
             )}
           />
-          {termsOfPayment === L18nEs.constants.termsOfPayments.POSTPAID && (
+          {termsOfPayment === "POSTPAID" && (
             <>
               <Controller
                 name="generalInfo.postpaidDays"

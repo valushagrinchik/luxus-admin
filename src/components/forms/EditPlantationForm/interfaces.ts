@@ -42,7 +42,7 @@ export type EditCheckInput = {
   name: string;
   favourite: boolean;
   beneficiary: string;
-  documentPath: string;
+  documentPath?: any;
 };
 export type EditPlantationInput = {
   generalInfo: {

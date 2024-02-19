@@ -3,7 +3,10 @@ import { TextField } from "../../../../../../../controls/TextField";
 import { Button } from "../../../../../../../controls/Button/Button";
 import { CloseIcon } from "../../../../../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
-import { EditTransferDetailsInput } from "../../../../interfaces";
+import {
+  EditBaseInput,
+  EditTransferDetailsInput,
+} from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddTransferDetails } from "../../../../../../../lib/validation";
 import { v4 as uuid } from "uuid";
@@ -15,11 +18,13 @@ export const EditTransferDetailsForm = ({
   onSubmit,
   data = {},
   mode = "create",
+  legalEntitiesMap,
 }: {
   onReset: () => void;
   onSubmit: (data: EditTransferDetailsInput) => void;
   data?: any;
   mode: "edit" | "view" | "create";
+  legalEntitiesMap: EditBaseInput;
 }) => {
   const action =
     Object.values(data).filter((value) => !!value).length > 0
@@ -28,26 +33,28 @@ export const EditTransferDetailsForm = ({
 
   const disabled = mode === "view";
 
-  const { control, handleSubmit } = useForm<EditTransferDetailsInput>({
-    resolver: yupResolver(schemaAddTransferDetails),
-    defaultValues: {
-      id: data.id || uuid(),
-      name: data.name || "",
-      beneficiary: data.beneficiary || "",
-      beneficiaryAddress: data.beneficiaryAddress || "",
-      documentPath: data.documentPath || "",
-      favourite: data.favourite || false,
-      bank: data.bank || "",
-      bankAddress: data.bankAddress || "",
-      bankAccountNumber: data.bankAccountNumber || "",
-      bankAccountType: data.bankAccountType || "",
-      bankSwift: data.bankSwift || "",
-      correspondentBank: data.correspondentBank || "",
-      correspondentBankAddress: data.correspondentBankAddress || "",
-      correspondentBankAccountNumber: data.correspondentBankAccountNumber || "",
-      correspondentBankSwift: data.correspondentBankSwift || "",
-    },
-  });
+  const { control, handleSubmit, formState } =
+    useForm<EditTransferDetailsInput>({
+      resolver: yupResolver(schemaAddTransferDetails),
+      defaultValues: {
+        id: data.id || uuid(),
+        name: data.name || "",
+        beneficiary: data.beneficiary || "",
+        beneficiaryAddress: data.beneficiaryAddress || "",
+        documentPath: data.documentPath || "",
+        favourite: data.favourite || false,
+        bank: data.bank || "",
+        bankAddress: data.bankAddress || "",
+        bankAccountNumber: data.bankAccountNumber || "",
+        bankAccountType: data.bankAccountType || "",
+        bankSwift: data.bankSwift || "",
+        correspondentBank: data.correspondentBank || "",
+        correspondentBankAddress: data.correspondentBankAddress || "",
+        correspondentBankAccountNumber:
+          data.correspondentBankAccountNumber || "",
+        correspondentBankSwift: data.correspondentBankSwift || "",
+      },
+    });
 
   const submit = (data: EditTransferDetailsInput) => {
     onSubmit(data);
@@ -70,10 +77,12 @@ export const EditTransferDetailsForm = ({
               }
               helperText={error ? error.message : null}
               error={!!error}
+              select
+              options={legalEntitiesMap}
               onChange={onChange}
               value={value}
               fullWidth
-              placeholder="Seleccionar Tipo Cuenta Bancaria"
+              placeholder="Indicar Razón social"
               disabled={disabled}
             />
           )}
@@ -295,7 +304,11 @@ export const EditTransferDetailsForm = ({
           <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button color="base" onClick={handleSubmit(submit)} disabled={disabled}>
+        <Button
+          color="base"
+          onClick={handleSubmit(submit)}
+          disabled={disabled || !formState.isValid}
+        >
           <OkIcon width={16} height={16} />
           Guardar
         </Button>

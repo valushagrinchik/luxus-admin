@@ -20,8 +20,10 @@ import { ViewIcon } from "../../../../../controls/icons/ViewIcon";
 
 export const TransferDetailsCRUDForm = ({
   mode,
+  legalEntitiesMap,
 }: {
   mode: EditPlantationFormMode;
+  legalEntitiesMap: EditBaseInput;
 }) => {
   const disabled = mode === "preview";
 
@@ -138,6 +140,7 @@ export const TransferDetailsCRUDForm = ({
           onSubmit={update}
           data={entity}
           mode={modalMode}
+          legalEntitiesMap={legalEntitiesMap}
         />
       </Modal>
     </>

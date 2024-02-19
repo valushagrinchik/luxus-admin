@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../../../../../controls/Button/Button";
 import { Modal } from "../../../../../controls/Modal";
 import { PlusIcon } from "../../../../../controls/icons/PlusIcon";
@@ -6,6 +6,7 @@ import { Table } from "../Table/Table";
 import { BinIcon } from "../../../../../controls/icons/BinIcon";
 import { EditIcon } from "../../../../../controls/icons/EditIcon";
 import {
+  EditBaseInput,
   EditCheckInput,
   EditContactInput,
   EditPlantationFormMode,
@@ -17,8 +18,15 @@ import { EditCheckForm } from "./components/EditCheckForm/EditCheckForm";
 import L18nEs from "../../../../../lib/l18n";
 import { FavouriteBox } from "../../../../../controls/FavouriteBox";
 
-export const ChecksCRUDForm = ({ mode }: { mode: EditPlantationFormMode }) => {
+export const ChecksCRUDForm = ({
+  mode,
+  legalEntitiesMap,
+}: {
+  mode: EditPlantationFormMode;
+  legalEntitiesMap: EditBaseInput;
+}) => {
   const disabled = mode === "preview";
+
   const { control } = useFormContext();
   const entities = useFieldArray({
     control,
@@ -111,7 +119,12 @@ export const ChecksCRUDForm = ({ mode }: { mode: EditPlantationFormMode }) => {
         />
       )}
       <Modal open={open} onClose={handleClose}>
-        <EditCheckForm onReset={handleClose} onSubmit={update} data={check} />
+        <EditCheckForm
+          onReset={handleClose}
+          onSubmit={update}
+          data={check}
+          legalEntitiesMap={legalEntitiesMap}
+        />
       </Modal>
     </>
   );
