@@ -1,15 +1,15 @@
-export const ArrowLeftIcon = (props: any) => (
+export const FullArrowUpIcon = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
+    width="12"
+    height="12"
+    viewBox="0 0 12 12"
     fill="none"
     {...props}
   >
     <path
-      d="M15 18L9 12L15 6"
-      stroke="#101828"
+      d="M6 9.5V2.5M6 2.5L2.5 6M6 2.5L9.5 6"
+      stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"

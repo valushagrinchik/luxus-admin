@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import styles from "./PlantationsList.module.css";
 import { EditBaseInput } from "../forms/EditPlantationForm/interfaces";
 import L18nEs from "../../lib/l18n";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { EditIcon } from "../../controls/icons/EditIcon";
 import { Plantation, PlantationFilters } from "../../lib/types";
 import Pagination from "@mui/material/Pagination";
@@ -17,8 +17,9 @@ import {
   selectSelectedPlantations,
   setSelectedPlantations,
 } from "../../redux/reducer/catalogReducer";
-import { uniq } from "lodash";
+import { orderBy, uniq } from "lodash";
 import { withAdminApprovable } from "../hocs/withAdminApprovable/withAdminApprovable";
+import { FullArrowUpIcon } from "../../controls/icons/FullArrowUpIcon";
 
 interface RowProps {
   data: EditBaseInput;
@@ -37,17 +38,23 @@ const Row = ({
   renderActions = () => <></>,
   onShow,
 }: RowProps) => {
-  const rowStyle = {
-    backgroundColor: bgColor,
-    gridTemplateColumns: `repeat(${Object.keys(data).length + 2}, 1fr)`,
-  };
+  const isCheckable = !!renderCheckbox;
+  const rowStyle = isCheckable
+    ? {
+        gridTemplateColumns: `40px repeat(${
+          Object.keys(data).length + 1
+        }, 1fr)`,
+      }
+    : {
+        gridTemplateColumns: `repeat(${Object.keys(data).length + 1}, 1fr)`,
+      };
 
   return (
     <div
       className={classNames(styles.row, className, {
         clickable: !!onShow,
       })}
-      style={rowStyle}
+      style={{ ...rowStyle, backgroundColor: bgColor }}
       onClick={(event) => onShow?.call(this, data)}
     >
       <div className={styles.checkbox_area}>{renderCheckbox(data)}</div>
@@ -63,6 +70,33 @@ const AdminApprovableRow = withAdminApprovable<RowProps>(Row);
 
 const Table = ({ children }: { children: any }) => {
   return <div className={styles.table}>{children}</div>;
+};
+
+const SortableTitle = ({
+  title,
+  onChange,
+}: {
+  title: string;
+  onChange: (up: boolean) => void;
+}) => {
+  const [up, setUp] = useState<boolean>(true);
+  return (
+    <>
+      {title}
+
+      <FullArrowUpIcon
+        color="var(--Gray-300)"
+        style={{
+          cursor: "pointer",
+          ...(up ? {} : { transform: "rotate(180deg)" }),
+        }}
+        onClick={() => {
+          setUp(!up);
+          onChange(!up);
+        }}
+      />
+    </>
+  );
 };
 
 type PlantationsListProps = {
@@ -84,7 +118,37 @@ export const PlantationsList = ({
   const appDispatch = useAppDispatch();
   const selectedPlantations = useAppSelector(selectSelectedPlantations);
 
-  const headers = L18nEs.pages.plantation.list.table.headers;
+  const [sortBy, setSortBy] = useState<{
+    field: keyof Plantation;
+    up: boolean;
+  } | null>(null);
+
+  const headers = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(L18nEs.pages.plantation.list.table.headers).map(
+          ([key, value]) => {
+            return [
+              key,
+              ["id", "name", "legalEntityName", "postpaidCredit"].includes(
+                key
+              ) ? (
+                <SortableTitle
+                  title={value}
+                  onChange={(up: boolean) => {
+                    setSortBy({ field: key as keyof Plantation, up });
+                  }}
+                />
+              ) : (
+                value
+              ),
+            ];
+          }
+        )
+      ),
+    []
+  );
+
   const termsOfPayments = L18nEs.constants.termsOfPayments;
 
   const limit = 10;
@@ -167,31 +231,30 @@ export const PlantationsList = ({
     );
   };
 
+  const sortData = sortBy
+    ? orderBy(
+        data,
+        [(record) => record[sortBy.field]],
+        [sortBy.up ? "desc" : "asc"]
+      )
+    : data;
+
   return (
     <>
       <Table>
         <Row key={"headers"} className={styles.headers} data={headers}></Row>
-        {data?.map((record) => (
-          <>
-            {/* <Row
-              onClick={() => handlePreview(record)}
-              key={`row_${record.id}_wer`}
-              data={recordToRender(record)}
-              renderCheckbox={renderCheckbox}
-              renderActions={renderRowActions}
-            ></Row> */}
-            <AdminApprovableRow
-              onShow={() => actions.onShow(record)}
-              key={`row_${record.id}`}
-              data={recordToRender(record)}
-              renderCheckbox={renderCheckbox}
-              renderActions={renderRowActions}
-              rawData={record}
-              onCancel={actions.onCancel}
-              onAdminRefuse={actions.onAdminRefuse}
-              onAdminApprove={actions.onAdminApprove}
-            ></AdminApprovableRow>
-          </>
+        {sortData?.map((record) => (
+          <AdminApprovableRow
+            onShow={() => actions.onShow(record)}
+            key={`row_${record.id}`}
+            data={recordToRender(record)}
+            renderCheckbox={renderCheckbox}
+            renderActions={renderRowActions}
+            rawData={record}
+            onCancel={actions.onCancel}
+            onAdminRefuse={actions.onAdminRefuse}
+            onAdminApprove={actions.onAdminApprove}
+          ></AdminApprovableRow>
         ))}
       </Table>
       <Pagination

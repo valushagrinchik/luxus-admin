@@ -1,7 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { Plantation, PlantationFilters } from "../lib/types";
-import { CreateGroupBody, UpdateGroupBody } from "./interfaces";
+import { CreatePlantationBody, UpdatePlantationBody } from "./interfaces";
 import { baseQueryWithReauth } from "./utils";
+import { transformPlantationDataBack } from "../lib/utils";
+import { EditPlantationInput } from "../components/forms/EditPlantationForm/interfaces";
 
 // Define a service using a base URL and expected endpoints
 export const plantationsApi = createApi({
@@ -24,11 +26,14 @@ export const plantationsApi = createApi({
       providesTags: () => [{ type: "Plantation", id: "LIST" }],
     }),
 
-    getPlantation: builder.query<Plantation, number>({
+    getPlantation: builder.query<EditPlantationInput, number>({
       query: (id) => ({ url: `/plantations/${id}` }),
+      transformResponse: (response: Plantation) => {
+        return transformPlantationDataBack(response);
+      },
     }),
 
-    updatePlantation: builder.mutation<Plantation, UpdateGroupBody>({
+    updatePlantation: builder.mutation<Plantation, UpdatePlantationBody>({
       query: (body) => ({
         url: `/plantations/${body.id}`,
         method: "PATCH",
@@ -36,7 +41,7 @@ export const plantationsApi = createApi({
       }),
       invalidatesTags: () => [{ type: "Plantation", id: "LIST" }],
     }),
-    createPlantation: builder.mutation<Plantation, CreateGroupBody>({
+    createPlantation: builder.mutation<Plantation, CreatePlantationBody>({
       query: (body) => ({
         url: `/plantations`,
         method: "POST",

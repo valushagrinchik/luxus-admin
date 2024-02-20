@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "../../../../../controls/Button/Button";
 import { Modal } from "../../../../../controls/Modal";
 import { PlusIcon } from "../../../../../controls/icons/PlusIcon";
@@ -9,29 +9,29 @@ import {
   EditBaseInput,
   EditCheckInput,
   EditContactInput,
-  EditPlantationFormMode,
+  EditPlantationInput,
+  Mode,
 } from "../../interfaces";
-import { useFieldArray, useFormContext } from "react-hook-form";
-
-import styles from "./ChecksCRUDForm.module.css";
-import { EditCheckForm } from "./components/EditCheckForm/EditCheckForm";
-import L18nEs from "../../../../../lib/l18n";
+import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 import { FavouriteBox } from "../../../../../controls/FavouriteBox";
+import { EditCheckForm } from "./components/EditCheckForm/EditCheckForm";
+import { v4 as uuid } from "uuid";
+
+import L18nEs from "../../../../../lib/l18n";
+import styles from "./ChecksCRUDForm.module.css";
 
 export const ChecksCRUDForm = ({
   mode,
   legalEntitiesMap,
+  checks: entities,
 }: {
-  mode: EditPlantationFormMode;
+  mode: Mode;
   legalEntitiesMap: EditBaseInput;
+  checks: UseFieldArrayReturn<EditPlantationInput, "checks", "id">;
 }) => {
-  const disabled = mode === "preview";
-
-  const { control } = useFormContext();
-  const entities = useFieldArray({
-    control,
-    name: "checks",
-  });
+  const disabled = mode === Mode.preview;
+  const { watch } = useFormContext();
+  const country = watch("generalInfo.country");
 
   const [open, setOpen] = useState(false);
 
@@ -72,15 +72,16 @@ export const ChecksCRUDForm = ({
     L18nEs.pages.plantation.create.tabs.financial.checksBlock.table.headers;
 
   return (
-    <>
+    <div className={styles.container}>
       <div className={styles.title}>
         <h2>Cheques</h2>
         <div className={styles.actions}>
           {!disabled && (
             <Button
               color="gray"
-              onClick={() => handleOpen({})}
+              onClick={() => handleOpen({ id: uuid() })}
               className={styles.add_btn}
+              disabled={!country}
             >
               <PlusIcon width={16} height={16} />
             </Button>
@@ -95,6 +96,9 @@ export const ChecksCRUDForm = ({
             <FavouriteBox
               checked={data.favourite}
               onClick={() => {
+                if (mode === Mode.preview) {
+                  return;
+                }
                 entities.replace(
                   entities.fields
                     .map((e) =>
@@ -107,15 +111,24 @@ export const ChecksCRUDForm = ({
               }}
             />
           )}
-          renderActions={(data) => (
-            <>
-              <BinIcon className="action_icon" onClick={() => remove(data)} />
-              <EditIcon
-                className="action_icon"
-                onClick={() => handleOpen(data)}
-              />
-            </>
-          )}
+          renderActions={
+            mode === Mode.preview
+              ? undefined
+              : (data) => {
+                  return (
+                    <>
+                      <BinIcon
+                        className="action_icon"
+                        onClick={() => remove(data)}
+                      />
+                      <EditIcon
+                        className="action_icon"
+                        onClick={() => handleOpen(data)}
+                      />
+                    </>
+                  );
+                }
+          }
         />
       )}
       <Modal open={open} onClose={handleClose}>
@@ -124,8 +137,9 @@ export const ChecksCRUDForm = ({
           onSubmit={update}
           data={check}
           legalEntitiesMap={legalEntitiesMap}
+          mode={mode}
         />
       </Modal>
-    </>
+    </div>
   );
 };

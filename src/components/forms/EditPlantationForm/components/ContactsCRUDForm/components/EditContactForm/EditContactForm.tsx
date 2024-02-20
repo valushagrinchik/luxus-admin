@@ -3,11 +3,10 @@ import { TextField } from "../../../../../../../controls/TextField";
 import { Button } from "../../../../../../../controls/Button/Button";
 import { CloseIcon } from "../../../../../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
-import { PlantationDepartmanet } from "../../../../../../../lib/constants";
+import { PlantationDepartment } from "../../../../../../../lib/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddPlantationContact } from "../../../../../../../lib/validation";
-import { v4 as uuid } from "uuid";
-import { EditContactInput } from "../../../../interfaces";
+import { EditContactInput, Mode } from "../../../../interfaces";
 
 import L18nEs from "../../../../../../../lib/l18n";
 import styles from "./EditContactForm.module.css";
@@ -17,28 +16,27 @@ export const EditContactForm = ({
   onSubmit,
   data = {},
   positions = L18nEs.constants.salesPositions,
+  mode,
+  department,
 }: {
   onReset: () => void;
   onSubmit: (data: EditContactInput) => void;
   data?: any;
   positions?: Record<string, string>;
+  mode: Mode;
+  department: PlantationDepartment;
 }) => {
-  const action =
-    Object.values(data).filter((value) => !!value).length > 0
-      ? "update"
-      : "create";
-
-  const { control, handleSubmit } = useForm<EditContactInput>({
+  const { control, handleSubmit, formState } = useForm<EditContactInput>({
     resolver: yupResolver(schemaAddPlantationContact),
     defaultValues: {
-      id: data.id || uuid(),
+      id: data.id,
       name: data.name || "",
       email: data.email || "",
       whatsapp: data.whatsapp || "",
       telegram: data.telegram || "",
       skype: data.skype || "",
       position: data.position || "",
-      department: PlantationDepartmanet.SALES,
+      department,
     },
   });
 
@@ -48,12 +46,17 @@ export const EditContactForm = ({
 
   return (
     <div className={styles.form}>
-      <h2>{action === "create" ? "Crear" : "Editar"}</h2>
+      <h2>
+        {mode === Mode.create ? "Crear" : mode === Mode.edit ? "Editar" : ""}
+      </h2>
       <div className={styles.row}>
         <Controller
           name="name"
           control={control}
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
+          render={({
+            field: { onChange, value, ref },
+            fieldState: { error },
+          }) => (
             <TextField
               label={
                 <>
@@ -63,6 +66,7 @@ export const EditContactForm = ({
               helperText={error ? error.message : null}
               error={!!error}
               onChange={onChange}
+              inputRef={ref}
               value={value}
               fullWidth
               placeholder="Indicar Nombre"
@@ -176,7 +180,11 @@ export const EditContactForm = ({
           <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button color="base" onClick={handleSubmit(submit)}>
+        <Button
+          color="base"
+          onClick={handleSubmit(submit)}
+          disabled={!formState.isValid}
+        >
           <OkIcon width={16} height={16} />
           Guardar
         </Button>

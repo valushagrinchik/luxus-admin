@@ -111,14 +111,19 @@ export const PlantationsFilters = ({
         )}
       </div>
 
-      <div className={styles.group}>
-        <Button color="base" onClick={onCreateBtnClick}>
-          <PlusIcon width={24} height={24} />
+      <div className={styles.actions_group}>
+        <Button
+          color="base"
+          onClick={onCreateBtnClick}
+          style={{ padding: "10px", height: "36px" }}
+        >
+          <PlusIcon width={16} height={16} />
         </Button>
         <Button
           color="red"
           disabled={!selectedPlantations.length}
           onClick={onDeleteBtnClick}
+          style={{ padding: "10px", height: "36px" }}
         >
           <BinIcon
             color={
@@ -128,7 +133,7 @@ export const PlantationsFilters = ({
             }
           />
         </Button>
-        <Button color="transparent">
+        <Button color="transparent" style={{ padding: "8px", height: "36px" }}>
           <ExcelIcon width={24} height={24} color="var(--Primary-800)" />
         </Button>
       </div>

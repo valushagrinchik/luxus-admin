@@ -89,7 +89,8 @@ export const SortsFilters = ({
         <Button
           color="red"
           disabled={!selectedSorts.length}
-          onClick={() => onDeleteBtnClick()}
+          onClick={onDeleteBtnClick}
+          style={{ padding: "10px", height: "36px" }}
         >
           <BinIcon
             color={
@@ -97,7 +98,7 @@ export const SortsFilters = ({
             }
           />
         </Button>
-        <Button color="transparent">
+        <Button color="transparent" style={{ padding: "8px", height: "36px" }}>
           <ExcelIcon width={24} height={24} color="var(--Primary-800)" />
         </Button>
       </div>

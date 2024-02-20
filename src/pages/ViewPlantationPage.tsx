@@ -1,23 +1,17 @@
 import { useParams } from "react-router-dom";
-import { useGetPlantationQuery } from "../api/plantationsApi";
 import { EditPlantationForm } from "../components/forms/EditPlantationForm/EditPlantationForm";
+import { Mode } from "../components/forms/EditPlantationForm/interfaces";
 
 const ViewPlantationPage = () => {
   const { plantationId } = useParams();
 
-  const { data, isLoading } = useGetPlantationQuery(+(plantationId as string));
-
-  if (isLoading) {
-    return <div>Cargando...</div>;
-  }
-
-  if (!data) {
-    return <div>Sin datos</div>;
+  if (!plantationId) {
+    return <>Identificación de plantación desconocida</>;
   }
 
   return (
     <div className="container">
-      <EditPlantationForm data={data} mode="preview" />
+      <EditPlantationForm plantationId={plantationId} mode={Mode.preview} />
     </div>
   );
 };

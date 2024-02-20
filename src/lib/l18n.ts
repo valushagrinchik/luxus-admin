@@ -9,8 +9,8 @@ const L18nEs = {
       SERVIENTREGA: "Servientrega",
     },
     bankAccountTypes: {
-      current: "Cuenta corriente",
-      savings: "Cuenta de ahorros",
+      CURRENT: "Cuenta corriente",
+      SAVINGS: "Cuenta de ahorros",
     },
     financialPositions: {
       SOCIO: "SOCIO",
@@ -19,8 +19,8 @@ const L18nEs = {
       "ASISTENTE ADMINISTRATIVO": "ASISTENTE ADMINISTRATIVO",
     },
     salesPositions: {
-      "Gerente comercial": "Gerente comercial",
-      Ejecutivo: "Ejecutivo",
+      "GERENTE COMERCIAL": "GERENTE COMERCIAL",
+      EJECUTIVO: "EJECUTIVO",
     },
     termsOfPayments: {
       PREPAID: "Prepago",
@@ -326,6 +326,9 @@ const L18nEs = {
           sales: {
             title: "Departamento de ventas",
           },
+        },
+        modals: {
+          approveReset: "¿Deseas salir sin guardar los cambios?",
         },
       },
       update: {},

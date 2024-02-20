@@ -7,33 +7,36 @@ import { BinIcon } from "../../../../../controls/icons/BinIcon";
 import { EditIcon } from "../../../../../controls/icons/EditIcon";
 import {
   EditBaseInput,
-  EditPlantationFormMode,
+  Mode,
   EditTransferDetailsInput,
+  EditPlantationInput,
 } from "../../interfaces";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 
 import styles from "./TransferDetailsCRUDForm.module.css";
 import { EditTransferDetailsForm } from "./components/EditTransferDetailsForm/EditTransferDetailsForm";
 import L18nEs from "../../../../../lib/l18n";
 import { FavouriteBox } from "../../../../../controls/FavouriteBox";
 import { ViewIcon } from "../../../../../controls/icons/ViewIcon";
+import { v4 as uuid } from "uuid";
 
 export const TransferDetailsCRUDForm = ({
   mode,
   legalEntitiesMap,
+  transferDetails: entities,
 }: {
-  mode: EditPlantationFormMode;
+  mode: Mode;
   legalEntitiesMap: EditBaseInput;
+  transferDetails: UseFieldArrayReturn<
+    EditPlantationInput,
+    "transferDetails",
+    "id"
+  >;
 }) => {
-  const disabled = mode === "preview";
+  const disabled = mode === Mode.preview;
 
-  const { control } = useFormContext();
-  const entities = useFieldArray({
-    control,
-    name: "transferDetails",
-  });
-
-  // const favourite = entities.fields.find((e: any) => e.favourite);
+  const { watch } = useFormContext();
+  const country = watch("generalInfo.country");
 
   const [open, setOpen] = useState(false);
 
@@ -43,13 +46,11 @@ export const TransferDetailsCRUDForm = ({
   >({});
 
   // mode to open modal in
-  const [modalMode, setModalMode] = useState<"view" | "edit" | "create">(
-    "create"
-  );
+  const [modalMode, setModalMode] = useState<Mode>(Mode.create);
 
   const handleOpen = (
     data: EditTransferDetailsInput | EditBaseInput,
-    mode: "view" | "edit" | "create"
+    mode: Mode
   ) => {
     setEntity(data);
     setModalMode(mode);
@@ -60,7 +61,7 @@ export const TransferDetailsCRUDForm = ({
     setOpen(false);
   };
 
-  const update = (data: EditTransferDetailsInput) => {
+  const update = async (data: EditTransferDetailsInput) => {
     if (entities.fields.find((entity) => entity.id === data.id)) {
       const result = [...entities.fields].map((entity) =>
         entity.id === data.id ? data : entity
@@ -69,6 +70,7 @@ export const TransferDetailsCRUDForm = ({
     } else {
       entities.append(data);
     }
+    // await control._executeSchema(["transferDetails"]);
     setOpen(false);
   };
 
@@ -91,8 +93,9 @@ export const TransferDetailsCRUDForm = ({
           {!disabled && (
             <Button
               color="gray"
-              onClick={() => handleOpen({}, "create")}
+              onClick={() => handleOpen({ id: uuid() }, Mode.create)}
               className={styles.add_btn}
+              disabled={!country}
             >
               <PlusIcon width={16} height={16} />
             </Button>
@@ -103,10 +106,21 @@ export const TransferDetailsCRUDForm = ({
         <Table<EditTransferDetailsInput>
           headers={headers}
           data={entities.fields as EditTransferDetailsInput[]}
+          renderCell={(key, value) => {
+            if (key === "bankAccountType") {
+              return L18nEs.constants.bankAccountTypes[
+                value as keyof typeof L18nEs.constants.bankAccountTypes
+              ];
+            }
+            return value || "-";
+          }}
           renderCheckbox={(data) => (
             <FavouriteBox
               checked={data.favourite}
               onClick={() => {
+                if (mode === Mode.preview) {
+                  return;
+                }
                 entities.replace(
                   entities.fields
                     .map((e) =>
@@ -119,19 +133,31 @@ export const TransferDetailsCRUDForm = ({
               }}
             />
           )}
-          renderActions={(data) => (
-            <>
-              <ViewIcon
-                className="action_icon"
-                onClick={() => handleOpen(data, "view")}
-              />
-              <EditIcon
-                className="action_icon"
-                onClick={() => handleOpen(data, "edit")}
-              />
-              <BinIcon className="action_icon" onClick={() => remove(data)} />
-            </>
-          )}
+          renderActions={
+            mode === Mode.preview
+              ? (data) => (
+                  <ViewIcon
+                    className="action_icon"
+                    onClick={() => handleOpen(data, Mode.preview)}
+                  />
+                )
+              : (data) => (
+                  <>
+                    <ViewIcon
+                      className="action_icon"
+                      onClick={() => handleOpen(data, Mode.preview)}
+                    />
+                    <EditIcon
+                      className="action_icon"
+                      onClick={() => handleOpen(data, Mode.edit)}
+                    />
+                    <BinIcon
+                      className="action_icon"
+                      onClick={() => remove(data)}
+                    />
+                  </>
+                )
+          }
         />
       )}
       <Modal open={open} onClose={handleClose}>

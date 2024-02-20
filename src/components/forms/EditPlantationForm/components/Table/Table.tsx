@@ -7,23 +7,28 @@ export const Table = <T extends EditBaseInput>({
   headers,
   data,
   renderCheckbox,
-  renderActions = (data: T) => <></>,
+  renderActions,
+  renderCell,
 }: {
   headers: Record<string, string>;
   data: T[];
   renderCheckbox?: (data: T) => ReactNode;
-
   renderActions?: (data: T) => ReactNode;
+  renderCell?: (key: string, value: string) => string;
 }) => {
   const isCheckable = !!renderCheckbox;
+  const isActions = !!renderActions;
+
   const rowStyle = isCheckable
     ? {
         gridTemplateColumns: `40px repeat(${
-          Object.keys(headers).length + 1
+          Object.keys(headers).length + (isActions ? 1 : 0)
         }, 1fr)`,
       }
     : {
-        gridTemplateColumns: `repeat(${Object.keys(headers).length + 1}, 1fr)`,
+        gridTemplateColumns: `repeat(${
+          Object.keys(headers).length + (isActions ? 1 : 0)
+        }, 1fr)`,
       };
   return (
     <div className={styles.table}>
@@ -32,18 +37,22 @@ export const Table = <T extends EditBaseInput>({
         {Object.entries(headers).map(([key, header]) => (
           <span key={uuid()}>{header}</span>
         ))}
-        <span key="actions_header"></span>
+        {isActions && <span key="actions_header"></span>}
       </div>
 
       {data.map((row, index) => (
         <div className={styles.row} key={index} style={rowStyle}>
           {isCheckable && <span>{renderCheckbox(row)}</span>}
-          {Object.keys(headers).map((key, index) => (
-            <span key={uuid()}>{row[key] || "-"}</span>
+          {Object.keys(headers).map((key) => (
+            <span key={uuid()}>
+              {renderCell ? renderCell(key, row[key]) : row[key] || "-"}
+            </span>
           ))}
-          <span key={`actions_${index}`} className={styles.actions}>
-            {renderActions(row)}
-          </span>
+          {isActions && (
+            <span key={`actions_${index}`} className={styles.actions}>
+              {renderActions(row)}
+            </span>
+          )}
         </div>
       ))}
     </div>

@@ -21,7 +21,7 @@ import Pagination from "@mui/material/Pagination";
 import { Checkbox } from "../../controls/Checkbox";
 import uniq from "lodash/uniq";
 import { Button } from "../../controls/Button/Button";
-import { ArrowDownSortsIcon } from "../../controls/icons/ArrowDownSortsIcon";
+import { ArrowDownSmallIcon } from "../../controls/icons/ArrowDownSmallIcon";
 import { ArrowRightSortsIcon } from "../../controls/icons/ArrowRightSortsIcon";
 import { BinIcon } from "../../controls/icons/BinIcon";
 import { useAuth } from "../../lib/auth";
@@ -29,7 +29,6 @@ import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
 import { OkIconSmall } from "../../controls/icons/OkIconSmall";
 
 import styles from "./SortsList.module.css";
-
 
 interface BaseRowProps {
   open: boolean;
@@ -156,7 +155,7 @@ const Row = ({
                 onClick={() => setIsOpen(!isOpen)}
               >
                 {isOpen ? (
-                  <ArrowDownSortsIcon color="#0040C1" />
+                  <ArrowDownSmallIcon color="#0040C1" />
                 ) : (
                   <ArrowRightSortsIcon color="var(--Gray-900)" />
                 )}

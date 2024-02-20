@@ -1,32 +1,51 @@
 import Box from "../../../../../controls/Box";
 import styles from "./FinancialDataForm.module.css";
-import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import {
+  Controller,
+  UseFieldArrayReturn,
+  useFormContext,
+} from "react-hook-form";
 import { TextField } from "../../../../../controls/TextField";
 import { ContactsCRUDForm } from "../ContactsCRUDForm/ContactsCRUDForm";
 import { ChecksCRUDForm } from "../ChecksCRUDForm/ChecksCRUDForm";
 import { TransferDetailsCRUDForm } from "../TransferDetailsCRUDForm/TransferDetailsCRUDForm";
 import L18nEs from "../../../../../lib/l18n";
-import { EditLegalEntityInput, EditPlantationFormMode } from "../../interfaces";
+import {
+  EditLegalEntityInput,
+  EditPlantationInput,
+  Mode,
+} from "../../interfaces";
+import { PlantationDepartment } from "../../../../../lib/constants";
+import { ChecksDeliveryMethod, TermsOfPayment } from "../../../../../lib/types";
 
 export const FinancialDataForm = ({
   mode,
+  checks,
+  transferDetails,
+  legalEntities,
 }: {
-  mode: EditPlantationFormMode;
+  mode: Mode;
+  checks: UseFieldArrayReturn<EditPlantationInput, "checks", "id">;
+  legalEntities: UseFieldArrayReturn<
+    EditPlantationInput,
+    "legalEntities",
+    "id"
+  >;
+  transferDetails: UseFieldArrayReturn<
+    EditPlantationInput,
+    "transferDetails",
+    "id"
+  >;
 }) => {
-  const disabled = mode === "preview";
-  const { control, getValues, watch } = useFormContext();
-  const data = getValues().generalInfo;
+  const disabled = mode === Mode.preview;
+  const { control, watch } = useFormContext();
+
   const termsOfPayment = watch("generalInfo.termsOfPayment");
   const deliveryMethod = watch("generalInfo.deliveryMethod");
 
-  const legalEntities = useFieldArray({
-    control,
-    name: "legalEntities",
-  });
-
   const legalEntitiesMap = Object.fromEntries(
     (legalEntities.fields as EditLegalEntityInput[]).map((entity) => [
-      entity.name,
+      entity.id,
       entity.name,
     ])
   );
@@ -37,50 +56,56 @@ export const FinancialDataForm = ({
         mode={mode}
         contactFieldKey="financialContacts"
         positions={L18nEs.constants.financialPositions}
+        department={PlantationDepartment.FINANCIAL}
       />
       <Box>
         <TransferDetailsCRUDForm
           mode={mode}
           legalEntitiesMap={legalEntitiesMap}
+          transferDetails={transferDetails}
         />
       </Box>
       <Box>
         <div className={styles.columns}>
-          <div className={styles.checks_block}>
-            <ChecksCRUDForm mode={mode} legalEntitiesMap={legalEntitiesMap} />
-          </div>
-          <div className={styles.delivery_method_block}>
-            <h2>Forma de entrega del cheque</h2>
-            <Controller
-              name="generalInfo.deliveryMethod"
-              control={control}
-              render={({
-                field: { onChange, value },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  select
-                  helperText={error ? error.message : null}
-                  error={!!error}
-                  onChange={onChange}
-                  value={value}
-                  options={L18nEs.constants.deliveryMethods}
-                  fullWidth
-                  style={{ width: "250px" }}
-                  disabled={disabled}
-                />
+          <ChecksCRUDForm
+            mode={mode}
+            legalEntitiesMap={legalEntitiesMap}
+            checks={checks}
+          />
+
+          {!!checks.fields.length && (
+            <div className={styles.delivery_method_block}>
+              <h2>Forma de entrega del cheque</h2>
+              <Controller
+                name="generalInfo.deliveryMethod"
+                control={control}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    select
+                    helperText={error ? error.message : null}
+                    error={!!error}
+                    onChange={onChange}
+                    value={value}
+                    options={L18nEs.constants.deliveryMethods}
+                    fullWidth
+                    style={{ width: "250px" }}
+                    disabled={disabled}
+                  />
+                )}
+              />
+              {deliveryMethod === ChecksDeliveryMethod.SERVIENTREGA && (
+                <div className={styles.info}>
+                  En adelante todos los cheques que se envie por Servientrega
+                  debe salir a nombre de MILTON PACHECO C.I 05018970011 CEL.
+                  0982520282 Servientrega Latacunga ELOY ALFARO S/N Y GENERAL
+                  JUAN MONTERO, LATACUNGA
+                </div>
               )}
-            />
-            {deliveryMethod ===
-              L18nEs.constants.deliveryMethods.SERVIENTREGA && (
-              <div className={styles.info}>
-                En adelante todos los cheques que se envie por Servientrega debe
-                salir a nombre de MILTON PACHECO C.I 05018970011 CEL. 0982520282
-                Servientrega Latacunga ELOY ALFARO S/N Y GENERAL JUAN MONTERO,
-                LATACUNGA
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </Box>
       <Box>
@@ -100,14 +125,13 @@ export const FinancialDataForm = ({
                 onChange={onChange}
                 value={value}
                 options={L18nEs.constants.termsOfPayments}
-                defaultValue={data.country}
                 fullWidth
                 style={{ width: "316px" }}
                 disabled={disabled}
               />
             )}
           />
-          {termsOfPayment === "POSTPAID" && (
+          {termsOfPayment === TermsOfPayment.POSTPAID && (
             <>
               <Controller
                 name="generalInfo.postpaidDays"

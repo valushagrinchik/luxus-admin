@@ -43,10 +43,10 @@ export const HEADER_TITLES = {
   plantations: "Fincas",
 };
 
-export const PlantationDepartmanet = {
-  FINANCIAL: "FINANCIAL",
-  SALES: "SALES",
-};
+export enum PlantationDepartment {
+  FINANCIAL = "FINANCIAL",
+  SALES = "SALES",
+}
 
 export const AdminConfirmationFormTitles: Record<SortListGroup, string> = {
   [SortListGroup.group]:

@@ -33,6 +33,7 @@ export type LegalEntity = {
   name: string;
   plantationId: number;
 };
+
 export type Plantation = {
   id: number;
   name: string;
@@ -46,7 +47,54 @@ export type Plantation = {
   postpaidCredit: number;
   postpaidDays: number;
   termsOfPayment: TermsOfPayment;
+  contacts?: Contact[];
+
+  checks?: Check[];
+  transferDetails?: TransferDetails[];
 };
+
+type Check = {
+  beneficiary: string;
+  documentPath?: any;
+  favourite: boolean;
+  id: number;
+  name: string;
+  plantationId: number;
+  plantationLegalEntityId: number;
+};
+
+type TransferDetails = {
+  bank: string;
+  bankAccountNumber: string;
+  bankAccountType: string;
+  bankAddress?: string;
+  bankSwift?: string;
+  beneficiary: string;
+  beneficiaryAddress?: string;
+  correspondentBank?: string;
+  correspondentBankAccountNumber?: string;
+  correspondentBankAddress?: string;
+  correspondentBankSwift?: string;
+  documentPath?: string;
+  favourite: boolean;
+  id: number;
+  name: string;
+  plantationId: number;
+  plantationLegalEntityId: number;
+};
+
+export type Contact = {
+  department: string;
+  email: string;
+  id: number;
+  name: string;
+  plantationId: number;
+  position: string;
+  skype: string;
+  telegram: string;
+  whatsapp: string;
+};
+
 export type EditCategoryFormInputs = {
   name: string;
   groupId: string;
@@ -81,6 +129,7 @@ export enum TermsOfPayment {
   PAIDUPONACTUAL = "PAIDUPONACTUAL",
   POSTPAID = "POSTPAID",
 }
+
 export enum ChecksDeliveryMethod {
   PERSONALLY = "PERSONALLY",
   SERVIENTREGA = "SERVIENTREGA",

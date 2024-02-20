@@ -10,31 +10,42 @@ import { EditIcon } from "../../../../../controls/icons/EditIcon";
 import {
   EditBaseInput,
   EditContactInput,
-  EditPlantationFormMode,
+  EditPlantationInput,
+  Mode,
 } from "../../interfaces";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import {
+  UseFieldArrayReturn,
+  useFieldArray,
+  useFormContext,
+} from "react-hook-form";
+import { v4 as uuid } from "uuid";
 
 import L18nEs from "../../../../../lib/l18n";
 import styles from "./ContactsCRUDForm.module.css";
+import { PlantationDepartment } from "../../../../../lib/constants";
 
 export const ContactsCRUDForm = ({
   contactFieldKey,
-  positions = L18nEs.constants.salesPositions,
+  positions,
+  department,
   mode,
 }: {
   contactFieldKey: string;
-  positions?: Record<string, string>;
-  mode: EditPlantationFormMode;
+  positions: Record<string, string>;
+  department: PlantationDepartment;
+  mode: Mode;
 }) => {
   const texts = L18nEs.shared.contactsBlock;
 
-  const { control } = useFormContext();
+  const { control, watch } = useFormContext();
   const contacts = useFieldArray({
     control,
     name: contactFieldKey,
   });
 
-  const disabled = mode === "preview";
+  watch(contactFieldKey);
+
+  const disabled = mode === Mode.preview;
 
   const [open, setOpen] = useState(false);
 
@@ -50,7 +61,7 @@ export const ContactsCRUDForm = ({
     setOpen(false);
   };
 
-  const updateContact = (data: EditContactInput) => {
+  const updateContact = async (data: EditContactInput) => {
     if (contacts.fields.find((contact) => contact.id === data.id)) {
       const result = [...contacts.fields].map((entity) =>
         entity.id === data.id ? data : entity
@@ -59,6 +70,7 @@ export const ContactsCRUDForm = ({
     } else {
       contacts.append(data);
     }
+
     setOpen(false);
   };
 
@@ -78,7 +90,7 @@ export const ContactsCRUDForm = ({
             {!disabled && (
               <Button
                 color="gray"
-                onClick={() => handleOpen({})}
+                onClick={() => handleOpen({ id: uuid() })}
                 className={styles.add_btn}
               >
                 <PlusIcon width={16} height={16} />
@@ -90,19 +102,23 @@ export const ContactsCRUDForm = ({
           <Table<EditContactInput>
             headers={texts.table.headers}
             data={contacts.fields as EditContactInput[]}
-            renderActions={(data) => (
-              <>
-                <BinIcon
-                  className="action_icon"
-                  onClick={() => deleteContact(data)}
-                />
+            renderActions={
+              mode === Mode.preview
+                ? undefined
+                : (data) => (
+                    <>
+                      <BinIcon
+                        className="action_icon"
+                        onClick={() => deleteContact(data)}
+                      />
 
-                <EditIcon
-                  className="action_icon"
-                  onClick={() => handleOpen(data)}
-                />
-              </>
-            )}
+                      <EditIcon
+                        className="action_icon"
+                        onClick={() => handleOpen(data)}
+                      />
+                    </>
+                  )
+            }
           />
         )}
       </Box>
@@ -113,6 +129,8 @@ export const ContactsCRUDForm = ({
           onSubmit={updateContact}
           data={contact}
           positions={positions}
+          mode={mode}
+          department={department}
         />
       </Modal>
     </div>

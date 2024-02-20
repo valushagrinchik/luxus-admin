@@ -1,8 +1,9 @@
+import { ReactNode } from "react";
 import { Button } from "../../../controls/Button/Button";
 import styles from "./AdminConfirmationForm.module.css";
 
 interface AdminConfirmationFormProps {
-  title: string;
+  title: ReactNode | string;
   onSubmit: () => void;
   onReset: () => void;
 }

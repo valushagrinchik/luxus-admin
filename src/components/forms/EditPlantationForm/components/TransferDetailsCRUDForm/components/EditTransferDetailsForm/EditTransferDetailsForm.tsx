@@ -1,4 +1,4 @@
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useFormContext } from "react-hook-form";
 import { TextField } from "../../../../../../../controls/TextField";
 import { Button } from "../../../../../../../controls/Button/Button";
 import { CloseIcon } from "../../../../../../../controls/icons/CloseIcon";
@@ -6,42 +6,67 @@ import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
 import {
   EditBaseInput,
   EditTransferDetailsInput,
+  Mode,
 } from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddTransferDetails } from "../../../../../../../lib/validation";
-import { v4 as uuid } from "uuid";
 
 import styles from "./EditTransferDetailsForm.module.css";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { AddFileIcon } from "../../../../../../../controls/icons/AddFileIcon";
+import { InputAdornment } from "@mui/material";
+import { CloseIconSmall } from "../../../../../../../controls/icons/CloseIconSmall";
+import L18nEs from "../../../../../../../lib/l18n";
 
 export const EditTransferDetailsForm = ({
   onReset,
   onSubmit,
   data = {},
-  mode = "create",
+  mode = Mode.create,
   legalEntitiesMap,
 }: {
   onReset: () => void;
   onSubmit: (data: EditTransferDetailsInput) => void;
   data?: any;
-  mode: "edit" | "view" | "create";
+  mode: Mode;
   legalEntitiesMap: EditBaseInput;
 }) => {
-  const action =
-    Object.values(data).filter((value) => !!value).length > 0
-      ? "update"
-      : "create";
+  const disabled = mode === Mode.preview;
 
-  const disabled = mode === "view";
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [showFileField, setShowFileField] = useState(false);
+  const [resetAddress, setResetAddress] = useState(true);
 
-  const { control, handleSubmit, formState } =
+  const { getValues: getGlobalValues } = useFormContext();
+
+  const { control, handleSubmit, watch, setValue, getValues } =
     useForm<EditTransferDetailsInput>({
       resolver: yupResolver(schemaAddTransferDetails),
       defaultValues: {
-        id: data.id || uuid(),
+        id: "",
+        name: "",
+        beneficiary: "",
+        beneficiaryAddress: "",
+        documentPath: undefined,
+        favourite: false,
+        bank: "",
+        bankAddress: "",
+        bankAccountNumber: "",
+        bankAccountType: "",
+        bankSwift: "",
+        correspondentBank: "",
+        correspondentBankAddress: "",
+        correspondentBankAccountNumber: "",
+        correspondentBankSwift: "",
+        // plantationId: getValues().generalInfo.id,
+        plantationLegalEntityId: "",
+      },
+      values: {
+        id: data.id || "",
         name: data.name || "",
         beneficiary: data.beneficiary || "",
         beneficiaryAddress: data.beneficiaryAddress || "",
-        documentPath: data.documentPath || "",
+        documentPath: data.documentPath,
         favourite: data.favourite || false,
         bank: data.bank || "",
         bankAddress: data.bankAddress || "",
@@ -53,20 +78,53 @@ export const EditTransferDetailsForm = ({
         correspondentBankAccountNumber:
           data.correspondentBankAccountNumber || "",
         correspondentBankSwift: data.correspondentBankSwift || "",
+        // plantationId: data.plantationId,
+        plantationLegalEntityId: data.plantationLegalEntityId || "",
       },
     });
 
-  const submit = (data: EditTransferDetailsInput) => {
-    onSubmit(data);
+  // DEPENDENCY OF beneficiary FROM name
+  const name = watch("plantationLegalEntityId");
+  useEffect(() => {
+    if (name) {
+      setValue("name", legalEntitiesMap[name]);
+      setValue("beneficiary", legalEntitiesMap[name]);
+      setValue(
+        "beneficiaryAddress",
+        getGlobalValues().legalEntities.find((e: any) => e.id === name)
+          ?.actualAddress
+      );
+    }
+  }, [name, setValue, legalEntitiesMap]);
+
+  // CUSTOM VALIDATION
+  watch("beneficiary");
+  watch("documentPath");
+  watch("bank");
+  watch("bankAccountNumber");
+  watch("bankAccountType");
+  const validate = () => {
+    const values = getValues();
+
+    return (
+      values.name &&
+      values.beneficiary &&
+      (values.name !== values.beneficiary ? values.documentPath : true) &&
+      values.bank &&
+      values.bankAccountNumber &&
+      values.bankAccountType
+    );
   };
+  const isValid = validate();
 
   return (
     <div className={styles.form}>
-      <h2>{action === "create" ? "Crear" : "Editar"}</h2>
-
+      <h2>
+        {mode === Mode.create ? "Crear" : mode === Mode.edit ? "Editar" : ""}
+      </h2>
       <div className={styles.row}>
         <Controller
-          name="name"
+          name="plantationLegalEntityId"
           control={control}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
@@ -79,7 +137,11 @@ export const EditTransferDetailsForm = ({
               error={!!error}
               select
               options={legalEntitiesMap}
-              onChange={onChange}
+              onChange={(event: ChangeEvent) => {
+                setValue("documentPath", undefined);
+                setShowFileField(false);
+                onChange(event);
+              }}
               value={value}
               fullWidth
               placeholder="Indicar Razón social"
@@ -99,7 +161,14 @@ export const EditTransferDetailsForm = ({
               }
               helperText={error ? error.message : null}
               error={!!error}
-              onChange={onChange}
+              onChange={(event: ChangeEvent) => {
+                setShowFileField((event.target as any).value !== name);
+                if ((event.target as any).value !== name) {
+                  resetAddress && setValue("beneficiaryAddress", "");
+                  setResetAddress(false);
+                }
+                onChange(event);
+              }}
               value={value}
               fullWidth
               placeholder="Indicar Beneficiario"
@@ -108,6 +177,70 @@ export const EditTransferDetailsForm = ({
           )}
         />
       </div>
+      {showFileField && (
+        <div className={styles.row}>
+          <Controller
+            name="documentPath"
+            control={control}
+            render={({ field: { onChange, value }, fieldState: { error } }) => {
+              return (
+                <TextField
+                  helperText={error ? error.message : null}
+                  error={!!error}
+                  onChange={onChange}
+                  value={value?.name || ""}
+                  fullWidth
+                  placeholder="La letra de cambio a un tercero"
+                  onKeyDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  InputProps={
+                    !!value
+                      ? {
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <CloseIconSmall
+                                style={{
+                                  cursor: "pointer",
+                                  marginRight: "5px",
+                                }}
+                                onClick={() => {
+                                  setValue("documentPath", undefined);
+                                }}
+                              />
+                            </InputAdornment>
+                          ),
+                        }
+                      : {}
+                  }
+                />
+              );
+            }}
+          />
+          <Button
+            color="base"
+            onClick={() => {
+              if (!fileInputRef.current) {
+                return;
+              }
+              fileInputRef.current.click();
+            }}
+          >
+            <AddFileIcon />
+            Subir
+          </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={(event: any) => {
+              const fileUploaded = event.target.files[0];
+              setValue("documentPath", fileUploaded);
+            }}
+          />
+        </div>
+      )}
       <div className={styles.row}>
         <Controller
           name="beneficiaryAddress"
@@ -192,11 +325,13 @@ export const EditTransferDetailsForm = ({
             <TextField
               label={
                 <>
-                  Tipo Cuenta Bancaria{" "}
+                  Tipo Cuenta Bancaria
                   <span className={styles.required}>*</span>
                 </>
               }
               helperText={error ? error.message : null}
+              select
+              options={L18nEs.constants.bankAccountTypes}
               error={!!error}
               onChange={onChange}
               value={value}
@@ -292,26 +427,21 @@ export const EditTransferDetailsForm = ({
           )}
         />
       </div>
-      {/* TODO: add file 
-
-      placeholder: La letra de cambio a un tercero
-      btn title: Subir
-      
-      */}
-
       <div className={styles.actions}>
         <Button color="gray" onClick={() => onReset()}>
           <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button
-          color="base"
-          onClick={handleSubmit(submit)}
-          disabled={disabled || !formState.isValid}
-        >
-          <OkIcon width={16} height={16} />
-          Guardar
-        </Button>
+        {mode !== Mode.preview && (
+          <Button
+            color="base"
+            onClick={handleSubmit(onSubmit)}
+            disabled={disabled || !isValid}
+          >
+            <OkIcon width={16} height={16} />
+            Guardar
+          </Button>
+        )}
       </div>
     </div>
   );

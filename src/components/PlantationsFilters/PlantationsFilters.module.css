@@ -10,7 +10,11 @@
 
 .group {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+}
+.actions_group {
+  display: flex;
+  gap: 4px;
 }
 
 .multiselect_value {

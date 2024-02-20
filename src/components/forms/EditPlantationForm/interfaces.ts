@@ -1,3 +1,9 @@
+import {
+  ChecksDeliveryMethod,
+  CountryCode,
+  TermsOfPayment,
+} from "../../../lib/types";
+
 export type EditContactInput = {
   id: string;
   name: string;
@@ -17,25 +23,29 @@ export type EditLegalEntityInput = {
   code: string;
   legalAddress: string;
   actualAddress: string;
+  plantationId: string;
 };
 export type EditTransferDetailsInput = {
   id: string;
   name: string;
   favourite: boolean;
   beneficiary: string;
-  beneficiaryAddress: string;
-  documentPath: string;
+  beneficiaryAddress?: string;
+  documentPath?: any;
 
   bank: string;
-  bankAddress: string;
+  bankAddress?: string;
   bankAccountNumber: string;
   bankAccountType: string;
-  bankSwift: string;
+  bankSwift?: string;
 
-  correspondentBank: string;
-  correspondentBankAddress: string;
-  correspondentBankAccountNumber: string;
-  correspondentBankSwift: string;
+  correspondentBank?: string;
+  correspondentBankAddress?: string;
+  correspondentBankAccountNumber?: string;
+  correspondentBankSwift?: string;
+
+  // plantationId: string;
+  plantationLegalEntityId: string;
 };
 export type EditCheckInput = {
   id: string;
@@ -43,17 +53,21 @@ export type EditCheckInput = {
   favourite: boolean;
   beneficiary: string;
   documentPath?: any;
+
+  // plantationId: string;
+  plantationLegalEntityId: string;
 };
+
 export type EditPlantationInput = {
   generalInfo: {
     id: string;
     name: string;
-    country: string;
+    country: CountryCode | string;
     comments: string;
-    deliveryMethod: string;
-    termsOfPayment: string;
-    postpaidCredit: string;
-    postpaidDays: string;
+    deliveryMethod: ChecksDeliveryMethod;
+    termsOfPayment: TermsOfPayment;
+    postpaidCredit?: string;
+    postpaidDays?: string;
   };
   transferDetails: EditTransferDetailsInput[];
   checks: EditCheckInput[];
@@ -62,4 +76,8 @@ export type EditPlantationInput = {
   salesContacts: EditContactInput[];
 };
 
-export type EditPlantationFormMode = "preview" | "create" | "edit";
+export enum Mode {
+  "preview" = "preview",
+  "create" = "create",
+  "edit" = "edit",
+}

@@ -1,36 +1,51 @@
-import { Controller, useForm } from "react-hook-form";
-import { TextField } from "../../../../../controls/TextField";
-import { Button } from "../../../../../controls/Button/Button";
-import { CloseIcon } from "../../../../../controls/icons/CloseIcon";
-import { OkIcon } from "../../../../../controls/icons/OkIcon";
-import { EditLegalEntityInput } from "../../interfaces";
-import { v4 as uuid } from "uuid";
+import { Controller, useForm, useFormContext } from "react-hook-form";
+import { TextField } from "../../../../../../../controls/TextField";
+import { Button } from "../../../../../../../controls/Button/Button";
+import { CloseIcon } from "../../../../../../../controls/icons/CloseIcon";
+import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
+import { EditLegalEntityInput, Mode } from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { schemaAddPlantationLegalEntity } from "../../../../../lib/validation";
+import { schemaAddPlantationLegalEntity } from "../../../../../../../lib/validation";
 import styles from "./EditLegalEntityForm.module.css";
+import { CountryCode } from "../../../../../../../lib/types";
 
 export const EditLegalEntityForm = ({
   data = {},
   onReset,
   onSubmit,
+  mode,
 }: {
   data?: any;
   onReset: () => void;
   onSubmit: (data: any) => void;
+  mode: Mode;
 }) => {
-  const action =
-    Object.values(data).filter((value) => !!value).length > 0
-      ? "update"
-      : "create";
+  const { watch, getValues } = useFormContext();
 
-  const { control, handleSubmit, formState } = useForm<EditLegalEntityInput>({
+  const country = watch("generalInfo.country");
+
+  const {
+    control,
+    handleSubmit,
+    formState,
+    getValues: getCurrentValues,
+  } = useForm<EditLegalEntityInput>({
     resolver: yupResolver(schemaAddPlantationLegalEntity),
     defaultValues: {
-      id: data.id || uuid(),
+      id: "",
+      name: "",
+      code: "",
+      legalAddress: "",
+      actualAddress: "",
+      plantationId: "",
+    },
+    values: {
+      id: data.id,
       name: data.name || "",
       code: data.code || "",
       legalAddress: data.legalAddress || "",
       actualAddress: data.actualAddress || "",
+      plantationId: data.plantationId || getValues().generalInfo.id,
     },
   });
 
@@ -40,7 +55,9 @@ export const EditLegalEntityForm = ({
 
   return (
     <div className={styles.form}>
-      <h2>{action === "create" ? "Crear" : "Editar"}</h2>
+      <h2>
+        {mode === Mode.create ? "Crear" : mode === Mode.edit ? "Editar" : ""}
+      </h2>
       <div className={styles.row}>
         <Controller
           name="name"
@@ -68,7 +85,8 @@ export const EditLegalEntityForm = ({
             <TextField
               label={
                 <>
-                  Ruc o cédula <span className={styles.required}>*</span>
+                  {country === CountryCode.ec ? "Ruc o cédula" : "NIT"}
+                  <span className={styles.required}>*</span>
                 </>
               }
               helperText={error ? error.message : null}
@@ -76,7 +94,9 @@ export const EditLegalEntityForm = ({
               onChange={onChange}
               value={value}
               fullWidth
-              placeholder="Indicar Ruc o cédula"
+              placeholder={`Indicar ${
+                country === CountryCode.ec ? "Ruc o cédula" : "NIT"
+              }`}
             />
           )}
         />
