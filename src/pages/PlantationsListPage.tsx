@@ -8,16 +8,23 @@ import {
   useCancelPlantationMutation,
   useDeletePlantationMutation,
 } from "../api/plantationsApi";
-import { useAppSelector } from "../store";
-import { selectSelectedPlantations } from "../redux/reducer/catalogReducer";
+import { useAppDispatch, useAppSelector } from "../store";
+import {
+  selectSelectedPlantations,
+  setSelectedPlantations,
+} from "../redux/reducer/catalogReducer";
 import { AdminConfirmationForm } from "../components/forms/AdminConfirmationForm/AdminConfirmationForm";
 import { useNavigate } from "react-router-dom";
 import { AdminConfirmationFormPlantationTitle } from "../lib/constants";
+import { useAuth } from "../lib/auth";
 
 type ModalType = "create" | "update" | "delete" | "admin_approve";
 
 const PlantationsListPage = () => {
   const navigate = useNavigate();
+  const appDispatch = useAppDispatch();
+
+  const { user, isAdmin } = useAuth();
 
   const [open, setOpen] = useState(false);
   const [refetch, setRefetch] = useState(false);
@@ -47,6 +54,12 @@ const PlantationsListPage = () => {
   const handleDelete = async () => {
     const promises = selectedPlantations.map((id) => deletePlantation(id));
     await Promise.allSettled(promises);
+    appDispatch(setSelectedPlantations([]));
+    handleClose();
+  };
+
+  const handleAdminDelete = async () => {
+    await deletePlantation(modalConfig?.data.id);
     handleClose();
   };
 
@@ -62,7 +75,7 @@ const PlantationsListPage = () => {
         <AdminConfirmationForm
           title={AdminConfirmationFormPlantationTitle}
           onReset={handleClose}
-          onSubmit={handleDelete}
+          onSubmit={handleAdminDelete}
         />
       );
     }
@@ -91,7 +104,11 @@ const PlantationsListPage = () => {
     onCreateBtnClick: () => {
       navigate("/plantations/create");
     },
-    onDeleteBtnClick: () => {
+    onDeleteBtnClick: async () => {
+      if (user && isAdmin) {
+        await handleDelete();
+        return;
+      }
       handleOpen("delete", {});
     },
   };

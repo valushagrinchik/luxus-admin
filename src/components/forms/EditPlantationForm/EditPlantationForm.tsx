@@ -87,8 +87,8 @@ export const EditPlantationForm = ({
           data?.generalInfo?.deliveryMethod || ChecksDeliveryMethod.PERSONALLY,
         termsOfPayment:
           data?.generalInfo?.termsOfPayment || TermsOfPayment.POSTPAID,
-        postpaidCredit: data?.generalInfo?.postpaidCredit,
-        postpaidDays: data?.generalInfo?.postpaidDays,
+        postpaidCredit: data?.generalInfo?.postpaidCredit || "",
+        postpaidDays: data?.generalInfo?.postpaidDays || "",
       },
       legalEntities: data?.legalEntities || [],
       transferDetails: data?.transferDetails || [],

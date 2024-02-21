@@ -20,6 +20,7 @@ import {
 import { orderBy, uniq } from "lodash";
 import { withAdminApprovable } from "../hocs/withAdminApprovable/withAdminApprovable";
 import { FullArrowUpIcon } from "../../controls/icons/FullArrowUpIcon";
+import Box from "../../controls/Box";
 
 interface RowProps {
   data: EditBaseInput;
@@ -216,7 +217,7 @@ export const PlantationsList = ({
   }
 
   if (!data?.length) {
-    return <div>Sin datos</div>;
+    return <Box>Sin datos</Box>;
   }
 
   const renderRowActions = (data: any) => {
