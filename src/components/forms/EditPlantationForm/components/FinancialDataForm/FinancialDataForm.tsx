@@ -17,6 +17,7 @@ import {
 } from "../../interfaces";
 import { PlantationDepartment } from "../../../../../lib/constants";
 import { ChecksDeliveryMethod, TermsOfPayment } from "../../../../../lib/types";
+import { ChangeEvent } from "react";
 
 export const FinancialDataForm = ({
   mode,
@@ -38,7 +39,7 @@ export const FinancialDataForm = ({
   >;
 }) => {
   const disabled = mode === Mode.preview;
-  const { control, watch } = useFormContext();
+  const { control, watch, setValue } = useFormContext();
 
   const termsOfPayment = watch("generalInfo.termsOfPayment");
   const deliveryMethod = watch("generalInfo.deliveryMethod");
@@ -122,7 +123,14 @@ export const FinancialDataForm = ({
                 placeholder="Pago diferido"
                 helperText={error ? error.message : null}
                 error={!!error}
-                onChange={onChange}
+                onChange={(event: ChangeEvent) => {
+                  if ((event.target as any).value !== TermsOfPayment.POSTPAID) {
+                    setValue("generalInfo.postpaidDays", "");
+                    setValue("generalInfo.postpaidCredit", "");
+                  }
+
+                  onChange(event);
+                }}
                 value={value}
                 options={L18nEs.constants.termsOfPayments}
                 fullWidth

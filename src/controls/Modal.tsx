@@ -61,6 +61,9 @@ const ModalContent = styled("div")(
 		gap: 24px;
 		outline: none;
 
+    max-height: 100vh;
+    overflow: auto;
+
     & .modal-title {
       margin: 0;
       line-height: 1.5rem;

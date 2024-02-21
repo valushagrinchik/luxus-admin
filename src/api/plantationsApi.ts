@@ -31,15 +31,24 @@ export const plantationsApi = createApi({
       transformResponse: (response: Plantation) => {
         return transformPlantationDataBack(response);
       },
+      providesTags: (result) => {
+        return [{ type: "Plantation", id: result?.generalInfo.id }];
+      },
     }),
 
     updatePlantation: builder.mutation<Plantation, UpdatePlantationBody>({
-      query: (body) => ({
-        url: `/plantations/${body.id}`,
-        method: "PATCH",
-        body,
-      }),
-      invalidatesTags: () => [{ type: "Plantation", id: "LIST" }],
+      query: (body) => {
+        console.log(body, "body");
+        return {
+          url: `/plantations/${body.id}`,
+          method: "PATCH",
+          body,
+        };
+      },
+      invalidatesTags: (result) => [
+        { type: "Plantation", id: "LIST" },
+        { type: "Plantation", id: result?.id },
+      ],
     }),
     createPlantation: builder.mutation<Plantation, CreatePlantationBody>({
       query: (body) => ({
@@ -55,7 +64,10 @@ export const plantationsApi = createApi({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: () => [{ type: "Plantation", id: "LIST" }],
+      invalidatesTags: (result) => [
+        { type: "Plantation", id: "LIST" },
+        { type: "Plantation", id: result?.plantation },
+      ],
     }),
     deletePlantation: builder.mutation<{ plantation: number }, number>({
       query: (id) => ({
@@ -63,7 +75,10 @@ export const plantationsApi = createApi({
         method: "DELETE",
         body: {},
       }),
-      invalidatesTags: () => [{ type: "Plantation", id: "LIST" }],
+      invalidatesTags: (result) => [
+        { type: "Plantation", id: "LIST" },
+        { type: "Plantation", id: result?.plantation },
+      ],
     }),
   }),
 });

@@ -9,12 +9,6 @@ export const transformPlantationData = (
 ): CreatePlantationBody => {
   return {
     ...formData.generalInfo,
-    postpaidCredit: formData.generalInfo.postpaidCredit
-      ? +formData.generalInfo.postpaidCredit
-      : undefined,
-    postpaidDays: formData.generalInfo.postpaidDays
-      ? +formData.generalInfo.postpaidDays
-      : undefined,
     legalEntities: formData.legalEntities.map((entity) => ({
       ...entity,
       checks: formData.checks.filter((check) => check.name === entity.name),

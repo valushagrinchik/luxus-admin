@@ -28,6 +28,9 @@
 *:after {
   box-sizing: border-box;
 }
+*:focus {
+  outline: none !important;
+}
 body {
   margin: 0;
   font-family: "Roboto+Condensed";

@@ -53,10 +53,7 @@ export const EditPlantationForm = ({
       await create(data);
     }
     if (mode === Mode.edit) {
-      await update({
-        id: +formData.generalInfo.id,
-        ...data,
-      });
+      await update(data);
     }
     navigateToList();
   };
@@ -132,7 +129,20 @@ export const EditPlantationForm = ({
       values.generalInfo.country &&
       values.generalInfo.name &&
       values.generalInfo.deliveryMethod &&
-      values.generalInfo.termsOfPayment
+      values.generalInfo.termsOfPayment &&
+      (values.generalInfo.termsOfPayment === TermsOfPayment.POSTPAID
+        ? values.generalInfo.postpaidCredit && values.generalInfo.postpaidDays
+        : true) &&
+      values.transferDetails.reduce(
+        (valid, tr) =>
+          valid &&
+          !!tr.bank &&
+          !!tr.bankAccountNumber &&
+          !!tr.bankAccountType &&
+          !!tr.name &&
+          !!tr.beneficiary,
+        true
+      )
     );
   };
 

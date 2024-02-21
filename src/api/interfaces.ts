@@ -25,20 +25,22 @@ export type UpdateSortBody = {
 } & CreateSortBody;
 
 export type CreatePlantationBody = {
+  id: string;
   name: string;
   country: string;
   comments?: string;
   deliveryMethod: string;
   termsOfPayment: string;
-  postpaidCredit?: number;
-  postpaidDays?: number;
+  postpaidCredit?: string;
+  postpaidDays?: string;
   legalEntities: LegalEntity[];
   contacts: Contact[];
 };
 
-export type UpdatePlantationBody = { id: number } & CreatePlantationBody;
+export type UpdatePlantationBody = CreatePlantationBody;
 
 type TransferDetails = {
+  id: string;
   name: string;
   favourite: boolean;
   beneficiary: string;
@@ -58,6 +60,7 @@ type TransferDetails = {
 };
 
 type PlantationChecks = {
+  id: string;
   name: string;
   favourite: boolean;
   beneficiary: string;
@@ -65,6 +68,7 @@ type PlantationChecks = {
 };
 
 type LegalEntity = {
+  id: string;
   name: string;
   code: string;
   legalAddress: string;
@@ -75,6 +79,7 @@ type LegalEntity = {
 };
 
 type Contact = {
+  id: string;
   name: string;
   email: string;
   whatsapp: string;
