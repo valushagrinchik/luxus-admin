@@ -94,7 +94,9 @@ export const Sidebar = ({
                       key={index}
                       to={item.link}
                       className={classNames({
-                        [styles.active]: pathname === item.link,
+                        [styles.active]:
+                          `/${pathname.split("/").filter((a) => !!a)[0]}` ===
+                          item.link,
                       })}
                     >
                       <span className={classNames(styles.menu_item)}>

@@ -25,6 +25,7 @@ import { transformPlantationData } from "../../../lib/utils";
 
 import styles from "./EditPlantationForm.module.css";
 import { ArrowLeftIcon } from "../../../controls/icons/ArrowLeftIcon";
+import Box from "../../../controls/Box";
 
 export const EditPlantationForm = ({
   plantationId,
@@ -33,11 +34,11 @@ export const EditPlantationForm = ({
   plantationId: string;
   mode: Mode;
 }) => {
-  const { data, isLoading } = useGetPlantationQuery(+plantationId, {
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useGetPlantationQuery(+plantationId, {
     skip: mode === Mode.create,
   });
 
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const navigateToList = () => {
@@ -98,10 +99,6 @@ export const EditPlantationForm = ({
     },
   });
 
-  const {
-    formState: { isValid: isValidForm, errors },
-  } = methods;
-
   const transferDetails = useFieldArray({
     control: methods.control,
     name: "transferDetails",
@@ -152,8 +149,21 @@ export const EditPlantationForm = ({
     return <div>Cargando...</div>;
   }
 
+  if (!isLoading && error) {
+    const code = (
+      error as {
+        data: { error: string; message: string[]; statusCode: number };
+      }
+    )?.data?.error;
+    if (code === "PLANTATION_NOT_FOUND") return <>PLANTACIÓN_NO_ENCONTRADA</>;
+  }
+
   if (mode !== Mode.create && !data) {
-    return <div>Sin datos</div>;
+    return (
+      <>
+        <Box>Sin datos</Box>
+      </>
+    );
   }
 
   const tabSlotProps = {
