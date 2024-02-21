@@ -38,6 +38,8 @@ export const SortsFilters = ({
   // workaround to display text field select placeholder
   const [searchBy, setSearchBy] = useState("");
 
+  const excelDisabled = true;
+
   return (
     <div className={styles.filter_row}>
       <TextField
@@ -98,8 +100,16 @@ export const SortsFilters = ({
             }
           />
         </Button>
-        <Button color="transparent" style={{ padding: "8px", height: "36px" }}>
-          <ExcelIcon width={24} height={24} color="var(--Primary-800)" />
+        <Button
+          disabled={excelDisabled}
+          color="transparent"
+          style={{ padding: "8px", height: "36px" }}
+        >
+          <ExcelIcon
+            width={24}
+            height={24}
+            color={excelDisabled ? "var(--Gray-400)" : "var(--Primary-800)"}
+          />
         </Button>
       </div>
     </div>

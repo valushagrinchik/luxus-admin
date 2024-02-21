@@ -31,6 +31,7 @@ export const PlantationsFilters = ({
   const l18n = L18nEs.pages.plantation.filters;
 
   const [termOfPaymentsOpen, setTermOfPaymentsOpen] = useState(false);
+  const excelDisabled = true;
 
   return (
     <div className={styles.filter_row}>
@@ -133,8 +134,16 @@ export const PlantationsFilters = ({
             }
           />
         </Button>
-        <Button color="transparent" style={{ padding: "8px", height: "36px" }}>
-          <ExcelIcon width={24} height={24} color="var(--Primary-800)" />
+        <Button
+          disabled={excelDisabled}
+          color="transparent"
+          style={{ padding: "8px", height: "36px" }}
+        >
+          <ExcelIcon
+            width={24}
+            height={24}
+            color={excelDisabled ? "var(--Gray-400)" : "var(--Primary-800)"}
+          />
         </Button>
       </div>
     </div>
