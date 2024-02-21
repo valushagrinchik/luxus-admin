@@ -6,14 +6,14 @@ import { Sidebar } from "../components/Sidebar/Sidebar";
 import { useAuth } from "../lib/auth";
 
 const DashboardPage = () => {
-  let auth = useAuth();
+  let { user } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => {
     setIsOpen(false);
   };
 
-  if (!auth.user) {
+  if (!user.id) {
     return (
       <Navigate
         to={{

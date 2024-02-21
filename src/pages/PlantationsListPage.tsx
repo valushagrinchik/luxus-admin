@@ -105,7 +105,7 @@ const PlantationsListPage = () => {
       navigate("/plantations/create");
     },
     onDeleteBtnClick: async () => {
-      if (user && isAdmin) {
+      if (user.id && isAdmin) {
         await handleDelete();
         return;
       }
