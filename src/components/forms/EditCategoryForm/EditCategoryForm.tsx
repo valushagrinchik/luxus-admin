@@ -14,6 +14,7 @@ import { OkIcon } from "../../../controls/icons/OkIcon";
 import { TextField } from "../../../controls/TextField";
 
 import styles from "./EditCategoryForm.module.css";
+import { useMemo } from "react";
 
 interface EditCategoryFormProps {
   onSubmit: () => void;
@@ -36,8 +37,12 @@ export const EditCategoryForm = ({
   const [update] = useUpdateCategoryMutation();
   const [create] = useCreateCategoryMutation();
 
-  const groupsMap = Object.fromEntries(
-    groups?.map((group: any) => [group.id, group.name]) || []
+  const groupsMap = useMemo(
+    () =>
+      Object.fromEntries(
+        groups?.map((group: any) => [group.id, group.name]) || []
+      ),
+    [groups]
   );
 
   const {

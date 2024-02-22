@@ -67,7 +67,7 @@ const Row = ({
   );
 };
 
-const AdminApprovableRow = withAdminApprovable<RowProps>(Row);
+export const AdminApprovableRow = withAdminApprovable<RowProps>(Row);
 
 const Table = ({ children }: { children: any }) => {
   return <div className={styles.table}>{children}</div>;
@@ -216,8 +216,12 @@ export const PlantationsList = ({
     return <div>Cargando...</div>;
   }
 
+  if (!data?.length && filters) {
+    return <Box>Sin resultados</Box>;
+  }
+
   if (!data?.length) {
-    return <Box>Sin datos</Box>;
+    return <></>;
   }
 
   const renderRowActions = (data: any) => {

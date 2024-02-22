@@ -29,6 +29,7 @@ import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
 import { OkIconSmall } from "../../controls/icons/OkIconSmall";
 
 import styles from "./SortsList.module.css";
+import { NoData } from "../ui/NoData";
 
 interface BaseRowProps {
   open: boolean;
@@ -357,8 +358,12 @@ export const SortsList = ({
     return <div>Cargando...</div>;
   }
 
-  if (!data?.length) {
-    return <div>Sin datos</div>;
+  if (!data?.length && !search.search) {
+    return <></>;
+  }
+
+  if (!data?.length && search.search) {
+    return <NoData />;
   }
 
   return (
@@ -379,7 +384,7 @@ export const SortsList = ({
             }
             group={group}
           >
-            {group.categories?.map((cat) => (
+            {group.categories?.map((cat: any) => (
               <CategoryRow
                 open={config.category}
                 key={`category_${cat.id}`}

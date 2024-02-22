@@ -1,7 +1,7 @@
 import { pick } from "lodash";
 import { CreatePlantationBody } from "../api/interfaces";
 import { EditPlantationInput } from "../components/forms/EditPlantationForm/interfaces";
-import { PlantationDepartment } from "./constants";
+import { PlantationDepartment, SortListGroup } from "./constants";
 import { Plantation } from "./types";
 
 export const transformPlantationData = (
@@ -69,5 +69,36 @@ export const transformPlantationDataBack = (
         ...contact,
         id: contact.id.toString(),
       })),
+  };
+};
+
+export const defineRowConfig = (group: SortListGroup | null) => {
+  switch (group) {
+    case SortListGroup.group: {
+      return {
+        group: false,
+        category: false,
+        sort: false,
+      };
+    }
+    case SortListGroup.category: {
+      return {
+        group: true,
+        category: false,
+        sort: false,
+      };
+    }
+    case SortListGroup.sort: {
+      return {
+        group: true,
+        category: true,
+        sort: false,
+      };
+    }
+  }
+  return {
+    group: true,
+    category: true,
+    sort: false,
   };
 };

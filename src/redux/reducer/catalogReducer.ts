@@ -5,6 +5,7 @@ import { SortListGroup } from "../../lib/constants";
 
 // Define a type for the slice state
 export interface CatalogState {
+  sortsGroupBy: SortListGroup;
   sortsSearch: {
     search?: string;
     type: SortListGroup;
@@ -15,6 +16,7 @@ export interface CatalogState {
 
 // Define the initial state using that type
 const initialState: CatalogState = {
+  sortsGroupBy: SortListGroup.sort,
   sortsSearch: {
     search: undefined,
     type: SortListGroup.sort,
@@ -27,6 +29,12 @@ export const catalogSlice = createSlice({
   name: "catalog",
   initialState,
   reducers: {
+    setSortsGroupBy: (
+      state,
+      action: PayloadAction<Partial<CatalogState["sortsGroupBy"]>>
+    ) => {
+      state.sortsGroupBy = action.payload;
+    },
     setSearch: (
       state,
       action: PayloadAction<Partial<CatalogState["sortsSearch"]>>
@@ -42,8 +50,15 @@ export const catalogSlice = createSlice({
   },
 });
 
-export const { setSearch, setSelectedSorts, setSelectedPlantations } =
-  catalogSlice.actions;
+export const {
+  setSortsGroupBy,
+  setSearch,
+  setSelectedSorts,
+  setSelectedPlantations,
+} = catalogSlice.actions;
+
+export const selectSortsGroupBy = (state: RootState) =>
+  state.catalog.sortsGroupBy;
 
 export const selectSortsSearch = (state: RootState) =>
   state.catalog.sortsSearch;

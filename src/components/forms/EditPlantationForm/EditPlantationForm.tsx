@@ -158,14 +158,6 @@ export const EditPlantationForm = ({
     if (code === "PLANTATION_NOT_FOUND") return <>PLANTACIÓN_NO_ENCONTRADA</>;
   }
 
-  if (mode !== Mode.create && !data) {
-    return (
-      <>
-        <Box>Sin datos</Box>
-      </>
-    );
-  }
-
   const tabSlotProps = {
     root: ({ selected }: { selected: boolean }) =>
       selected

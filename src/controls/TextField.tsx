@@ -110,7 +110,7 @@ export const TextField = React.forwardRef(function MyTextField(
       }}
     >
       {select && !Object.entries(options || {})?.length && (
-        <MUIMenuItem disabled>Sin datos</MUIMenuItem>
+        <MUIMenuItem disabled>sin opciones</MUIMenuItem>
       )}
       {options &&
         Object.entries(options).map(([value, label]) => (

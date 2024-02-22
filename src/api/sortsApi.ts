@@ -10,6 +10,7 @@ import {
 } from "./interfaces";
 import { CatalogState } from "../redux/reducer/catalogReducer";
 import { baseQueryWithReauth } from "./utils";
+import { orderBy } from "lodash";
 
 // Define a service using a base URL and expected endpoints
 export const sortsApi = createApi({
@@ -30,13 +31,36 @@ export const sortsApi = createApi({
       { offset: number; limit: number } & CatalogState["sortsSearch"]
     >({
       query: (params) => ({ url: `/groups/search`, params }),
+      transformResponse: (response: Group[]) => {
+        return orderBy(
+          response,
+          [(group) => group.name.toLowerCase()],
+          ["asc"]
+        ).map((group) => ({
+          ...group,
+          categories: orderBy(
+            group.categories,
+            [(cat) => cat.name.toLowerCase()],
+            ["asc"]
+          ).map((cat) => ({
+            ...cat,
+            sorts: orderBy(
+              cat.sorts,
+              [(sort) => sort.name.toLowerCase()],
+              ["asc"]
+            ),
+          })),
+        }));
+      },
       providesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
     getCategories: builder.query<Category[], { groupId: number } | undefined>({
       query: (params) => ({ url: `/categories`, params }),
+      providesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
     getGroups: builder.query<Group[], void>({
       query: () => `/groups`,
+      providesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
 
     updateGroup: builder.mutation<Group, UpdateGroupBody>({

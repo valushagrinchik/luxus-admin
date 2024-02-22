@@ -19,6 +19,7 @@ import {
   setSelectedSorts,
 } from "../redux/reducer/catalogReducer";
 import { AdminConfirmationForm } from "../components/forms/AdminConfirmationForm/AdminConfirmationForm";
+import { useAuth } from "../lib/auth";
 
 type ModalType = "create" | "update" | "delete" | "admin_approve";
 
@@ -50,6 +51,7 @@ const renderForm = (
 };
 
 const SortsListPage = () => {
+  const { isAdmin } = useAuth();
   const [open, setOpen] = useState(false);
   const [refetch, setRefetch] = useState(false);
   const appDispatch = useAppDispatch();
@@ -113,6 +115,15 @@ const SortsListPage = () => {
       return;
     }
     if (modalConfig?.modalType === "delete") {
+      if (isAdmin) {
+        return (
+          <AdminConfirmationForm
+            title={AdminConfirmationFormTitles[modalConfig.type]}
+            onReset={handleClose}
+            onSubmit={handleDelete}
+          />
+        );
+      }
       return <ConfirmationForm onReset={handleClose} onSubmit={handleDelete} />;
     }
 

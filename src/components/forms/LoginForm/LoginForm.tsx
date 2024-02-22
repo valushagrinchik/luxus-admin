@@ -48,7 +48,7 @@ export const LoginForm = () => {
   return (
     <div className={styles.form_container}>
       <form className={styles.form}>
-        <h1>Inicie sesión en el sitio</h1>
+        <h1>Plataforma Luxus</h1>
         <div>
           <label htmlFor="email">
             Email<span className={styles.required}>*</span>
@@ -76,6 +76,7 @@ export const LoginForm = () => {
             control={control}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <TextField
+                type="password"
                 helperText={error ? error.message : null}
                 error={!!error}
                 onChange={onChange}
@@ -87,7 +88,7 @@ export const LoginForm = () => {
         </div>
         <div className={styles.required}>{submitError && submitError}</div>
         <Button color="base" onClick={handleSubmit(submit)}>
-          Enviar
+          Ingresar
         </Button>
       </form>
     </div>

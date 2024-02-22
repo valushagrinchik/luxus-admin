@@ -5,7 +5,7 @@ import { Button } from "../../../controls/Button/Button";
 import { CloseIconSmall } from "../../../controls/icons/CloseIconSmall";
 import { OkIconSmall } from "../../../controls/icons/OkIconSmall";
 
-export const withAdminApprovable = function <T>(Component: FC<T>) {
+export const withAdminApprovable = <T,>(Component: FC<T>) => {
   return (
     props: T &
       JSX.IntrinsicAttributes & {
