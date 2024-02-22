@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "../../controls/Button/Button";
 import { TextField } from "../../controls/TextField";
 import { BinIcon } from "../../controls/icons/BinIcon";
-import { ExcelIcon } from "../../controls/icons/ExcelIcon";
 import L18nEs from "../../lib/l18n";
 import styles from "./PlantationsFilters.module.css";
 import { PlusIcon } from "../../controls/icons/PlusIcon";
@@ -11,6 +10,8 @@ import { selectSelectedPlantations } from "../../redux/reducer/catalogReducer";
 import { CloseIcon } from "../../controls/icons/CloseIcon";
 import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
 import { PlantationFilters } from "../../lib/types";
+import { ExcelDownloadBtn } from "../../controls/ExcelDownloadBtn";
+import { isEmpty, omitBy } from "lodash";
 
 interface PlantationsFiltersProps {
   filters: PlantationFilters | null;
@@ -31,7 +32,6 @@ export const PlantationsFilters = ({
   const l18n = L18nEs.pages.plantation.filters;
 
   const [termOfPaymentsOpen, setTermOfPaymentsOpen] = useState(false);
-  const excelDisabled = true;
 
   return (
     <div className={styles.filter_row}>
@@ -134,17 +134,26 @@ export const PlantationsFilters = ({
             }
           />
         </Button>
-        <Button
-          disabled={excelDisabled}
-          color="transparent"
-          style={{ padding: "8px", height: "36px" }}
-        >
-          <ExcelIcon
-            width={24}
-            height={24}
-            color={excelDisabled ? "var(--Gray-400)" : "var(--Primary-800)"}
-          />
-        </Button>
+        <ExcelDownloadBtn
+          disabled={false}
+          url={
+            !filters
+              ? "/api/plantations/excel"
+              : [
+                  "/api/plantations/excel",
+                  new URLSearchParams(
+                    omitBy(
+                      {
+                        country: filters.country,
+                        termsOfPayment: filters.termsOfPayment?.join(","),
+                      } as Record<string, any>,
+                      isEmpty
+                    )
+                  ),
+                ].join("?")
+          }
+          prefix="plantations"
+        />
       </div>
     </div>
   );
