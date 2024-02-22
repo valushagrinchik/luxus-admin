@@ -31,27 +31,27 @@ export const sortsApi = createApi({
       { offset: number; limit: number } & CatalogState["sortsSearch"]
     >({
       query: (params) => ({ url: `/groups/search`, params }),
-      transformResponse: (response: Group[]) => {
-        return orderBy(
-          response,
-          [(group) => group.name.toLowerCase()],
-          ["asc"]
-        ).map((group) => ({
-          ...group,
-          categories: orderBy(
-            group.categories,
-            [(cat) => cat.name.toLowerCase()],
-            ["asc"]
-          ).map((cat) => ({
-            ...cat,
-            sorts: orderBy(
-              cat.sorts,
-              [(sort) => sort.name.toLowerCase()],
-              ["asc"]
-            ),
-          })),
-        }));
-      },
+      // transformResponse: (response: Group[]) => {
+      //   return orderBy(
+      //     response,
+      //     [(group) => group.name.toLowerCase()],
+      //     ["asc"]
+      //   ).map((group) => ({
+      //     ...group,
+      //     categories: orderBy(
+      //       group.categories,
+      //       [(cat) => cat.name.toLowerCase()],
+      //       ["asc"]
+      //     ).map((cat) => ({
+      //       ...cat,
+      //       sorts: orderBy(
+      //         cat.sorts,
+      //         [(sort) => sort.name.toLowerCase()],
+      //         ["asc"]
+      //       ),
+      //     })),
+      //   }));
+      // },
       providesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
     getCategories: builder.query<Category[], { groupId: number } | undefined>({

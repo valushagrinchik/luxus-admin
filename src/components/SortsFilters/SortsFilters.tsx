@@ -1,5 +1,4 @@
 import { BinIcon } from "../../controls/icons/BinIcon";
-import { ExcelIcon } from "../../controls/icons/ExcelIcon";
 import { Button } from "../../controls/Button/Button";
 import {
   SortListGroup,
@@ -10,6 +9,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store";
 import {
   selectSelectedSorts,
+  selectSortsSearch,
   setSearch,
 } from "../../redux/reducer/catalogReducer";
 import { Dropdown } from "../../controls/Dropdown";
@@ -17,6 +17,8 @@ import { SearchIcon } from "../../controls/icons/SearchIcon";
 import { TextField } from "../../controls/TextField";
 import styles from "./SortsFilters.module.css";
 import { useState } from "react";
+import { ExcelDownloadBtn } from "../../controls/ExcelDownloadBtn";
+import { isEmpty, omitBy } from "lodash";
 
 interface SortsFiltersProps {
   onSortListGroupChange: (value: SortListGroup) => void;
@@ -31,14 +33,12 @@ export const SortsFilters = ({
 }: SortsFiltersProps) => {
   const appDispatch = useAppDispatch();
   const selectedSorts = useAppSelector(selectSelectedSorts);
-
+  const search = useAppSelector(selectSortsSearch);
   // workaround to display text field select placeholder
   const [groupBy, setGroupBy] = useState("");
 
   // workaround to display text field select placeholder
   const [searchBy, setSearchBy] = useState("");
-
-  const excelDisabled = true;
 
   return (
     <div className={styles.filter_row}>
@@ -100,17 +100,13 @@ export const SortsFilters = ({
             }
           />
         </Button>
-        <Button
-          disabled={excelDisabled}
-          color="transparent"
-          style={{ padding: "8px", height: "36px" }}
-        >
-          <ExcelIcon
-            width={24}
-            height={24}
-            color={excelDisabled ? "var(--Gray-400)" : "var(--Primary-800)"}
-          />
-        </Button>
+        <ExcelDownloadBtn
+          disabled={false}
+          url={
+            "/api/groups/excel?" + new URLSearchParams(omitBy(search, isEmpty))
+          }
+          prefix="sorts"
+        />
       </div>
     </div>
   );

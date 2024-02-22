@@ -102,3 +102,7 @@ export const defineRowConfig = (group: SortListGroup | null) => {
     sort: false,
   };
 };
+
+export const today = () => {
+  return new Date().toLocaleDateString("en-US");
+};
