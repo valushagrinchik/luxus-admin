@@ -25,7 +25,6 @@ import { transformPlantationData } from "../../../lib/utils";
 
 import styles from "./EditPlantationForm.module.css";
 import { ArrowLeftIcon } from "../../../controls/icons/ArrowLeftIcon";
-import Box from "../../../controls/Box";
 
 export const EditPlantationForm = ({
   plantationId,
@@ -48,13 +47,13 @@ export const EditPlantationForm = ({
   const [create] = useCreatePlantationMutation();
   const [update] = useUpdatePlantationMutation();
 
-  const onSubmit = async (formData: EditPlantationInput) => {
-    const data = transformPlantationData(formData);
+  const onSubmit = async (input: EditPlantationInput) => {
+    const formData = transformPlantationData(input);
     if (mode === Mode.create) {
-      await create(data);
+      await create(formData);
     }
     if (mode === Mode.edit) {
-      await update(data);
+      await update(formData);
     }
     navigateToList();
   };

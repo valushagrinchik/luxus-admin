@@ -75,8 +75,6 @@ export const LegalEntitiesCRUDForm = ({
         bank: "",
         bankAccountNumber: "",
         bankAccountType: "",
-
-        // plantationId: data.plantationId,
         plantationLegalEntityId: data.id,
       });
       checks.append({
@@ -84,8 +82,6 @@ export const LegalEntitiesCRUDForm = ({
         name: data.name,
         beneficiary: data.name,
         favourite: !legalEntities.fields.length,
-
-        // plantationId: data.plantationId,
         plantationLegalEntityId: data.id,
       });
     }

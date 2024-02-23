@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { Plantation, PlantationFilters } from "../lib/types";
+import { Plantation, PlantationThin, PlantationFilters } from "../lib/types";
 import { CreatePlantationBody, UpdatePlantationBody } from "./interfaces";
 import { baseQueryWithReauth } from "./utils";
 import { transformPlantationDataBack } from "../lib/utils";
@@ -19,7 +19,7 @@ export const plantationsApi = createApi({
     ),
 
     searchPlantations: builder.query<
-      Plantation[],
+      PlantationThin[],
       { offset: number; limit: number } & PlantationFilters
     >({
       query: (params) => ({ url: `/plantations/search`, params }),
@@ -36,9 +36,11 @@ export const plantationsApi = createApi({
       },
     }),
 
-    updatePlantation: builder.mutation<Plantation, UpdatePlantationBody>({
+    updatePlantation: builder.mutation<
+      { plantation: number },
+      UpdatePlantationBody
+    >({
       query: (body) => {
-        console.log(body, "body");
         return {
           url: `/plantations/${body.id}`,
           method: "PATCH",
@@ -47,10 +49,13 @@ export const plantationsApi = createApi({
       },
       invalidatesTags: (result) => [
         { type: "Plantation", id: "LIST" },
-        { type: "Plantation", id: result?.id },
+        { type: "Plantation", id: result?.plantation },
       ],
     }),
-    createPlantation: builder.mutation<Plantation, CreatePlantationBody>({
+    createPlantation: builder.mutation<
+      { plantation: number },
+      CreatePlantationBody
+    >({
       query: (body) => ({
         url: `/plantations`,
         method: "POST",

@@ -17,7 +17,7 @@ import { SearchIcon } from "../../controls/icons/SearchIcon";
 import { TextField } from "../../controls/TextField";
 import styles from "./SortsFilters.module.css";
 import { useState } from "react";
-import { ExcelDownloadBtn } from "../../controls/ExcelDownloadBtn";
+import { ExcelDownloadBtn } from "../../controls/DownloadBtn";
 import { isEmpty, omitBy } from "lodash";
 
 interface SortsFiltersProps {

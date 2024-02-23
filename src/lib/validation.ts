@@ -61,13 +61,6 @@ export const schemaAddTransferDetails = yup
     name: yup.string().required(ErrorMessages.reqiuredField),
     beneficiary: yup.string().required(ErrorMessages.reqiuredField),
     beneficiaryAddress: yup.string(),
-    documentPath: yup
-      .mixed()
-      .when(["name", "beneficiary"], ([name, beneficiary], field) => {
-        return name && beneficiary && name !== beneficiary
-          ? field.required(ErrorMessages.reqiuredField)
-          : field.nullable();
-      }),
     favourite: yup.boolean().default(false),
     bank: yup.string().required(ErrorMessages.reqiuredField),
     bankAddress: yup.string(),
@@ -78,8 +71,6 @@ export const schemaAddTransferDetails = yup
     correspondentBankAddress: yup.string(),
     correspondentBankAccountNumber: yup.string(),
     correspondentBankSwift: yup.string(),
-
-    // plantationId: yup.string().required(ErrorMessages.reqiuredField),
     plantationLegalEntityId: yup.string().required(ErrorMessages.reqiuredField),
   })
   .required();
@@ -91,14 +82,6 @@ export const schemaAddCheck = yup
     name: yup.string().required(ErrorMessages.reqiuredField),
     favourite: yup.boolean().default(false),
     beneficiary: yup.string().required(ErrorMessages.reqiuredField),
-    documentPath: yup
-      .mixed()
-      .when(["name", "beneficiary"], ([name, beneficiary], field) => {
-        return name && beneficiary && name !== beneficiary
-          ? field.required(ErrorMessages.reqiuredField)
-          : field.nullable();
-      }),
-    // plantationId: yup.string().required(ErrorMessages.reqiuredField),
     plantationLegalEntityId: yup.string().required(ErrorMessages.reqiuredField),
   })
   .required();

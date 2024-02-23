@@ -6,7 +6,6 @@ import { Table } from "../Table/Table";
 import { BinIcon } from "../../../../../controls/icons/BinIcon";
 import { EditIcon } from "../../../../../controls/icons/EditIcon";
 import {
-  EditBaseInput,
   EditCheckInput,
   EditContactInput,
   EditPlantationInput,
@@ -26,7 +25,7 @@ export const ChecksCRUDForm = ({
   checks: entities,
 }: {
   mode: Mode;
-  legalEntitiesMap: EditBaseInput;
+  legalEntitiesMap: Record<string, string>;
   checks: UseFieldArrayReturn<EditPlantationInput, "checks", "id">;
 }) => {
   const disabled = mode === Mode.preview;

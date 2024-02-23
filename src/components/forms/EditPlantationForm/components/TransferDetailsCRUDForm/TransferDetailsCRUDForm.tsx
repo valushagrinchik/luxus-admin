@@ -12,13 +12,12 @@ import {
   EditPlantationInput,
 } from "../../interfaces";
 import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
-
-import styles from "./TransferDetailsCRUDForm.module.css";
 import { EditTransferDetailsForm } from "./components/EditTransferDetailsForm/EditTransferDetailsForm";
 import L18nEs from "../../../../../lib/l18n";
 import { FavouriteBox } from "../../../../../controls/FavouriteBox";
 import { ViewIcon } from "../../../../../controls/icons/ViewIcon";
 import { v4 as uuid } from "uuid";
+import styles from "./TransferDetailsCRUDForm.module.css";
 
 export const TransferDetailsCRUDForm = ({
   mode,
@@ -70,7 +69,6 @@ export const TransferDetailsCRUDForm = ({
     } else {
       entities.append(data);
     }
-    // await control._executeSchema(["transferDetails"]);
     setOpen(false);
   };
 

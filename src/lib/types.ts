@@ -139,3 +139,20 @@ export type PlantationFilters = {
   country?: string;
   termsOfPayment?: string[];
 };
+
+// using in list with less data then Plantation
+export type PlantationThin = {
+  id: number;
+  name: string;
+  country: CountryCode;
+  comments: string;
+
+  deletedAt: string;
+  deletedBy: number;
+  deliveryMethod: ChecksDeliveryMethod;
+  legalEntities: LegalEntity[];
+  legalEntitiesNames: string[];
+  postpaidCredit: number;
+  postpaidDays: number;
+  termsOfPayment: TermsOfPayment;
+};

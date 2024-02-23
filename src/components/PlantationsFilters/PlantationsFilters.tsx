@@ -10,7 +10,7 @@ import { selectSelectedPlantations } from "../../redux/reducer/catalogReducer";
 import { CloseIcon } from "../../controls/icons/CloseIcon";
 import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
 import { PlantationFilters } from "../../lib/types";
-import { ExcelDownloadBtn } from "../../controls/ExcelDownloadBtn";
+import { ExcelDownloadBtn } from "../../controls/DownloadBtn";
 import { isEmpty, omitBy } from "lodash";
 
 interface PlantationsFiltersProps {

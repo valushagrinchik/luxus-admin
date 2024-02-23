@@ -88,3 +88,8 @@ type Contact = {
   position: string;
   department: string;
 };
+
+export type Document = {
+  id: number;
+  name: string;
+};

@@ -5,18 +5,18 @@ import { PlantationDepartment, SortListGroup } from "./constants";
 import { Plantation } from "./types";
 
 export const transformPlantationData = (
-  formData: EditPlantationInput
+  input: EditPlantationInput
 ): CreatePlantationBody => {
   return {
-    ...formData.generalInfo,
-    legalEntities: formData.legalEntities.map((entity) => ({
+    ...input.generalInfo,
+    legalEntities: input.legalEntities.map((entity) => ({
       ...entity,
-      checks: formData.checks.filter((check) => check.name === entity.name),
-      transferDetails: formData.transferDetails.filter(
+      checks: input.checks.filter((check) => check.name === entity.name),
+      transferDetails: input.transferDetails.filter(
         (check) => check.name === entity.name
       ),
     })),
-    contacts: [...formData.financialContacts, ...formData.salesContacts],
+    contacts: [...input.financialContacts, ...input.salesContacts],
   };
 };
 

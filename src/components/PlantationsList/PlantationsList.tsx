@@ -5,7 +5,7 @@ import { EditBaseInput } from "../forms/EditPlantationForm/interfaces";
 import L18nEs from "../../lib/l18n";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { EditIcon } from "../../controls/icons/EditIcon";
-import { Plantation, PlantationFilters } from "../../lib/types";
+import { PlantationFilters, PlantationThin } from "../../lib/types";
 import Pagination from "@mui/material/Pagination";
 import {
   useSearchPlantationsQuery,
@@ -120,7 +120,7 @@ export const PlantationsList = ({
   const selectedPlantations = useAppSelector(selectSelectedPlantations);
 
   const [sortBy, setSortBy] = useState<{
-    field: keyof Plantation;
+    field: keyof PlantationThin;
     up: boolean;
   } | null>(null);
 
@@ -137,7 +137,7 @@ export const PlantationsList = ({
                 <SortableTitle
                   title={value}
                   onChange={(up: boolean) => {
-                    setSortBy({ field: key as keyof Plantation, up });
+                    setSortBy({ field: key as keyof PlantationThin, up });
                   }}
                 />
               ) : (
@@ -174,11 +174,13 @@ export const PlantationsList = ({
 
   const { data: total } = useSearchPlantationsTotalQuery({ ...search });
 
-  const recordToRender = (record: Plantation) => ({
+  const recordToRender = (record: PlantationThin) => ({
     id: record.id,
     country: <CountryIcon countryCode={record.country} />,
     name: record.name,
-    legalEntityName: record.legalEntities[0].name,
+    legalEntityName: orderBy(record.legalEntitiesNames, (name) =>
+      name.toLowerCase()
+    ).join(", "),
     termsOfPayment: (
       <span className={classNames(styles.tag, styles[record.termsOfPayment])}>
         {termsOfPayments[record.termsOfPayment]}

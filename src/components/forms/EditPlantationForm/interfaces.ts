@@ -31,7 +31,7 @@ export type EditTransferDetailsInput = {
   favourite: boolean;
   beneficiary: string;
   beneficiaryAddress?: string;
-  documentPath?: any;
+  document?: { id: number; name: string };
 
   bank: string;
   bankAddress?: string;
@@ -44,17 +44,15 @@ export type EditTransferDetailsInput = {
   correspondentBankAccountNumber?: string;
   correspondentBankSwift?: string;
 
-  // plantationId: string;
   plantationLegalEntityId: string;
 };
+
 export type EditCheckInput = {
   id: string;
   name: string;
   favourite: boolean;
   beneficiary: string;
-  documentPath?: any;
-
-  // plantationId: string;
+  document?: { id: number; name: string };
   plantationLegalEntityId: string;
 };
 

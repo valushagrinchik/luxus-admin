@@ -3,13 +3,13 @@ import { TextField } from "../../../../../../../controls/TextField";
 import { Button } from "../../../../../../../controls/Button/Button";
 import { CloseIcon } from "../../../../../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
-import { EditBaseInput, EditCheckInput, Mode } from "../../../../interfaces";
+import { EditCheckInput, Mode } from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddCheck } from "../../../../../../../lib/validation";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { AddFileIcon } from "../../../../../../../controls/icons/AddFileIcon";
-import { InputAdornment } from "@mui/material";
-import { CloseIconSmall } from "../../../../../../../controls/icons/CloseIconSmall";
+import { ChangeEvent, useState } from "react";
+import { Document } from "../../../../../../../api/interfaces";
+import { DocumentFileUpload } from "../../../../../../../controls/DocumentFileUpload/DocumentFileUpload";
+
 import styles from "./EditCheckForm.module.css";
 
 export const EditCheckForm = ({
@@ -22,49 +22,33 @@ export const EditCheckForm = ({
   onReset: () => void;
   onSubmit: (data: EditCheckInput) => void;
   data?: any;
-  legalEntitiesMap: EditBaseInput;
+  legalEntitiesMap: Record<string, string>;
   mode: Mode;
 }) => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [showFileField, setShowFileField] = useState(false);
+  const [document, setDocument] = useState<Document | null>(data.document);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    getValues,
-    formState: { isValid: isValidForm, errors },
-  } = useForm<EditCheckInput>({
-    resolver: yupResolver(schemaAddCheck),
+  const { control, handleSubmit, watch, setValue, getValues } =
+    useForm<EditCheckInput>({
+      resolver: yupResolver(schemaAddCheck),
 
-    defaultValues: {
-      id: "",
-      name: "",
-      beneficiary: "",
-      favourite: false,
-      // documentPath: data.documentPath,
-    },
-    values: {
-      id: data.id,
-      name: data.name || "",
-      favourite: data.favourite || false,
-      beneficiary: data.beneficiary || "",
-      documentPath: data.documentPath,
-      plantationLegalEntityId: data.plantationLegalEntityId || "",
-    },
-  });
+      defaultValues: {
+        id: "",
+        name: data.name || "",
+        beneficiary: "",
+        favourite: false,
+      },
+      values: {
+        id: data.id,
+        name: data.name || "",
+        favourite: data.favourite || false,
+        beneficiary: data.beneficiary || "",
+        plantationLegalEntityId: data.plantationLegalEntityId || "",
+      },
+    });
 
-  const name = watch("plantationLegalEntityId");
-  watch("beneficiary");
-  watch("documentPath");
-
-  useEffect(() => {
-    if (name) {
-      setValue("name", legalEntitiesMap[name]);
-      setValue("beneficiary", legalEntitiesMap[name]);
-    }
-  }, [name, setValue, legalEntitiesMap]);
+  const name = watch("name");
+  const beneficiary = watch("beneficiary");
+  const [showFileField, setShowFileField] = useState(name !== beneficiary);
 
   const validate = () => {
     const values = getValues();
@@ -72,11 +56,15 @@ export const EditCheckForm = ({
     return (
       values.name &&
       values.beneficiary &&
-      (values.name !== values.beneficiary ? values.documentPath : true)
+      (values.name !== values.beneficiary ? document : true)
     );
   };
 
   const isValid = validate();
+
+  const submit = (data: any) => {
+    onSubmit({ ...data, document });
+  };
 
   return (
     <div className={styles.form}>
@@ -98,7 +86,10 @@ export const EditCheckForm = ({
             helperText={error ? error.message : null}
             error={!!error}
             onChange={(event: ChangeEvent) => {
-              setValue("documentPath", null);
+              const id = (event.target as any).value;
+              setValue("name", legalEntitiesMap[id]);
+              setValue("beneficiary", legalEntitiesMap[id]);
+              setDocument(null);
               setShowFileField(false);
               onChange(event);
             }}
@@ -122,7 +113,11 @@ export const EditCheckForm = ({
             helperText={error ? error.message : null}
             error={!!error}
             onChange={(event: ChangeEvent) => {
-              setShowFileField((event.target as any).value !== name);
+              if ((event.target as any).value !== name) {
+                setShowFileField(true);
+              } else {
+                setShowFileField(false);
+              }
               onChange(event);
             }}
             value={value}
@@ -132,68 +127,7 @@ export const EditCheckForm = ({
         )}
       />
       {showFileField && (
-        <div className={styles.row}>
-          <Controller
-            name="documentPath"
-            control={control}
-            render={({ field: { onChange, value }, fieldState: { error } }) => {
-              return (
-                <TextField
-                  helperText={error ? error.message : null}
-                  error={!!error}
-                  onChange={onChange}
-                  value={value?.name || ""}
-                  fullWidth
-                  placeholder="La letra de cambio a un tercero"
-                  onKeyDown={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                  InputProps={
-                    !!value
-                      ? {
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CloseIconSmall
-                                style={{
-                                  cursor: "pointer",
-                                  marginRight: "5px",
-                                }}
-                                onClick={() => {
-                                  setValue("documentPath", null);
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }
-                      : {}
-                  }
-                />
-              );
-            }}
-          />
-          <Button
-            color="base"
-            onClick={() => {
-              if (!fileInputRef.current) {
-                return;
-              }
-              fileInputRef.current.click();
-            }}
-          >
-            <AddFileIcon />
-            Subir
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={(event: any) => {
-              const fileUploaded = event.target.files[0];
-              setValue("documentPath", fileUploaded);
-            }}
-          />
-        </div>
+        <DocumentFileUpload value={document} onChange={setDocument} />
       )}
 
       <div className={styles.actions}>
@@ -201,11 +135,7 @@ export const EditCheckForm = ({
           <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button
-          color="base"
-          onClick={handleSubmit(onSubmit)}
-          disabled={!isValid}
-        >
+        <Button color="base" onClick={handleSubmit(submit)} disabled={!isValid}>
           <OkIcon width={16} height={16} />
           Guardar
         </Button>

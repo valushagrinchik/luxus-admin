@@ -10,13 +10,11 @@ import {
 } from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddTransferDetails } from "../../../../../../../lib/validation";
-
-import styles from "./EditTransferDetailsForm.module.css";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { AddFileIcon } from "../../../../../../../controls/icons/AddFileIcon";
-import { InputAdornment } from "@mui/material";
-import { CloseIconSmall } from "../../../../../../../controls/icons/CloseIconSmall";
+import { ChangeEvent, useState } from "react";
 import L18nEs from "../../../../../../../lib/l18n";
+import { DocumentFileUpload } from "../../../../../../../controls/DocumentFileUpload/DocumentFileUpload";
+import { Document } from "../../../../../../../api/interfaces";
+import styles from "./EditTransferDetailsForm.module.css";
 
 export const EditTransferDetailsForm = ({
   onReset,
@@ -32,22 +30,18 @@ export const EditTransferDetailsForm = ({
   legalEntitiesMap: EditBaseInput;
 }) => {
   const disabled = mode === Mode.preview;
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [showFileField, setShowFileField] = useState(false);
-  const [resetAddress, setResetAddress] = useState(true);
-
+  const [document, setDocument] = useState<Document | null>(data.document);
   const { getValues: getGlobalValues } = useFormContext();
+  const [resetAddress, setResetAddress] = useState(true);
 
   const { control, handleSubmit, watch, setValue, getValues } =
     useForm<EditTransferDetailsInput>({
       resolver: yupResolver(schemaAddTransferDetails),
       defaultValues: {
         id: "",
-        name: "",
-        beneficiary: "",
-        beneficiaryAddress: "",
-        documentPath: undefined,
+        name: data.name || "",
+        beneficiary: data.beneficiary || "",
+        beneficiaryAddress: data.beneficiaryAddress || "",
         favourite: false,
         bank: "",
         bankAddress: "",
@@ -58,7 +52,6 @@ export const EditTransferDetailsForm = ({
         correspondentBankAddress: "",
         correspondentBankAccountNumber: "",
         correspondentBankSwift: "",
-        // plantationId: getValues().generalInfo.id,
         plantationLegalEntityId: "",
       },
       values: {
@@ -66,7 +59,6 @@ export const EditTransferDetailsForm = ({
         name: data.name || "",
         beneficiary: data.beneficiary || "",
         beneficiaryAddress: data.beneficiaryAddress || "",
-        documentPath: data.documentPath,
         favourite: data.favourite || false,
         bank: data.bank || "",
         bankAddress: data.bankAddress || "",
@@ -78,44 +70,36 @@ export const EditTransferDetailsForm = ({
         correspondentBankAccountNumber:
           data.correspondentBankAccountNumber || "",
         correspondentBankSwift: data.correspondentBankSwift || "",
-        // plantationId: data.plantationId,
         plantationLegalEntityId: data.plantationLegalEntityId || "",
       },
     });
 
-  // DEPENDENCY OF beneficiary FROM name
-  const name = watch("plantationLegalEntityId");
-  useEffect(() => {
-    if (name) {
-      setValue("name", legalEntitiesMap[name]);
-      setValue("beneficiary", legalEntitiesMap[name]);
-      setValue(
-        "beneficiaryAddress",
-        getGlobalValues().legalEntities.find((e: any) => e.id === name)
-          ?.actualAddress
-      );
-    }
-  }, [name, setValue, legalEntitiesMap]);
-
   // CUSTOM VALIDATION
-  watch("beneficiary");
-  watch("documentPath");
   watch("bank");
   watch("bankAccountNumber");
   watch("bankAccountType");
+  const name = watch("name");
+  const beneficiary = watch("beneficiary");
+  const [showFileField, setShowFileField] = useState(name !== beneficiary);
+
   const validate = () => {
     const values = getValues();
 
     return (
       values.name &&
       values.beneficiary &&
-      (values.name !== values.beneficiary ? values.documentPath : true) &&
+      (values.name !== values.beneficiary ? document : true) &&
       values.bank &&
       values.bankAccountNumber &&
       values.bankAccountType
     );
   };
+
   const isValid = validate();
+
+  const submit = (data: any) => {
+    onSubmit({ ...data, document });
+  };
 
   return (
     <div className={styles.form}>
@@ -138,7 +122,16 @@ export const EditTransferDetailsForm = ({
               select
               options={legalEntitiesMap}
               onChange={(event: ChangeEvent) => {
-                setValue("documentPath", undefined);
+                const id = (event.target as any).value;
+                setValue("name", legalEntitiesMap[id]);
+                setValue("beneficiary", legalEntitiesMap[id]);
+                setValue(
+                  "beneficiaryAddress",
+                  getGlobalValues().legalEntities.find(
+                    (e: any) => e.id === name
+                  )?.actualAddress
+                );
+                setDocument(null);
                 setShowFileField(false);
                 onChange(event);
               }}
@@ -162,11 +155,14 @@ export const EditTransferDetailsForm = ({
               helperText={error ? error.message : null}
               error={!!error}
               onChange={(event: ChangeEvent) => {
-                setShowFileField((event.target as any).value !== name);
                 if ((event.target as any).value !== name) {
+                  setShowFileField(true);
                   resetAddress && setValue("beneficiaryAddress", "");
                   setResetAddress(false);
+                } else {
+                  setShowFileField(false);
                 }
+
                 onChange(event);
               }}
               value={value}
@@ -178,69 +174,9 @@ export const EditTransferDetailsForm = ({
         />
       </div>
       {showFileField && (
-        <div className={styles.row}>
-          <Controller
-            name="documentPath"
-            control={control}
-            render={({ field: { onChange, value }, fieldState: { error } }) => {
-              return (
-                <TextField
-                  helperText={error ? error.message : null}
-                  error={!!error}
-                  onChange={onChange}
-                  value={value?.name || ""}
-                  fullWidth
-                  placeholder="La letra de cambio a un tercero"
-                  onKeyDown={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                  InputProps={
-                    !!value
-                      ? {
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CloseIconSmall
-                                style={{
-                                  cursor: "pointer",
-                                  marginRight: "5px",
-                                }}
-                                onClick={() => {
-                                  setValue("documentPath", undefined);
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }
-                      : {}
-                  }
-                />
-              );
-            }}
-          />
-          <Button
-            color="base"
-            onClick={() => {
-              if (!fileInputRef.current) {
-                return;
-              }
-              fileInputRef.current.click();
-            }}
-          >
-            <AddFileIcon />
-            Subir
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={(event: any) => {
-              const fileUploaded = event.target.files[0];
-              setValue("documentPath", fileUploaded);
-            }}
-          />
-        </div>
+        <DocumentFileUpload value={document} onChange={setDocument} />
       )}
+
       <div className={styles.row}>
         <Controller
           name="beneficiaryAddress"
@@ -435,7 +371,7 @@ export const EditTransferDetailsForm = ({
         {mode !== Mode.preview && (
           <Button
             color="base"
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(submit)}
             disabled={disabled || !isValid}
           >
             <OkIcon width={16} height={16} />

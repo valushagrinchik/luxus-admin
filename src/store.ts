@@ -5,6 +5,7 @@ import { sortsApi } from "./api/sortsApi";
 import { loginApi } from "./api/loginApi";
 import catalogReducer from "./redux/reducer/catalogReducer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { documentsApi } from "./api/documentsApi";
 
 export const store = configureStore({
   reducer: {
@@ -12,12 +13,14 @@ export const store = configureStore({
     [plantationsApi.reducerPath]: plantationsApi.reducer,
     [sortsApi.reducerPath]: sortsApi.reducer,
     [loginApi.reducerPath]: loginApi.reducer,
+    [documentsApi.reducerPath]: documentsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(plantationsApi.middleware)
       .concat(sortsApi.middleware)
-      .concat(loginApi.middleware),
+      .concat(loginApi.middleware)
+      .concat(documentsApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
