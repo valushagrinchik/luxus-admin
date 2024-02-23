@@ -66,8 +66,6 @@ export const EditPlantationForm = ({
         name: "",
         country: "",
         comments: "",
-        deliveryMethod: ChecksDeliveryMethod.PERSONALLY,
-        termsOfPayment: TermsOfPayment.POSTPAID,
         postpaidCredit: "",
         postpaidDays: "",
       },
@@ -114,8 +112,15 @@ export const EditPlantationForm = ({
     keyName: "sid",
   });
 
+  methods.watch("legalEntities");
+  methods.watch("transferDetails");
+  methods.watch("checks");
+  methods.watch("financialContacts");
+  methods.watch("salesContacts");
+
   const validate = () => {
     const values = methods.getValues();
+
     return (
       values.checks.length >= values.legalEntities.length &&
       values.transferDetails.length >= values.legalEntities.length &&

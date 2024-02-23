@@ -94,7 +94,6 @@ export const schemaAddPlantationLegalEntity = yup
     code: yup.string().required(ErrorMessages.reqiuredField),
     legalAddress: yup.string().required(ErrorMessages.reqiuredField),
     actualAddress: yup.string().required(ErrorMessages.reqiuredField),
-    plantationId: yup.string().required(ErrorMessages.reqiuredField),
   })
   .required();
 

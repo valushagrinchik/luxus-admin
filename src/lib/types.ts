@@ -31,7 +31,6 @@ export type LegalEntity = {
   id: number;
   legalAddress: string;
   name: string;
-  plantationId: number;
 };
 
 export type Plantation = {
@@ -59,7 +58,6 @@ type Check = {
   favourite: boolean;
   id: number;
   name: string;
-  plantationId: number;
   plantationLegalEntityId: number;
 };
 
@@ -79,7 +77,6 @@ type TransferDetails = {
   favourite: boolean;
   id: number;
   name: string;
-  plantationId: number;
   plantationLegalEntityId: number;
 };
 
@@ -88,7 +85,6 @@ export type Contact = {
   email: string;
   id: number;
   name: string;
-  plantationId: number;
   position: string;
   skype: string;
   telegram: string;

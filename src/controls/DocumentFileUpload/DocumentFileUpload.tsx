@@ -13,9 +13,11 @@ import { DownloadBtn } from "../DownloadBtn";
 
 export const DocumentFileUpload = ({
   value,
+  disabled = false,
   onChange,
 }: {
   value: Document | null;
+  disabled?: boolean;
   onChange: (document: Document | null) => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -25,6 +27,11 @@ export const DocumentFileUpload = ({
   const [removeDocument] = useRemoveFileMutation();
 
   const handleFileChange = async (event: any) => {
+    try {
+      await handleFileRemove();
+    } catch (error) {
+      console.log(error);
+    }
     const res: any = await uploadDocument(event.target.files[0]);
 
     if (res.data) {
@@ -48,6 +55,7 @@ export const DocumentFileUpload = ({
       <TextField
         value={document?.name || ""}
         fullWidth
+        disabled={disabled}
         placeholder="La letra de cambio a un tercero"
         onKeyDown={(e) => {
           e.stopPropagation();
@@ -70,7 +78,7 @@ export const DocumentFileUpload = ({
               userSelect: "none",
             },
           },
-          ...(document
+          ...(document && !disabled
             ? {
                 endAdornment: (
                   <InputAdornment position="end">
@@ -90,6 +98,7 @@ export const DocumentFileUpload = ({
 
       <Button
         color="base"
+        disabled={disabled}
         onClick={() => {
           if (!fileInputRef.current) {
             return;

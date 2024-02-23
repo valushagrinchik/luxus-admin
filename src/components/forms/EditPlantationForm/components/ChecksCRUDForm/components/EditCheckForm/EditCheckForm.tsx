@@ -25,6 +25,7 @@ export const EditCheckForm = ({
   legalEntitiesMap: Record<string, string>;
   mode: Mode;
 }) => {
+  const disabled = mode === Mode.preview;
   const [document, setDocument] = useState<Document | null>(data.document);
 
   const { control, handleSubmit, watch, setValue, getValues } =
@@ -127,7 +128,11 @@ export const EditCheckForm = ({
         )}
       />
       {showFileField && (
-        <DocumentFileUpload value={document} onChange={setDocument} />
+        <DocumentFileUpload
+          value={document}
+          disabled={disabled}
+          onChange={setDocument}
+        />
       )}
 
       <div className={styles.actions}>

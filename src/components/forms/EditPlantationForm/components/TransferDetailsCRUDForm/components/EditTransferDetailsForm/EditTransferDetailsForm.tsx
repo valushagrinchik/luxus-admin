@@ -174,7 +174,11 @@ export const EditTransferDetailsForm = ({
         />
       </div>
       {showFileField && (
-        <DocumentFileUpload value={document} onChange={setDocument} />
+        <DocumentFileUpload
+          value={document}
+          disabled={disabled}
+          onChange={setDocument}
+        />
       )}
 
       <div className={styles.row}>

@@ -61,7 +61,10 @@ export const plantationsApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Plantation", id: "LIST" }],
+      invalidatesTags: (result) => [
+        { type: "Plantation", id: "LIST" },
+        { type: "Plantation", id: result?.plantation },
+      ],
     }),
     cancelPlantation: builder.mutation<{ plantation: number }, number>({
       query: (id) => ({

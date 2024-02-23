@@ -23,7 +23,6 @@ export type EditLegalEntityInput = {
   code: string;
   legalAddress: string;
   actualAddress: string;
-  plantationId: string;
 };
 export type EditTransferDetailsInput = {
   id: string;

@@ -174,7 +174,9 @@ export const PlantationsList = ({
 
   const { data: total } = useSearchPlantationsTotalQuery({ ...search });
 
-  const recordToRender = (record: PlantationThin) => ({
+  const recordToRender = (
+    record: PlantationThin
+  ): Record<keyof typeof headers, any> => ({
     id: record.id,
     country: <CountryIcon countryCode={record.country} />,
     name: record.name,
@@ -241,7 +243,7 @@ export const PlantationsList = ({
   const sortData = sortBy
     ? orderBy(
         data,
-        [(record) => record[sortBy.field]],
+        [(record) => recordToRender(record)[sortBy.field]],
         [sortBy.up ? "desc" : "asc"]
       )
     : data;
@@ -265,6 +267,18 @@ export const PlantationsList = ({
         ))}
       </Table>
       <Pagination
+        sx={{
+          ".MuiPaginationItem-root.Mui-selected": {
+            border: "none",
+            backgroundColor: "var(--Gray-100, #f2f4f7)",
+            color: "var(--Gray-700, #101828)",
+          },
+          ".MuiPaginationItem-root.Mui-selected:hover": {
+            border: "none",
+            backgroundColor: "var(--Gray-300, #f2f4f7)",
+            color: "var(--Gray-700, #101828)",
+          },
+        }}
         count={total?.total ? Math.ceil(total.total / limit) : 0}
         page={page}
         onChange={(event, page) => {

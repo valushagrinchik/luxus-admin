@@ -413,6 +413,18 @@ export const SortsList = ({
         ))}
       </div>
       <Pagination
+        sx={{
+          ".MuiPaginationItem-root.Mui-selected": {
+            border: "none",
+            backgroundColor: "var(--Gray-100, #f2f4f7)",
+            color: "var(--Gray-700, #101828)",
+          },
+          ".MuiPaginationItem-root.Mui-selected:hover": {
+            border: "none",
+            backgroundColor: "var(--Gray-300, #f2f4f7)",
+            color: "var(--Gray-700, #101828)",
+          },
+        }}
         count={total?.total ? Math.ceil(total.total / limit) : 0}
         page={page}
         onChange={(event, page) => {

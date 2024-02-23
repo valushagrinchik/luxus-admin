@@ -37,7 +37,6 @@ export const EditLegalEntityForm = ({
       code: "",
       legalAddress: "",
       actualAddress: "",
-      plantationId: "",
     },
     values: {
       id: data.id,
@@ -45,7 +44,6 @@ export const EditLegalEntityForm = ({
       code: data.code || "",
       legalAddress: data.legalAddress || "",
       actualAddress: data.actualAddress || "",
-      plantationId: data.plantationId || getValues().generalInfo.id,
     },
   });
 

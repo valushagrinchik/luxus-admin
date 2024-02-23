@@ -19,7 +19,7 @@ const Backdrop = React.forwardRef<
 
 const StyledModal = styled("div")`
   position: fixed;
-  z-index: 10;
+  z-index: 22;
   inset: 0;
   display: flex;
   align-items: center;

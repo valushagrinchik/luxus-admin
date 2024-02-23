@@ -41,18 +41,15 @@ export const transformPlantationDataBack = (
     legalEntities: data.legalEntities.map((entity) => ({
       ...entity,
       id: entity.id.toString(),
-      plantationId: entity.plantationId.toString(),
     })),
     checks: (data.checks || []).map((entity) => ({
       ...entity,
       id: entity.id.toString(),
-      plantationId: entity.plantationId.toString(),
       plantationLegalEntityId: entity.plantationLegalEntityId.toString(),
     })),
     transferDetails: (data.transferDetails || []).map((entity) => ({
       ...entity,
       id: entity.id.toString(),
-      plantationId: entity.plantationId.toString(),
       plantationLegalEntityId: entity.plantationLegalEntityId.toString(),
     })),
     financialContacts: (data.contacts || [])
