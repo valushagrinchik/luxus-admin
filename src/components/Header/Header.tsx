@@ -21,12 +21,14 @@ export const Header = ({
   const title = HEADER_TITLES[topLevelSlag as keyof typeof HEADER_TITLES] || "";
 
   return (
-    <header>
-      <div className={styles.menu_toggle_btn} onClick={onMenuToggle}>
-        {isOpen ? <CloseIcon /> : <HamburgerIcon />}
+    <header className={styles.header}>
+      <div className={styles.fixed}>
+        <div className={styles.menu_toggle_btn} onClick={onMenuToggle}>
+          {isOpen ? <CloseIcon /> : <HamburgerIcon />}
+        </div>
+        <span className={styles.title}>{title}</span>
+        <span className={styles.user}>{user.email}</span>
       </div>
-      <span className={styles.title}>{title}</span>
-      <span className={styles.user}>{user.email}</span>
     </header>
   );
 };

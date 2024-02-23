@@ -1,3 +1,6 @@
+.header {
+  height: 48px;
+}
 .menu_toggle_btn {
   cursor: pointer;
 }
@@ -12,4 +15,17 @@
 }
 .user {
   margin-left: auto;
+}
+.fixed {
+  width: 100%;
+  z-index: 20;
+  display: flex;
+  padding: 12px 24px;
+  align-items: center;
+  gap: 10px;
+  position: fixed;
+  border-bottom: 1px solid var(--Gray-300, #d0d5dd);
+  background: var(--Base-White, #fff);
+  /* Shadow */
+  box-shadow: 0px 0px 16px 0px rgba(0, 20, 61, 0.08);
 }

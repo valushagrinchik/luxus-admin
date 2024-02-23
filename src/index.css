@@ -44,18 +44,6 @@ code {
     monospace;
 }
 
-header {
-  border-bottom: 1px solid var(--Gray-300, #d0d5dd);
-  background: var(--Base-White, #fff);
-  /* Shadow */
-  box-shadow: 0px 0px 16px 0px rgba(0, 20, 61, 0.08);
-  height: 48px;
-  display: flex;
-  padding: 12px 24px;
-  align-items: center;
-  gap: 10px;
-}
-
 h1 {
   color: var(--Gray-700, #344054);
   /* Display sm/Medium */
