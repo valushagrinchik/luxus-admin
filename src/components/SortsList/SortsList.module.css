@@ -9,7 +9,6 @@
 
   .header {
     border-bottom: 1px solid var(--Gray-300, #d0d5dd);
-    display: flex;
     gap: 16px;
     padding: 8px 2px 8px 8px;
     color: var(--Primary-800, #0040c1);
@@ -30,54 +29,57 @@
   flex-direction: column;
   align-items: center;
   flex: 1 0 0;
-}
-.row_header {
-  height: var(--row-height);
-  display: flex;
-  gap: 16px;
-  width: 100%;
-  border-bottom: 1px solid var(--Gray-300, #d0d5dd);
-  padding: 8px 2px 8px 8px;
-  position: relative;
-  color: var(--Gray-900, #101828);
-  align-items: center;
-  & .actions {
+
+  .actions {
     margin-left: auto;
     margin-right: 12px;
+    flex-direction: row;
     display: flex;
     gap: 4px;
     color: var(--Gray-500);
   }
-}
 
-.pre_deleted {
-  height: var(--row-height);
-  z-index: 10;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  opacity: 0.9;
-  background: var(--Red-50, #fef3f2);
-  display: flex;
-  align-items: center;
-  padding-left: 24px;
-  border-bottom: 1px solid var(--Gray-300, #d0d5dd);
-  & span {
-    color: var(--Red-600, #d92d20);
-    /* Text sm/Medium */
-    font-family: "Roboto Condensed";
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 20px; /* 142.857% */
-  }
+  .row_header {
+    height: var(--row-height);
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    border-bottom: 1px solid var(--Gray-300, #d0d5dd);
+    padding: 8px 2px 8px 8px;
+    position: relative;
+    color: var(--Gray-900, #101828);
+    align-items: center;
 
-  .actions {
-    padding: 6px 0;
-    height: 100%;
-    .cancel_btn {
-      height: 100%;
+    .pre_deleted {
+      height: var(--row-height);
+      z-index: 10;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0.9;
+      background: var(--Red-50, #fef3f2);
+      display: flex;
+      align-items: center;
+      padding-left: 24px;
+      border-bottom: 1px solid var(--Gray-300, #d0d5dd);
+      & span {
+        color: var(--Red-600, #d92d20);
+        /* Text sm/Medium */
+        font-family: "Roboto Condensed";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 20px; /* 142.857% */
+      }
+
+      .actions {
+        padding: 6px 0;
+        height: 100%;
+        .cancel_btn {
+          height: 100%;
+        }
+      }
     }
   }
 }

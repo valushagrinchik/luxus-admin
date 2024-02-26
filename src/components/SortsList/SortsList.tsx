@@ -31,24 +31,10 @@ import { OkIconSmall } from "../../controls/icons/OkIconSmall";
 import styles from "./SortsList.module.css";
 import { NoData } from "../ui/NoData";
 
-interface BaseRowProps {
+interface RowProps {
   open: boolean;
   children?: ReactNode;
   onActionBtnClick: (action: ListActionType, data: any) => void;
-}
-
-interface SortRowProps extends BaseRowProps {
-  sort: Sort;
-}
-
-interface CategoryRowProps extends BaseRowProps {
-  category: Category;
-}
-interface GroupRowProps extends BaseRowProps {
-  group: Group;
-}
-
-interface RowProps extends BaseRowProps {
   openable: boolean;
   data: any;
   className?: string;
@@ -196,57 +182,6 @@ const Row = ({
   );
 };
 
-const SortRow = ({ open, children, sort, onActionBtnClick }: SortRowProps) => {
-  return (
-    <Row
-      open={open}
-      className={styles.sort}
-      openable={false}
-      data={sort}
-      checkable={true}
-      onActionBtnClick={onActionBtnClick}
-    >
-      {children}
-    </Row>
-  );
-};
-const CategoryRow = ({
-  open,
-  children,
-  category,
-  onActionBtnClick,
-}: CategoryRowProps) => {
-  return (
-    <Row
-      open={open}
-      className={styles.category}
-      openable={true}
-      data={category}
-      onActionBtnClick={onActionBtnClick}
-    >
-      {children}
-    </Row>
-  );
-};
-const GroupRow = ({
-  open,
-  group,
-  onActionBtnClick,
-  children,
-}: GroupRowProps) => {
-  return (
-    <Row
-      open={open}
-      className={styles.group}
-      openable={true}
-      data={group}
-      onActionBtnClick={onActionBtnClick}
-    >
-      {children}
-    </Row>
-  );
-};
-
 const defineRowConfig = (group: SortListGroup) => {
   switch (group) {
     case SortListGroup.group: {
@@ -376,28 +311,35 @@ export const SortsList = ({
         </div>
 
         {data?.map((group) => (
-          <GroupRow
+          <Row
             open={config.group}
             key={`group_${group.id}`}
+            className={styles.group}
+            openable={true}
+            data={group}
             onActionBtnClick={(action, data) =>
               handleActionBtnClick(action, data, SortListGroup.group)
             }
-            group={group}
           >
             {group.categories?.map((cat: any) => (
-              <CategoryRow
+              <Row
                 open={config.category}
                 key={`category_${cat.id}`}
-                category={cat}
+                className={styles.category}
+                openable={true}
+                data={cat}
                 onActionBtnClick={(action, data) =>
                   handleActionBtnClick(action, data, SortListGroup.category)
                 }
               >
                 {cat.sorts?.map((sort: any) => (
-                  <SortRow
+                  <Row
                     open={config.sort}
-                    sort={sort}
                     key={`sort_${sort.id}`}
+                    className={styles.sort}
+                    openable={false}
+                    data={sort}
+                    checkable={true}
                     onActionBtnClick={(action, data) =>
                       handleActionBtnClick(
                         action,
@@ -405,11 +347,11 @@ export const SortsList = ({
                         SortListGroup.sort
                       )
                     }
-                  ></SortRow>
+                  ></Row>
                 ))}
-              </CategoryRow>
+              </Row>
             ))}
-          </GroupRow>
+          </Row>
         ))}
       </div>
       <Pagination
