@@ -33,7 +33,7 @@ export const EditCategoryForm = ({
   onReset,
   data,
 }: EditCategoryFormProps) => {
-  const { data: groups } = useGetGroupsQuery();
+  const { data: groups, isSuccess } = useGetGroupsQuery();
   const [update] = useUpdateCategoryMutation();
   const [create] = useCreateCategoryMutation();
 
@@ -48,11 +48,15 @@ export const EditCategoryForm = ({
   const {
     control,
     handleSubmit,
-    formState: { isValid },
+    formState: { isValid, isDirty },
   } = useForm<EditCategoryFormInputs>({
     resolver: yupResolver(schemaEditCategory),
     defaultValues: {
-      groupId: data?.groupId?.toString() || "",
+      groupId: "",
+      name: "",
+    },
+    values: {
+      groupId: isSuccess ? data?.groupId?.toString() || "" : "",
       name: data?.name || "",
     },
   });
@@ -125,7 +129,11 @@ export const EditCategoryForm = ({
           <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button color="base" onClick={handleSubmit(submit)} disabled={!isValid}>
+        <Button
+          color="base"
+          onClick={handleSubmit(submit)}
+          disabled={!isDirty || !isValid}
+        >
           <OkIcon width={16} height={16} />
           Guardar
         </Button>

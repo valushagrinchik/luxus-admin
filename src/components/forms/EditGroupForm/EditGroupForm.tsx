@@ -33,7 +33,7 @@ export const EditGroupForm = ({
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { isValid, isDirty },
   } = useForm<EditGroupFormInputs>({
     resolver: yupResolver(schemaEditGroup),
     defaultValues: {
@@ -87,7 +87,7 @@ export const EditGroupForm = ({
           <Button
             color="base"
             onClick={handleSubmit(submit)}
-            disabled={!isValid}
+            disabled={!isDirty || !isValid}
           >
             <OkIcon width={16} height={16} />
             Guardar

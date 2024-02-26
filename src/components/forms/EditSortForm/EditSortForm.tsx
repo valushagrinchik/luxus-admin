@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useMemo } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "../../../controls/Button/Button";
 import { EditSortFormInputs, Mode } from "../../../lib/types";
@@ -38,36 +38,39 @@ export const EditSortForm = ({
   const disabled = mode === Mode.preview;
   const [update] = useUpdateSortMutation();
   const [create] = useCreateSortMutation();
-  const {
-    handleSubmit,
-    control,
-    resetField,
-    formState: { isValid },
-    watch,
-  } = useForm<EditSortFormInputs>({
-    resolver: yupResolver(schemaEditSort),
-    defaultValues: {
+
+  const defaultValues = useMemo(() => {
+    return {
       name: data?.name || "",
       groupId: data?.groupId?.toString() || "",
       categoryId: data?.categoryId?.toString() || "",
-    },
+    };
+  }, [data]);
+
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { isValid, isDirty },
+    watch,
+    getValues,
+  } = useForm<EditSortFormInputs>({
+    resolver: yupResolver(schemaEditSort),
+    defaultValues,
   });
 
   const groupId = watch("groupId");
 
-  useEffect(() => {
-    resetField("categoryId");
-  }, [groupId]);
-
   const { data: groups } = useGetGroupsQuery();
-  const { data: categories } = useGetCategoriesQuery(
-    groupId
-      ? {
-          groupId: +groupId,
-        }
-      : undefined,
-    { skip: !groupId }
-  );
+  const { data: categories, isSuccess: isCatListLoaded } =
+    useGetCategoriesQuery(
+      groupId
+        ? {
+            groupId: +groupId,
+          }
+        : undefined,
+      { skip: !groupId }
+    );
 
   const groupsMap = Object.fromEntries(
     groups?.map((group: any) => [group.id, group.name]) || []
@@ -127,7 +130,19 @@ export const EditSortForm = ({
               placeholder="Seleccionar grupo"
               helperText={error ? error.message : null}
               error={!!error}
-              onChange={onChange}
+              onChange={(event: any) => {
+                reset(
+                  {
+                    ...getValues(),
+                    groupId: event.target.value,
+                    categoryId: "",
+                  },
+                  {
+                    keepDirtyValues: true,
+                  }
+                );
+                onChange(event);
+              }}
               value={value}
               options={groupsMap}
               fullWidth
@@ -150,7 +165,7 @@ export const EditSortForm = ({
               helperText={error ? error.message : null}
               error={!!error}
               onChange={onChange}
-              value={value}
+              value={isCatListLoaded ? value : ""}
               disabled={disabled || !groupId}
               options={categoriesMap}
               fullWidth
@@ -189,7 +204,7 @@ export const EditSortForm = ({
           <Button
             color="base"
             onClick={handleSubmit(submit)}
-            disabled={!isValid}
+            disabled={!isDirty || !isValid}
           >
             <OkIcon width={16} height={16} />
             Guardar
