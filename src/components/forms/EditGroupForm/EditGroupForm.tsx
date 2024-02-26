@@ -11,6 +11,7 @@ import { CloseIcon } from "../../../controls/icons/CloseIcon";
 import { TextField } from "../../../controls/TextField";
 
 import styles from "./EditGroupForm.module.css";
+import { Mode } from "../../../lib/types";
 
 type EditGroupFormInputs = {
   name: string;
@@ -20,14 +21,14 @@ interface EditGroupFormProps {
   onSubmit: () => void;
   onReset: () => void;
   data: any;
-  action: "create" | "update";
+  mode: Mode;
 }
 
 export const EditGroupForm = ({
   onSubmit,
   onReset,
   data,
-  action,
+  mode,
 }: EditGroupFormProps) => {
   const {
     control,
@@ -44,10 +45,10 @@ export const EditGroupForm = ({
   const [update] = useUpdateGroupMutation();
 
   const submit: SubmitHandler<EditGroupFormInputs> = async (formData) => {
-    if (action === "create") {
+    if (mode === Mode.create) {
       await create(formData);
     }
-    if (action === "update") {
+    if (mode === Mode.edit) {
       await update({ ...formData, id: data.id });
     }
     onSubmit();
@@ -56,7 +57,7 @@ export const EditGroupForm = ({
   return (
     <div className={styles.form_container}>
       <form className={styles.form}>
-        <h2>{action === "create" ? "Crear" : "Editar"} grupo</h2>
+        <h2>{mode === Mode.create ? "Crear" : "Editar"} grupo</h2>
 
         <Controller
           render={({ field: { onChange, value }, fieldState: { error } }) => (

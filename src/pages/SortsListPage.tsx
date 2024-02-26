@@ -20,35 +20,7 @@ import {
 } from "../redux/reducer/catalogReducer";
 import { AdminConfirmationForm } from "../components/forms/AdminConfirmationForm/AdminConfirmationForm";
 import { useAuth } from "../lib/auth";
-
-type ModalType = "create" | "update" | "delete" | "admin_approve";
-
-const renderForm = (
-  {
-    contentData,
-    ...props
-  }: {
-    contentData: any;
-    onSubmit: () => void;
-    onReset: () => void;
-  },
-  modalType: "create" | "update",
-  type: SortListGroup
-) => {
-  switch (type) {
-    case SortListGroup.group: {
-      return <EditGroupForm {...props} action={modalType} data={contentData} />;
-    }
-    case SortListGroup.category: {
-      return (
-        <EditCategoryForm {...props} action={modalType} data={contentData} />
-      );
-    }
-    case SortListGroup.sort: {
-      return <EditSortForm {...props} action={modalType} data={contentData} />;
-    }
-  }
-};
+import { ListActionType, Mode } from "../lib/types";
 
 const SortsListPage = () => {
   const { isAdmin } = useAuth();
@@ -57,12 +29,16 @@ const SortsListPage = () => {
   const appDispatch = useAppDispatch();
 
   const [modalConfig, setModalConfig] = useState<{
-    modalType: ModalType;
+    modalType: ListActionType;
     type: SortListGroup;
     data: any;
   } | null>(null);
 
-  const handleOpen = (modalType: ModalType, type: SortListGroup, data: any) => {
+  const handleOpen = (
+    modalType: ListActionType,
+    type: SortListGroup,
+    data: any
+  ) => {
     setModalConfig({
       modalType,
       type,
@@ -114,7 +90,13 @@ const SortsListPage = () => {
     if (!modalConfig) {
       return;
     }
-    if (modalConfig?.modalType === "delete") {
+    if (
+      modalConfig?.modalType === ListActionType.cancel ||
+      modalConfig?.modalType === ListActionType.admin_refuse
+    ) {
+      return;
+    }
+    if (modalConfig?.modalType === ListActionType.delete) {
       if (isAdmin) {
         return (
           <AdminConfirmationForm
@@ -127,7 +109,7 @@ const SortsListPage = () => {
       return <ConfirmationForm onReset={handleClose} onSubmit={handleDelete} />;
     }
 
-    if (modalConfig?.modalType === "admin_approve") {
+    if (modalConfig?.modalType === ListActionType.admin_approve) {
       return (
         <AdminConfirmationForm
           title={AdminConfirmationFormTitles[modalConfig.type]}
@@ -137,15 +119,39 @@ const SortsListPage = () => {
       );
     }
 
-    return renderForm(
-      {
-        onSubmit: handleClose,
-        onReset: handleClose,
-        contentData: modalConfig.data,
-      },
-      modalConfig.modalType,
-      modalConfig.type
-    );
+    const mode = modalConfig.modalType as unknown as Mode;
+    switch (modalConfig.type) {
+      case SortListGroup.group: {
+        return (
+          <EditGroupForm
+            mode={mode}
+            onSubmit={handleClose}
+            onReset={handleClose}
+            data={modalConfig.data}
+          />
+        );
+      }
+      case SortListGroup.category: {
+        return (
+          <EditCategoryForm
+            mode={mode}
+            onSubmit={handleClose}
+            onReset={handleClose}
+            data={modalConfig.data}
+          />
+        );
+      }
+      case SortListGroup.sort: {
+        return (
+          <EditSortForm
+            mode={mode}
+            onSubmit={handleClose}
+            onReset={handleClose}
+            data={modalConfig.data}
+          />
+        );
+      }
+    }
   };
 
   return (
@@ -154,10 +160,10 @@ const SortsListPage = () => {
       <SortsFilters
         onSortListGroupChange={setSortListGroup}
         onCreateBtnClick={(type) => {
-          handleOpen("create", type, {});
+          handleOpen(ListActionType.create, type, {});
         }}
         onDeleteBtnClick={() => {
-          handleOpen("delete", SortListGroup.sort, {});
+          handleOpen(ListActionType.delete, SortListGroup.sort, {});
         }}
       />
       <Box>

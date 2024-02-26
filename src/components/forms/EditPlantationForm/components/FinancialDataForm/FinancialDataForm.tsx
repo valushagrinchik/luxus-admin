@@ -10,13 +10,13 @@ import { ContactsCRUDForm } from "../ContactsCRUDForm/ContactsCRUDForm";
 import { ChecksCRUDForm } from "../ChecksCRUDForm/ChecksCRUDForm";
 import { TransferDetailsCRUDForm } from "../TransferDetailsCRUDForm/TransferDetailsCRUDForm";
 import L18nEs from "../../../../../lib/l18n";
-import {
-  EditLegalEntityInput,
-  EditPlantationInput,
-  Mode,
-} from "../../interfaces";
+import { EditLegalEntityInput, EditPlantationInput } from "../../interfaces";
 import { PlantationDepartment } from "../../../../../lib/constants";
-import { ChecksDeliveryMethod, TermsOfPayment } from "../../../../../lib/types";
+import {
+  ChecksDeliveryMethod,
+  Mode,
+  TermsOfPayment,
+} from "../../../../../lib/types";
 import { ChangeEvent } from "react";
 
 export const FinancialDataForm = ({

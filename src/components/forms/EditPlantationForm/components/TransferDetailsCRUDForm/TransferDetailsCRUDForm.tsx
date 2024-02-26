@@ -7,7 +7,6 @@ import { BinIcon } from "../../../../../controls/icons/BinIcon";
 import { EditIcon } from "../../../../../controls/icons/EditIcon";
 import {
   EditBaseInput,
-  Mode,
   EditTransferDetailsInput,
   EditPlantationInput,
 } from "../../interfaces";
@@ -18,6 +17,7 @@ import { FavouriteBox } from "../../../../../controls/FavouriteBox";
 import { ViewIcon } from "../../../../../controls/icons/ViewIcon";
 import { v4 as uuid } from "uuid";
 import styles from "./TransferDetailsCRUDForm.module.css";
+import { Mode } from "../../../../../lib/types";
 
 export const TransferDetailsCRUDForm = ({
   mode,

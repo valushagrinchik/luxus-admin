@@ -141,6 +141,7 @@
 }
 
 .bin_icon:hover {
+  cursor: pointer;
   color: var(--Red-500);
 }
 .admin_action_btn {

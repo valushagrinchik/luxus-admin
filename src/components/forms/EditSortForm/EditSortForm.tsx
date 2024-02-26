@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "../../../controls/Button/Button";
-import { EditSortFormInputs } from "../../../lib/types";
+import { EditSortFormInputs, Mode } from "../../../lib/types";
 import {
   useCreateSortMutation,
   useGetCategoriesQuery,
@@ -26,15 +26,16 @@ interface EditSortFormProps {
     groupId?: number;
     categoryId?: number;
   };
-  action: "create" | "update";
+  mode: Mode;
 }
 
 export const EditSortForm = ({
-  action,
+  mode,
   onSubmit,
   onReset,
   data,
 }: EditSortFormProps) => {
+  const disabled = mode === Mode.preview;
   const [update] = useUpdateSortMutation();
   const [create] = useCreateSortMutation();
   const {
@@ -77,13 +78,13 @@ export const EditSortForm = ({
   );
 
   const submit: SubmitHandler<EditSortFormInputs> = async (formData) => {
-    if (action === "create") {
+    if (mode === "create") {
       await create({
         name: formData.name,
         categoryId: +formData.categoryId,
       });
     }
-    if (action === "update") {
+    if (mode === Mode.edit) {
       await update({
         id: data.id,
         name: formData.name,
@@ -97,9 +98,19 @@ export const EditSortForm = ({
     return <></>;
   }
 
+  const title = () => {
+    if (mode === Mode.create) {
+      return "Crear variedad";
+    }
+    if (mode === Mode.edit) {
+      return "Editar variedad";
+    }
+    return "Variedad";
+  };
+
   return (
     <form className={styles.form}>
-      <h2>{action === "create" ? "Crear" : "Editar"} variedad</h2>
+      <h2>{title()}</h2>
       <div className={styles.fields}>
         <TextField label="Número" disabled value={data.id} fullWidth />
 
@@ -107,6 +118,7 @@ export const EditSortForm = ({
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
               select
+              disabled={disabled}
               label={
                 <>
                   Grupo <span className={styles.required}>*</span>
@@ -139,7 +151,7 @@ export const EditSortForm = ({
               error={!!error}
               onChange={onChange}
               value={value}
-              disabled={!groupId}
+              disabled={disabled || !groupId}
               options={categoriesMap}
               fullWidth
             />
@@ -158,6 +170,7 @@ export const EditSortForm = ({
               }
               placeholder="Indicar Nombre"
               fullWidth
+              disabled={disabled}
               error={!!error}
               onChange={onChange}
               value={value}
@@ -172,10 +185,16 @@ export const EditSortForm = ({
           <CloseIcon width={16} height={16} />
           Salir
         </Button>
-        <Button color="base" onClick={handleSubmit(submit)} disabled={!isValid}>
-          <OkIcon width={16} height={16} />
-          Guardar
-        </Button>
+        {!disabled && (
+          <Button
+            color="base"
+            onClick={handleSubmit(submit)}
+            disabled={!isValid}
+          >
+            <OkIcon width={16} height={16} />
+            Guardar
+          </Button>
+        )}
       </div>
     </form>
   );

@@ -9,7 +9,6 @@ import {
   EditCheckInput,
   EditContactInput,
   EditPlantationInput,
-  Mode,
 } from "../../interfaces";
 import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 import { FavouriteBox } from "../../../../../controls/FavouriteBox";
@@ -18,6 +17,7 @@ import { v4 as uuid } from "uuid";
 
 import L18nEs from "../../../../../lib/l18n";
 import styles from "./ChecksCRUDForm.module.css";
+import { Mode } from "../../../../../lib/types";
 
 export const ChecksCRUDForm = ({
   mode,

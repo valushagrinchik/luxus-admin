@@ -6,7 +6,6 @@ import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
 import {
   EditBaseInput,
   EditTransferDetailsInput,
-  Mode,
 } from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddTransferDetails } from "../../../../../../../lib/validation";
@@ -15,6 +14,7 @@ import L18nEs from "../../../../../../../lib/l18n";
 import { DocumentFileUpload } from "../../../../../../../controls/DocumentFileUpload/DocumentFileUpload";
 import { Document } from "../../../../../../../api/interfaces";
 import styles from "./EditTransferDetailsForm.module.css";
+import { Mode } from "../../../../../../../lib/types";
 
 export const EditTransferDetailsForm = ({
   onReset,

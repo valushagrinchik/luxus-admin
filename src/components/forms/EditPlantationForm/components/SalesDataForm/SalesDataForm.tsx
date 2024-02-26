@@ -1,6 +1,6 @@
 import { PlantationDepartment } from "../../../../../lib/constants";
 import L18nEs from "../../../../../lib/l18n";
-import { Mode } from "../../interfaces";
+import { Mode } from "../../../../../lib/types";
 import { ContactsCRUDForm } from "../ContactsCRUDForm/ContactsCRUDForm";
 
 export const SalesDataForm = ({ mode }: { mode: Mode }) => {

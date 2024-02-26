@@ -1,6 +1,6 @@
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "../../../controls/Button/Button";
-import { EditCategoryFormInputs } from "../../../lib/types";
+import { EditCategoryFormInputs, Mode } from "../../../lib/types";
 import {
   useCreateCategoryMutation,
   useGetGroupsQuery,
@@ -24,11 +24,11 @@ interface EditCategoryFormProps {
     name?: string;
     groupId?: number;
   };
-  action: "create" | "update";
+  mode: Mode;
 }
 
 export const EditCategoryForm = ({
-  action,
+  mode,
   onSubmit,
   onReset,
   data,
@@ -58,13 +58,13 @@ export const EditCategoryForm = ({
   });
 
   const submit: SubmitHandler<EditCategoryFormInputs> = async (formData) => {
-    if (action === "create") {
+    if (mode === Mode.create) {
       await create({
         name: formData.name,
         groupId: +formData.groupId,
       });
     }
-    if (action === "update") {
+    if (mode === Mode.edit) {
       await update({
         id: data.id,
         name: formData.name,
@@ -76,7 +76,7 @@ export const EditCategoryForm = ({
 
   return (
     <form className={styles.form}>
-      <h2>{action === "create" ? "Crear" : "Editar"} categoria</h2>
+      <h2>{mode === Mode.create ? "Crear" : "Editar"} categoria</h2>
 
       <Controller
         render={({ field: { onChange, value }, fieldState: { error } }) => (

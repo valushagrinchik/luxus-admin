@@ -3,7 +3,7 @@ import { TextField } from "../../../../../../../controls/TextField";
 import { Button } from "../../../../../../../controls/Button/Button";
 import { CloseIcon } from "../../../../../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
-import { EditCheckInput, Mode } from "../../../../interfaces";
+import { EditCheckInput } from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddCheck } from "../../../../../../../lib/validation";
 import { ChangeEvent, useState } from "react";
@@ -11,6 +11,7 @@ import { Document } from "../../../../../../../api/interfaces";
 import { DocumentFileUpload } from "../../../../../../../controls/DocumentFileUpload/DocumentFileUpload";
 
 import styles from "./EditCheckForm.module.css";
+import { Mode } from "../../../../../../../lib/types";
 
 export const EditCheckForm = ({
   onReset,

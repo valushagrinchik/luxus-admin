@@ -19,18 +19,11 @@ export type Group = {
   deletedAt: string;
   categories: Category[];
 };
+
 export type User = {
   id: number;
   email: string;
   access_token: string;
-};
-
-export type LegalEntity = {
-  actualAddress: string;
-  code: string;
-  id: number;
-  legalAddress: string;
-  name: string;
 };
 
 export type Plantation = {
@@ -51,7 +44,13 @@ export type Plantation = {
   checks?: Check[];
   transferDetails?: TransferDetails[];
 };
-
+export type LegalEntity = {
+  actualAddress: string;
+  code: string;
+  id: number;
+  legalAddress: string;
+  name: string;
+};
 type Check = {
   beneficiary: string;
   documentPath?: any;
@@ -60,7 +59,6 @@ type Check = {
   name: string;
   plantationLegalEntityId: number;
 };
-
 type TransferDetails = {
   bank: string;
   bankAccountNumber: string;
@@ -79,7 +77,6 @@ type TransferDetails = {
   name: string;
   plantationLegalEntityId: number;
 };
-
 export type Contact = {
   department: string;
   email: string;
@@ -107,13 +104,6 @@ export type MenuItem = {
   label: string;
   children?: MenuItem[];
 };
-
-export type ListActionType =
-  | "update"
-  | "cancel"
-  | "delete"
-  | "admin_refuse"
-  | "admin_approve";
 
 export enum CountryCode {
   co = "co",
@@ -152,3 +142,19 @@ export type PlantationThin = {
   postpaidDays: number;
   termsOfPayment: TermsOfPayment;
 };
+
+export enum Mode {
+  "preview" = "preview",
+  "create" = "create",
+  "edit" = "edit",
+}
+
+export enum ListActionType {
+  "preview" = "preview",
+  "create" = "create",
+  "edit" = "edit",
+  "cancel" = "cancel",
+  "delete" = "delete",
+  "admin_refuse" = "admin_refuse",
+  "admin_approve" = "admin_approve",
+}

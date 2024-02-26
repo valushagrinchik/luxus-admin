@@ -6,10 +6,11 @@ import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
 import { PlantationDepartment } from "../../../../../../../lib/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddPlantationContact } from "../../../../../../../lib/validation";
-import { EditContactInput, Mode } from "../../../../interfaces";
+import { EditContactInput } from "../../../../interfaces";
 
 import L18nEs from "../../../../../../../lib/l18n";
 import styles from "./EditContactForm.module.css";
+import { Mode } from "../../../../../../../lib/types";
 
 export const EditContactForm = ({
   onReset,

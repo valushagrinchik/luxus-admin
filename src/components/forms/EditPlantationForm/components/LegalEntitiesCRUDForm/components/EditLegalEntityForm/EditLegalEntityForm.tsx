@@ -3,11 +3,11 @@ import { TextField } from "../../../../../../../controls/TextField";
 import { Button } from "../../../../../../../controls/Button/Button";
 import { CloseIcon } from "../../../../../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../../../../../controls/icons/OkIcon";
-import { EditLegalEntityInput, Mode } from "../../../../interfaces";
+import { EditLegalEntityInput } from "../../../../interfaces";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaAddPlantationLegalEntity } from "../../../../../../../lib/validation";
 import styles from "./EditLegalEntityForm.module.css";
-import { CountryCode } from "../../../../../../../lib/types";
+import { CountryCode, Mode } from "../../../../../../../lib/types";
 
 export const EditLegalEntityForm = ({
   data = {},

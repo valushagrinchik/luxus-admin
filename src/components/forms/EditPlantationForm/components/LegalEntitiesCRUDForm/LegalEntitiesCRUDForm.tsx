@@ -5,16 +5,12 @@ import { PlusIcon } from "../../../../../controls/icons/PlusIcon";
 import { Table } from "../Table/Table";
 import { BinIcon } from "../../../../../controls/icons/BinIcon";
 import { EditIcon } from "../../../../../controls/icons/EditIcon";
-import {
-  EditLegalEntityInput,
-  EditPlantationInput,
-  Mode,
-} from "../../interfaces";
+import { EditLegalEntityInput, EditPlantationInput } from "../../interfaces";
 import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 import { v4 as uuid } from "uuid";
 import { EditLegalEntityForm } from "./components/EditLegalEntityForm/EditLegalEntityForm";
 import styles from "./LegalEntitiesCRUDForm.module.css";
-import { CountryCode } from "../../../../../lib/types";
+import { CountryCode, Mode } from "../../../../../lib/types";
 import { AdminConfirmationForm } from "../../../AdminConfirmationForm/AdminConfirmationForm";
 
 type ModalType = "editEntity" | "confirmDelete";

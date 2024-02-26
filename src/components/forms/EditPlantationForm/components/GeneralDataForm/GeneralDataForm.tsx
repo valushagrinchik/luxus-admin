@@ -5,11 +5,12 @@ import {
 } from "react-hook-form";
 import Box from "../../../../../controls/Box";
 import { TextField } from "../../../../../controls/TextField";
-import { EditPlantationInput, Mode } from "../../interfaces";
+import { EditPlantationInput } from "../../interfaces";
 import { LegalEntitiesCRUDForm } from "../LegalEntitiesCRUDForm/LegalEntitiesCRUDForm";
 
 import L18nEs from "../../../../../lib/l18n";
 import styles from "./GeneralDataForm.module.css";
+import { Mode } from "../../../../../lib/types";
 
 export const GeneralDataForm = ({
   mode,

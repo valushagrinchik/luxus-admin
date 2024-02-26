@@ -10,7 +10,6 @@ import {
   useSearchGroupsTotalQuery,
 } from "../../api/sortsApi";
 import {
-  CatalogState,
   selectSelectedSorts,
   selectSortsSearch,
   setSelectedSorts,
@@ -74,14 +73,14 @@ const Row = ({
           <Button
             color="red"
             className={styles.admin_action_btn}
-            onClick={() => onActionBtnClick("admin_refuse", data)}
+            onClick={() => onActionBtnClick(ListActionType.admin_refuse, data)}
           >
             <CloseIconSmall width={12} height={12} />
           </Button>
           <Button
             color="green"
             className={styles.admin_action_btn}
-            onClick={() => onActionBtnClick("admin_approve", data)}
+            onClick={() => onActionBtnClick(ListActionType.admin_approve, data)}
           >
             <OkIconSmall width={12} height={12} />
           </Button>
@@ -95,12 +94,12 @@ const Row = ({
           <BinIcon
             key=""
             className={styles.bin_icon}
-            onClick={() => onActionBtnClick("delete", data)}
+            onClick={() => onActionBtnClick(ListActionType.delete, data)}
           />
         )}
         <EditIcon
           className={styles.edit_btn}
-          onClick={() => onActionBtnClick("update", data)}
+          onClick={() => onActionBtnClick(ListActionType.edit, data)}
         />
       </>
     );
@@ -114,6 +113,7 @@ const Row = ({
         })}
         onMouseOver={() => openable && setShowDeleteBtn(true)}
         onMouseLeave={() => openable && setShowDeleteBtn(false)}
+        onDoubleClick={() => onActionBtnClick(ListActionType.preview, data)}
       >
         {!!data.deletedAt && !isAdmin && (
           <div className={styles.pre_deleted}>
@@ -123,7 +123,7 @@ const Row = ({
                 <Button
                   className={styles.cancel_btn}
                   color="red"
-                  onClick={() => onActionBtnClick("cancel", data)}
+                  onClick={() => onActionBtnClick(ListActionType.cancel, data)}
                 >
                   Cancelar
                 </Button>
@@ -210,7 +210,7 @@ const defineRowConfig = (group: SortListGroup) => {
 
 interface SortsListProps {
   openModal: (
-    action: "update" | "delete",
+    action: ListActionType,
     type: SortListGroup,
     data: Group | Category | Sort
   ) => void;
@@ -224,7 +224,7 @@ export const SortsList = ({
   refetch = false,
 }: SortsListProps) => {
   const limit = 10;
-  const search: CatalogState["sortsSearch"] = useAppSelector(selectSortsSearch);
+  const search = useAppSelector(selectSortsSearch);
   const [config, setConfig] = useState(defineRowConfig(group));
   const [page, setPage] = useState(1);
 
@@ -260,18 +260,22 @@ export const SortsList = ({
   }, [refetch, searchGroups]);
 
   const handleActionBtnClick = async (
-    action: any,
+    action: ListActionType,
     data: any,
     type: SortListGroup
   ) => {
     if (
-      action === "update" ||
-      action === "delete" ||
-      action === "admin_approve"
+      action === ListActionType.edit ||
+      action === ListActionType.delete ||
+      action === ListActionType.admin_approve ||
+      (action === ListActionType.preview && type === SortListGroup.sort)
     ) {
       return openModal(action, type, data);
     }
-    if (action === "admin_refuse" || action === "cancel") {
+    if (
+      action === ListActionType.admin_refuse ||
+      action === ListActionType.cancel
+    ) {
       switch (type) {
         case SortListGroup.sort: {
           await cancelSort(data.id);

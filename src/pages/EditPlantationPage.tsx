@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { EditPlantationForm } from "../components/forms/EditPlantationForm/EditPlantationForm";
-import { Mode } from "../components/forms/EditPlantationForm/interfaces";
+import { Mode } from "../lib/types";
 
 const EditPlantationPage = () => {
   let { plantationId } = useParams();

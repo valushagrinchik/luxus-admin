@@ -54,6 +54,7 @@ export const TextField = React.forwardRef(function MyTextField(
           overflow: "hidden",
         },
         ".MuiInputBase-input": {
+          fontFamily: "Roboto Condensed",
           padding: "6px 10px",
           paddingLeft: "0",
         },
@@ -66,9 +67,10 @@ export const TextField = React.forwardRef(function MyTextField(
         ".MuiInputBase-root.Mui-disabled": {
           border: "1px solid var(--Gray-300, #D0D5DD)",
           background: "var(--Primary-50, #EFF4FF) !important",
+          opacity: "0.5",
         },
         ".MuiInputBase-input-MuiInput-input.Mui-disabled": {
-          color: "var(--Gray-500, #667085)",
+          color: "var(--Gray-500, #667085) !important",
         },
         ".MuiFormHelperText-root": {
           marginLeft: 0,

@@ -72,9 +72,3 @@ export type EditPlantationInput = {
   financialContacts: EditContactInput[];
   salesContacts: EditContactInput[];
 };
-
-export enum Mode {
-  "preview" = "preview",
-  "create" = "create",
-  "edit" = "edit",
-}

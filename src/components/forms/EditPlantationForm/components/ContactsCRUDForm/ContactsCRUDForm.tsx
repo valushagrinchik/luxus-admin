@@ -7,22 +7,14 @@ import { EditContactForm } from "./components/EditContactForm/EditContactForm";
 import { Table } from "../Table/Table";
 import { BinIcon } from "../../../../../controls/icons/BinIcon";
 import { EditIcon } from "../../../../../controls/icons/EditIcon";
-import {
-  EditBaseInput,
-  EditContactInput,
-  EditPlantationInput,
-  Mode,
-} from "../../interfaces";
-import {
-  UseFieldArrayReturn,
-  useFieldArray,
-  useFormContext,
-} from "react-hook-form";
+import { EditBaseInput, EditContactInput } from "../../interfaces";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 as uuid } from "uuid";
 
 import L18nEs from "../../../../../lib/l18n";
 import styles from "./ContactsCRUDForm.module.css";
 import { PlantationDepartment } from "../../../../../lib/constants";
+import { Mode } from "../../../../../lib/types";
 
 export const ContactsCRUDForm = ({
   contactFieldKey,
