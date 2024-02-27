@@ -52,7 +52,8 @@ export const withData =
 
         appDispatch(setSortsToggleMap(openMapDefault));
       }
-    }, [data]);
+      // eslint-disable-next-line
+    }, [data, appDispatch]);
 
     useEffect(() => {
       if (refetch) {

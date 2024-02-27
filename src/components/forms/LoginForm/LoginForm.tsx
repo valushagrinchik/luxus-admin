@@ -15,11 +15,7 @@ type LoginFromInputs = {
 };
 
 export const LoginForm = () => {
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<LoginFromInputs>({
+  const { handleSubmit, control } = useForm<LoginFromInputs>({
     resolver: yupResolver(schemaLogin),
     defaultValues: {
       email: "",

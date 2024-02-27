@@ -10,7 +10,6 @@ import {
 } from "./interfaces";
 import { CatalogState } from "../redux/reducer/catalogReducer";
 import { baseQueryWithReauth } from "./utils";
-import { orderBy } from "lodash";
 
 // Define a service using a base URL and expected endpoints
 export const sortsApi = createApi({

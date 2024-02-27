@@ -181,7 +181,7 @@ export const PlantationsList = ({
     if (isSuccess) {
       appDispatch(setPlantationsListTotal(total?.total));
     }
-  }, [total?.total, isSuccess]);
+  }, [total?.total, isSuccess, appDispatch]);
 
   const recordToRender = (
     record: PlantationThin

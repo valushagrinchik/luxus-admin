@@ -20,16 +20,11 @@ export const EditLegalEntityForm = ({
   onSubmit: (data: any) => void;
   mode: Mode;
 }) => {
-  const { watch, getValues } = useFormContext();
+  const { watch } = useFormContext();
 
   const country = watch("generalInfo.country");
 
-  const {
-    control,
-    handleSubmit,
-    formState,
-    getValues: getCurrentValues,
-  } = useForm<EditLegalEntityInput>({
+  const { control, handleSubmit, formState } = useForm<EditLegalEntityInput>({
     resolver: yupResolver(schemaAddPlantationLegalEntity),
     defaultValues: {
       id: "",

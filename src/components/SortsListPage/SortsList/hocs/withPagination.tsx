@@ -25,7 +25,7 @@ export const withPagination =
       if (isSuccess) {
         appDispatch(setSortsListTotal(total.total));
       }
-    }, [total?.total, isSuccess]);
+    }, [total?.total, isSuccess, appDispatch]);
     return (
       <>
         <Component {...props} page={page} limit={limit} />

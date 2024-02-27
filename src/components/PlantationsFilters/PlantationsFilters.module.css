@@ -30,7 +30,7 @@
 .reset_filters {
   display: flex;
   cursor: pointer;
-  align-items: end;
+  align-items: flex-end;
   margin-bottom: 10px;
   color: var(--Error-500, #f04438);
   /* text/14 */
