@@ -59,3 +59,7 @@ export const AdminConfirmationFormTitles: Record<SortListGroup, string> = {
 
 export const AdminConfirmationFormPlantationTitle =
   "¿Estás seguro de que deseas eliminar de forma permanente a la finca  de la plataforma?";
+
+export const LIST_LIMIT = 20;
+export const SORTS_LIST_LIMIT = LIST_LIMIT;
+export const PLANTATIONS_LIST_LIMIT = LIST_LIMIT;

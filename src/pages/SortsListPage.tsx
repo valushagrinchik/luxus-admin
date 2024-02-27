@@ -4,7 +4,7 @@ import { PaginatedSortsList } from "../components/SortsListPage/SortsList/SortsL
 import { Modal } from "../controls/Modal";
 import { EditGroupForm } from "../components/forms/EditGroupForm/EditGroupForm";
 import { EditCategoryForm } from "../components/forms/EditCategoryForm/EditCategoryForm";
-import { AdminConfirmationFormTitles, SortListGroup } from "../lib/constants";
+import { AdminConfirmationFormTitles, SORTS_LIST_LIMIT, SortListGroup } from "../lib/constants";
 import { EditSortForm } from "../components/forms/EditSortForm/EditSortForm";
 import Box from "../controls/Box";
 import {
@@ -161,7 +161,7 @@ const SortsListPage = () => {
           emitEvent={emitEvent}
           refetch={refetch}
           openModal={handleOpen}
-          limit={2}
+          limit={SORTS_LIST_LIMIT}
         />
       </Box>
       <Modal open={open} onClose={handleClose}>
