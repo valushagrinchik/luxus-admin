@@ -1,32 +1,41 @@
-import { useState } from "react";
-import { SortsFilters } from "../components/SortsFilters/SortsFilters";
-import { SortsList } from "../components/SortsList/SortsList";
+import { useCallback, useEffect, useState } from "react";
+import { SortsFilters } from "../components/SortsListPage/SortsFilters/SortsFilters";
+import { PaginatedSortsList } from "../components/SortsListPage/SortsList/SortsList";
 import { Modal } from "../controls/Modal";
 import { EditGroupForm } from "../components/forms/EditGroupForm/EditGroupForm";
 import { EditCategoryForm } from "../components/forms/EditCategoryForm/EditCategoryForm";
 import { AdminConfirmationFormTitles, SortListGroup } from "../lib/constants";
 import { EditSortForm } from "../components/forms/EditSortForm/EditSortForm";
 import Box from "../controls/Box";
-import { ConfirmationForm } from "../components/forms/ConfirmationForm/ConfirmationForm";
 import {
   useDeleteCategoryMutation,
   useDeleteGroupMutation,
-  useDeleteSortMutation,
 } from "../api/sortsApi";
-import { useAppDispatch, useAppSelector } from "../store";
-import {
-  selectSelectedSorts,
-  setSelectedSorts,
-} from "../redux/reducer/catalogReducer";
 import { AdminConfirmationForm } from "../components/forms/AdminConfirmationForm/AdminConfirmationForm";
+import {
+  ListActionType,
+  Mode,
+  ModelType,
+  SharedActionType,
+} from "../lib/types";
+import { useWS } from "../hooks/useWS";
+import { ConfirmationForm } from "../components/forms/ConfirmationForm/ConfirmationForm";
 import { useAuth } from "../lib/auth";
-import { ListActionType, Mode } from "../lib/types";
 
 const SortsListPage = () => {
   const { isAdmin } = useAuth();
   const [open, setOpen] = useState(false);
   const [refetch, setRefetch] = useState(false);
-  const appDispatch = useAppDispatch();
+
+  const { event, emitEvent } = useWS();
+  useEffect(() => {
+    if (
+      event &&
+      [ModelType.Group, ModelType.Category, ModelType.Sort].includes(event.type)
+    ) {
+      setRefetch(true);
+    }
+  }, [event]);
 
   const [modalConfig, setModalConfig] = useState<{
     modalType: ListActionType;
@@ -34,52 +43,48 @@ const SortsListPage = () => {
     data: any;
   } | null>(null);
 
-  const handleOpen = (
-    modalType: ListActionType,
-    type: SortListGroup,
-    data: any
-  ) => {
-    setModalConfig({
-      modalType,
-      type,
-      data,
-    });
-    setOpen(true);
-  };
+  const handleOpen = useCallback(
+    (modalType: ListActionType, type: SortListGroup, data: any) => {
+      setModalConfig({
+        modalType,
+        type,
+        data,
+      });
+      setOpen(true);
+    },
+    [setModalConfig, setOpen]
+  );
 
   const handleClose = () => {
     setRefetch(true);
     setOpen(false);
   };
 
-  const [sortListGroup, setSortListGroup] = useState(SortListGroup.sort);
-
-  const selectedSorts = useAppSelector(selectSelectedSorts);
-  const [deleteSort] = useDeleteSortMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
   const [deleteGroup] = useDeleteGroupMutation();
 
   const handleDelete = async () => {
     switch (modalConfig?.type) {
-      case SortListGroup.sort: {
-        if (modalConfig.data?.id) {
-          // aprove from admin
-          await deleteSort(modalConfig.data.id);
-          break;
-        }
-
-        const deletePromises = selectedSorts.map((id) => deleteSort(id));
-        await Promise.allSettled(deletePromises);
-        appDispatch(setSelectedSorts([]));
-        break;
-      }
       case SortListGroup.category: {
         await deleteCategory(modalConfig.data.id);
+        emitEvent({
+          type: ModelType.Category,
+          id: [modalConfig.data.id],
+          action: SharedActionType.delete,
+        });
         break;
       }
       case SortListGroup.group: {
         await deleteGroup(modalConfig.data.id);
+        emitEvent({
+          type: ModelType.Group,
+          id: [modalConfig.data.id],
+          action: SharedActionType.delete,
+        });
         break;
+      }
+      default: {
+        throw new Error("Can't be performed");
       }
     }
 
@@ -90,26 +95,15 @@ const SortsListPage = () => {
     if (!modalConfig) {
       return;
     }
-    if (
-      modalConfig?.modalType === ListActionType.cancel ||
-      modalConfig?.modalType === ListActionType.admin_refuse
-    ) {
-      return;
-    }
-    if (modalConfig?.modalType === ListActionType.delete) {
-      if (isAdmin) {
-        return (
-          <AdminConfirmationForm
-            title={AdminConfirmationFormTitles[modalConfig.type]}
-            onReset={handleClose}
-            onSubmit={handleDelete}
-          />
-        );
-      }
+
+    if (modalConfig?.modalType === ListActionType.delete && !isAdmin) {
       return <ConfirmationForm onReset={handleClose} onSubmit={handleDelete} />;
     }
 
-    if (modalConfig?.modalType === ListActionType.admin_approve) {
+    if (
+      modalConfig?.modalType === ListActionType.admin_approve ||
+      (modalConfig?.modalType === ListActionType.delete && isAdmin)
+    ) {
       return (
         <AdminConfirmationForm
           title={AdminConfirmationFormTitles[modalConfig.type]}
@@ -158,24 +152,21 @@ const SortsListPage = () => {
     <div className="container">
       <h1>Variedades</h1>
       <SortsFilters
-        onSortListGroupChange={setSortListGroup}
         onCreateBtnClick={(type) => {
           handleOpen(ListActionType.create, type, {});
         }}
-        onDeleteBtnClick={() => {
-          handleOpen(ListActionType.delete, SortListGroup.sort, {});
-        }}
       />
       <Box>
-        <SortsList
+        <PaginatedSortsList
+          emitEvent={emitEvent}
           refetch={refetch}
-          openModal={(action, type, data) => handleOpen(action, type, data)}
-          group={sortListGroup}
+          openModal={handleOpen}
+          limit={2}
         />
-        <Modal open={open} onClose={handleClose}>
-          {renderActionForm()}
-        </Modal>
       </Box>
+      <Modal open={open} onClose={handleClose}>
+        {renderActionForm()}
+      </Modal>
     </div>
   );
 };

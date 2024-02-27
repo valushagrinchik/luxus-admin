@@ -1,28 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "../../store";
+import type { RootState } from "../store";
 import { SortListGroup } from "../../lib/constants";
 
 // Define a type for the slice state
 export interface CatalogState {
-  sortsGroupBy: SortListGroup;
+  sortsListPage: number;
+  sortsListTotal: number;
+  sortsGroupBy: SortListGroup | null;
+  sortsToggleMap: Record<string, boolean>; // {group_1: true, category_1: false}, where boolean means isOpen
   sortsSearch: {
     search?: string;
     type: SortListGroup;
   };
   selectedSorts: number[];
+
   selectedPlantations: number[];
+  plantationsListPage: number;
+  plantationsListTotal: number;
 }
 
 // Define the initial state using that type
 const initialState: CatalogState = {
-  sortsGroupBy: SortListGroup.sort,
+  sortsListPage: 1,
+  sortsListTotal: 0,
+  sortsGroupBy: null,
   sortsSearch: {
     search: undefined,
     type: SortListGroup.sort,
   },
+  sortsToggleMap: {},
   selectedSorts: [],
+
   selectedPlantations: [],
+  plantationsListPage: 1,
+  plantationsListTotal: 0,
 };
 
 export const catalogSlice = createSlice({
@@ -44,8 +56,28 @@ export const catalogSlice = createSlice({
     setSelectedSorts: (state, action: PayloadAction<number[]>) => {
       state.selectedSorts = [...action.payload];
     },
+
+    setSortsToggleMap: (
+      state,
+      action: PayloadAction<Record<string, boolean>>
+    ) => {
+      state.sortsToggleMap = { ...state.sortsToggleMap, ...action.payload };
+    },
+    setSortsListPage: (state, action: PayloadAction<number>) => {
+      state.sortsListPage = action.payload;
+    },
+    setSortsListTotal: (state, action: PayloadAction<number>) => {
+      state.sortsListTotal = action.payload;
+    },
+
     setSelectedPlantations: (state, action: PayloadAction<number[]>) => {
       state.selectedPlantations = [...action.payload];
+    },
+    setPlantationsListPage: (state, action: PayloadAction<number>) => {
+      state.plantationsListPage = action.payload;
+    },
+    setPlantationsListTotal: (state, action: PayloadAction<number>) => {
+      state.plantationsListTotal = action.payload;
     },
   },
 });
@@ -54,7 +86,13 @@ export const {
   setSortsGroupBy,
   setSearch,
   setSelectedSorts,
+  setSortsToggleMap,
+  setSortsListPage,
+  setSortsListTotal,
+
   setSelectedPlantations,
+  setPlantationsListPage,
+  setPlantationsListTotal,
 } = catalogSlice.actions;
 
 export const selectSortsGroupBy = (state: RootState) =>
@@ -66,7 +104,22 @@ export const selectSortsSearch = (state: RootState) =>
 export const selectSelectedSorts = (state: RootState) =>
   state.catalog.selectedSorts;
 
+export const selectSortsToggleMap = (state: RootState) =>
+  state.catalog.sortsToggleMap;
+
+export const selectSortsListPage = (state: RootState) =>
+  state.catalog.sortsListPage;
+
+export const selectSortsListTotal = (state: RootState) =>
+  state.catalog.sortsListTotal;
+
 export const selectSelectedPlantations = (state: RootState) =>
   state.catalog.selectedPlantations;
+
+export const selectPlantationsListPage = (state: RootState) =>
+  state.catalog.plantationsListPage;
+
+export const selectPlantationsListTotal = (state: RootState) =>
+  state.catalog.plantationsListTotal;
 
 export default catalogSlice.reducer;

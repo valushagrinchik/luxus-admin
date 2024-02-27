@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useAppDispatch, useAppSelector } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import styles from "./PlantationsList.module.css";
 import { EditBaseInput } from "../forms/EditPlantationForm/interfaces";
 import L18nEs from "../../lib/l18n";
@@ -15,6 +15,7 @@ import { Checkbox } from "../../controls/Checkbox";
 import { CountryIcon } from "../../controls/icons/CountryIcon";
 import {
   selectSelectedPlantations,
+  setPlantationsListTotal,
   setSelectedPlantations,
 } from "../../redux/reducer/catalogReducer";
 import { orderBy, uniq } from "lodash";
@@ -172,7 +173,15 @@ export const PlantationsList = ({
     }
   }, [refetch, searchPlantations]);
 
-  const { data: total } = useSearchPlantationsTotalQuery({ ...search });
+  const { data: total, isSuccess } = useSearchPlantationsTotalQuery({
+    ...search,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      appDispatch(setPlantationsListTotal(total?.total));
+    }
+  }, [total?.total, isSuccess]);
 
   const recordToRender = (
     record: PlantationThin
@@ -268,10 +277,20 @@ export const PlantationsList = ({
       </Table>
       <Pagination
         sx={{
-          ".MuiPaginationItem-root.Mui-selected": {
+          alignSelf: "flex-end",
+          ".MuiPaginationItem-root": {
             border: "none",
             backgroundColor: "var(--Gray-100, #f2f4f7)",
             color: "var(--Gray-700, #101828)",
+          },
+          ".MuiPaginationItem-root:hover": {
+            color: "var(--Primary-800, #0040c1)",
+            background: "var(--Primary-100)",
+          },
+          ".MuiPaginationItem-root.Mui-selected": {
+            border: "none",
+            color: "var(--Primary-800, #0040c1)",
+            background: "var(--Primary-100)",
           },
           ".MuiPaginationItem-root.Mui-selected:hover": {
             border: "none",

@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { plantationsApi } from "./api/plantationsApi";
+import { plantationsApi } from "../api/plantationsApi";
 
-import { sortsApi } from "./api/sortsApi";
-import { loginApi } from "./api/loginApi";
-import catalogReducer from "./redux/reducer/catalogReducer";
+import { sortsApi } from "../api/sortsApi";
+import { loginApi } from "../api/loginApi";
+import catalogReducer from "./reducer/catalogReducer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { documentsApi } from "./api/documentsApi";
+import { documentsApi } from "../api/documentsApi";
 
 export const store = configureStore({
   reducer: {

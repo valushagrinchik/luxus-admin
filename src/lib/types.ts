@@ -158,3 +158,17 @@ export enum ListActionType {
   "admin_refuse" = "admin_refuse",
   "admin_approve" = "admin_approve",
 }
+
+export enum SharedActionType {
+  "cancel" = "cancel",
+  "delete" = "delete",
+  "admin_refuse" = "admin_refuse",
+  "admin_approve" = "admin_approve",
+}
+
+export enum ModelType {
+  "Group" = "Group",
+  "Category" = "Category",
+  "Sort" = "Sort",
+  "Plantation" = "Plantation",
+}

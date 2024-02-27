@@ -5,8 +5,11 @@ import { BinIcon } from "../../controls/icons/BinIcon";
 import L18nEs from "../../lib/l18n";
 import styles from "./PlantationsFilters.module.css";
 import { PlusIcon } from "../../controls/icons/PlusIcon";
-import { useAppSelector } from "../../store";
-import { selectSelectedPlantations } from "../../redux/reducer/catalogReducer";
+import { useAppSelector } from "../../redux/store";
+import {
+  selectPlantationsListTotal,
+  selectSelectedPlantations,
+} from "../../redux/reducer/catalogReducer";
 import { CloseIcon } from "../../controls/icons/CloseIcon";
 import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
 import { PlantationFilters } from "../../lib/types";
@@ -27,6 +30,8 @@ export const PlantationsFilters = ({
   actions: { onChange: onFiltersChange, onCreateBtnClick, onDeleteBtnClick },
 }: PlantationsFiltersProps) => {
   const selectedPlantations = useAppSelector(selectSelectedPlantations);
+  const total = useAppSelector(selectPlantationsListTotal);
+
   const termsOfPaymentsMap = L18nEs.constants.termsOfPayments;
   const countries = L18nEs.constants.countries;
   const l18n = L18nEs.pages.plantation.filters;
@@ -135,7 +140,7 @@ export const PlantationsFilters = ({
           />
         </Button>
         <ExcelDownloadBtn
-          disabled={false}
+          disabled={!total}
           url={
             !filters
               ? "/api/plantations/excel"

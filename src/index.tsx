@@ -4,7 +4,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { AppRouter } from "./AppRouter";
 import { Provider } from "react-redux";
-import { store } from "./store";
+import { store } from "./redux/store";
 import { AuthProvider } from "./lib/auth";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

@@ -81,7 +81,7 @@ export const sortsApi = createApi({
     }),
     cancelGroup: builder.mutation<{ group: number }, number>({
       query: (id) => ({
-        url: `/groups/${id}`,
+        url: `/groups/${id}/cancel`,
         method: "POST",
         body: {},
       }),
@@ -114,7 +114,7 @@ export const sortsApi = createApi({
     }),
     cancelCategory: builder.mutation<{ category: number }, number>({
       query: (id) => ({
-        url: `/categories/${id}`,
+        url: `/categories/${id}/cancel`,
         method: "POST",
         body: {},
       }),
@@ -147,7 +147,7 @@ export const sortsApi = createApi({
     }),
     cancelSort: builder.mutation<{ sort: number }, number>({
       query: (id) => ({
-        url: `/sorts/${id}`,
+        url: `/sorts/${id}/cancel`,
         method: "POST",
         body: {},
       }),

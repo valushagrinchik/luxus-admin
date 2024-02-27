@@ -8,7 +8,7 @@ import {
   useCancelPlantationMutation,
   useDeletePlantationMutation,
 } from "../api/plantationsApi";
-import { useAppDispatch, useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 import {
   selectSelectedPlantations,
   setSelectedPlantations,

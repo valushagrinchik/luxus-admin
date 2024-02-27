@@ -1,0 +1,45 @@
+.sorts_list {
+  --row-height: 40px;
+
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--Gray-300, #d0d5dd);
+  overflow: hidden;
+  background: var(--Gray-100, #f2f4f7);
+
+  & > .header {
+    border-bottom: 1px solid var(--Gray-300, #d0d5dd);
+    gap: 16px;
+    padding: 8px 2px 8px 8px;
+    color: var(--Primary-800, #0040c1);
+    /* Text xs/Medium */
+    font-family: "Roboto Condensed";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px; /* 133.333% */
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    height: var(--row-height);
+  }
+}
+
+.group {
+  .header {
+    padding-left: 8px;
+  }
+}
+.category {
+  .header {
+    padding-left: 20px;
+  }
+}
+.sort {
+  .header {
+    padding-left: 8px;
+  }
+  .name {
+    text-transform: uppercase;
+  }
+}

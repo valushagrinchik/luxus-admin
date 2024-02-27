@@ -68,7 +68,7 @@ export const plantationsApi = createApi({
     }),
     cancelPlantation: builder.mutation<{ plantation: number }, number>({
       query: (id) => ({
-        url: `/plantations/${id}`,
+        url: `/plantations/${id}/cancel`,
         method: "POST",
         body: {},
       }),

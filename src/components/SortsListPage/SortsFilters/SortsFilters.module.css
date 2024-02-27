@@ -4,9 +4,7 @@
   width: 100%;
   margin-bottom: 16px;
 }
-.search_group {
-  display: flex;
-}
+
 .right_group {
   display: flex;
   gap: 8px;
