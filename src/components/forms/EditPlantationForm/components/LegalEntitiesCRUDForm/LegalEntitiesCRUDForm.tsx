@@ -5,15 +5,17 @@ import { PlusIcon } from "../../../../../controls/icons/PlusIcon";
 import { Table } from "../Table/Table";
 import { BinIcon } from "../../../../../controls/icons/BinIcon";
 import { EditIcon } from "../../../../../controls/icons/EditIcon";
-import { EditLegalEntityInput, EditPlantationInput } from "../../interfaces";
+import {
+  EditBaseInput,
+  EditLegalEntityInput,
+  EditPlantationInput,
+} from "../../interfaces";
 import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 import { v4 as uuid } from "uuid";
 import { EditLegalEntityForm } from "./components/EditLegalEntityForm/EditLegalEntityForm";
 import styles from "./LegalEntitiesCRUDForm.module.css";
-import { CountryCode, Mode } from "../../../../../lib/types";
+import { CountryCode, ListActionType, Mode } from "../../../../../lib/types";
 import { AdminConfirmationForm } from "../../../AdminConfirmationForm/AdminConfirmationForm";
-
-type ModalType = "editEntity" | "confirmDelete";
 
 export const LegalEntitiesCRUDForm = ({
   mode,
@@ -36,16 +38,26 @@ export const LegalEntitiesCRUDForm = ({
 }) => {
   const disabled = mode === Mode.preview;
   const [open, setOpen] = useState(false);
-  // contact to create/edit in modal
-  const [legalEntity, setLegalEntity] = useState<EditLegalEntityInput>();
-  const [modalType, setModalType] = useState<ModalType>();
+
+  // entity to create/edit in modal
+  const [legalEntity, setLegalEntity] = useState<
+    EditLegalEntityInput | EditBaseInput
+  >();
 
   const { watch } = useFormContext();
   const country = watch("generalInfo.country");
 
-  const openModal = (type: ModalType, data: any) => {
-    setModalType(type);
+  // mode to open modal in
+  const [modalMode, setModalMode] = useState<
+    Mode.create | Mode.edit | ListActionType.delete | null
+  >(null);
+
+  const handleOpen = (
+    data: EditLegalEntityInput | EditBaseInput,
+    mode: Mode.create | Mode.edit | ListActionType.delete
+  ) => {
     setLegalEntity(data);
+    setModalMode(mode);
     setOpen(true);
   };
 
@@ -53,7 +65,7 @@ export const LegalEntitiesCRUDForm = ({
     setOpen(false);
   };
 
-  const updateLegalEntity = (data: EditLegalEntityInput) => {
+  const update = (data: EditLegalEntityInput) => {
     if (legalEntities.fields.find((entity) => entity.id === data.id)) {
       const result = [...legalEntities.fields].map((entity) =>
         entity.id === data.id ? data : entity
@@ -85,11 +97,7 @@ export const LegalEntitiesCRUDForm = ({
     setOpen(false);
   };
 
-  const deleteLegalEntity = (data?: EditLegalEntityInput) => {
-    if (!data) {
-      return;
-    }
-
+  const deleteLegalEntity = (data: EditLegalEntityInput) => {
     legalEntities.replace([
       ...legalEntities.fields.filter((entity) => entity.id !== data.id),
     ]);
@@ -107,6 +115,45 @@ export const LegalEntitiesCRUDForm = ({
     ]);
   };
 
+  const handleDeleteBtnClick = (data: EditLegalEntityInput) => {
+    setLegalEntity(data);
+    setModalMode(ListActionType.delete);
+    setOpen(true);
+  };
+
+  const renderModalContent = () => {
+    if (!legalEntity) {
+      return;
+    }
+    if (modalMode === ListActionType.delete) {
+      return (
+        <AdminConfirmationForm
+          title={
+            <>
+              <span style={{ color: "var(--Red-500, #F04438)" }}>
+                Advertencia
+              </span>
+              : Se borrarán todos los datos asociados. ¿Proceder?
+            </>
+          }
+          onSubmit={() =>
+            deleteLegalEntity(legalEntity as EditLegalEntityInput)
+          }
+          onReset={handleClose}
+        />
+      );
+    }
+
+    return (
+      <EditLegalEntityForm
+        onReset={handleClose}
+        onSubmit={update}
+        data={legalEntity}
+        mode={modalMode as Mode}
+      />
+    );
+  };
+
   const headers = {
     name: "Razón Social",
     code: country === CountryCode.ec ? "Ruc o cédula" : "NIT",
@@ -121,9 +168,9 @@ export const LegalEntitiesCRUDForm = ({
           {!disabled && (
             <Button
               color="gray"
-              disabled={!country}
-              onClick={() => openModal("editEntity", { id: uuid() })}
+              onClick={() => handleOpen({ id: uuid() }, Mode.create)}
               className={styles.add_btn}
+              disabled={!country}
             >
               <PlusIcon width={16} height={16} />
             </Button>
@@ -141,13 +188,12 @@ export const LegalEntitiesCRUDForm = ({
                   <>
                     <BinIcon
                       className="action_icon"
-                      // onClick={() => deleteLegalEntity(data)}
-                      onClick={() => openModal("confirmDelete", data)}
+                      onClick={() => handleDeleteBtnClick(data)}
                     />
 
                     <EditIcon
                       className="action_icon"
-                      onClick={() => openModal("editEntity", data)}
+                      onClick={() => handleOpen(data, Mode.edit)}
                     />
                   </>
                 )
@@ -157,28 +203,7 @@ export const LegalEntitiesCRUDForm = ({
       )}
 
       <Modal open={open} onClose={handleClose}>
-        {modalType === "confirmDelete" && (
-          <AdminConfirmationForm
-            title={
-              <>
-                <span style={{ color: "var(--Red-500, #F04438)" }}>
-                  Advertencia
-                </span>
-                : Se borrarán todos los datos asociados. ¿Proceder?
-              </>
-            }
-            onSubmit={() => deleteLegalEntity(legalEntity)}
-            onReset={handleClose}
-          />
-        )}
-        {modalType === "editEntity" && (
-          <EditLegalEntityForm
-            onReset={handleClose}
-            onSubmit={updateLegalEntity}
-            data={legalEntity}
-            mode={mode}
-          />
-        )}
+        {renderModalContent()}
       </Modal>
     </>
   );

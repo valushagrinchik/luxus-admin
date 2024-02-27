@@ -43,9 +43,12 @@ export const ContactsCRUDForm = ({
 
   // contact to create/edit in modal
   const [contact, setContact] = useState<EditContactInput | EditBaseInput>({});
+  // mode to open modal in
+  const [modalMode, setModalMode] = useState<Mode | null>(null);
 
-  const handleOpen = (data: EditContactInput | EditBaseInput) => {
+  const handleOpen = (data: EditContactInput | EditBaseInput, mode: Mode) => {
     setContact(data);
+    setModalMode(mode);
     setOpen(true);
   };
 
@@ -82,7 +85,7 @@ export const ContactsCRUDForm = ({
             {!disabled && (
               <Button
                 color="gray"
-                onClick={() => handleOpen({ id: uuid() })}
+                onClick={() => handleOpen({ id: uuid() }, Mode.create)}
                 className={styles.add_btn}
               >
                 <PlusIcon width={16} height={16} />
@@ -106,7 +109,7 @@ export const ContactsCRUDForm = ({
 
                       <EditIcon
                         className="action_icon"
-                        onClick={() => handleOpen(data)}
+                        onClick={() => handleOpen(data, Mode.edit)}
                       />
                     </>
                   )
@@ -116,14 +119,16 @@ export const ContactsCRUDForm = ({
       </Box>
 
       <Modal open={open} onClose={handleClose}>
-        <EditContactForm
-          onReset={handleClose}
-          onSubmit={updateContact}
-          data={contact}
-          positions={positions}
-          mode={mode}
-          department={department}
-        />
+        {modalMode && (
+          <EditContactForm
+            onReset={handleClose}
+            onSubmit={updateContact}
+            data={contact}
+            positions={positions}
+            mode={modalMode}
+            department={department}
+          />
+        )}
       </Modal>
     </div>
   );
