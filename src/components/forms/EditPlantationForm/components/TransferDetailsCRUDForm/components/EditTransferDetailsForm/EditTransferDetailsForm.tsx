@@ -127,10 +127,10 @@ export const EditTransferDetailsForm = ({
                 setValue("beneficiary", legalEntitiesMap[id]);
                 setValue(
                   "beneficiaryAddress",
-                  getGlobalValues().legalEntities.find(
-                    (e: any) => e.id === name
-                  )?.actualAddress
+                  getGlobalValues().legalEntities.find((e: any) => e.id === id)
+                    ?.actualAddress
                 );
+                setResetAddress(true);
                 setDocument(null);
                 setShowFileField(false);
                 onChange(event);
