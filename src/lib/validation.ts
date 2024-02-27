@@ -112,6 +112,13 @@ export const schemaEditPlantation = yup
         .string()
         .oneOf(Object.values(ChecksDeliveryMethod))
         .required(ErrorMessages.reqiuredField),
+      deliveryInfo: yup
+        .string()
+        .when("deliveryMethod", ([deliveryMethod], field) => {
+          return deliveryMethod === ChecksDeliveryMethod.SERVIENTREGA
+            ? field.required(ErrorMessages.reqiuredField)
+            : field;
+        }),
       termsOfPayment: yup
         .string()
         .oneOf(Object.values(TermsOfPayment))

@@ -62,6 +62,7 @@ export type EditPlantationInput = {
     country: CountryCode | string;
     comments: string;
     deliveryMethod: ChecksDeliveryMethod;
+    deliveryInfo?: string;
     termsOfPayment: TermsOfPayment;
     postpaidCredit?: string;
     postpaidDays?: string;

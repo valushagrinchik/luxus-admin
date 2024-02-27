@@ -109,6 +109,7 @@ export const TextField = React.forwardRef(function MyTextField(
           top: "calc(50% - 10px)",
           marginRight: "6px",
         },
+        ...props.sx,
       }}
     >
       {select && !Object.entries(options || {})?.length && (

@@ -30,6 +30,7 @@ export const transformPlantationDataBack = (
         "country",
         "comments",
         "deliveryMethod",
+        "deliveryInfo",
         "termsOfPayment",
         "postpaidCredit",
         "postpaidDays",

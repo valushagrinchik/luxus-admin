@@ -66,6 +66,7 @@ export const EditPlantationForm = ({
         name: "",
         country: "",
         comments: "",
+        deliveryInfo: "",
         postpaidCredit: "",
         postpaidDays: "",
       },
@@ -83,6 +84,7 @@ export const EditPlantationForm = ({
         comments: data?.generalInfo?.comments || "",
         deliveryMethod:
           data?.generalInfo?.deliveryMethod || ChecksDeliveryMethod.PERSONALLY,
+        deliveryInfo: data?.generalInfo?.deliveryInfo || "",
         termsOfPayment:
           data?.generalInfo?.termsOfPayment || TermsOfPayment.POSTPAID,
         postpaidCredit: data?.generalInfo?.postpaidCredit || "",

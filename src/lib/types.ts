@@ -35,6 +35,7 @@ export type Plantation = {
   deletedAt: string;
   deletedBy: number;
   deliveryMethod: ChecksDeliveryMethod;
+  deliveryInfo: string;
   legalEntities: LegalEntity[];
   postpaidCredit: number;
   postpaidDays: number;

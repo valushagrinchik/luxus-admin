@@ -88,7 +88,15 @@ export const FinancialDataForm = ({
                     select
                     helperText={error ? error.message : null}
                     error={!!error}
-                    onChange={onChange}
+                    onChange={(event: ChangeEvent) => {
+                      if (
+                        (event.target as any).value !==
+                        ChecksDeliveryMethod.SERVIENTREGA
+                      ) {
+                        setValue("generalInfo.deliveryInfo", "");
+                      }
+                      onChange(event);
+                    }}
                     value={value}
                     options={L18nEs.constants.deliveryMethods}
                     fullWidth
@@ -98,12 +106,59 @@ export const FinancialDataForm = ({
                 )}
               />
               {deliveryMethod === ChecksDeliveryMethod.SERVIENTREGA && (
-                <div className={styles.info}>
-                  En adelante todos los cheques que se envie por Servientrega
-                  debe salir a nombre de MILTON PACHECO C.I 05018970011 CEL.
-                  0982520282 Servientrega Latacunga ELOY ALFARO S/N Y GENERAL
-                  JUAN MONTERO, LATACUNGA
-                </div>
+                <Controller
+                  name="generalInfo.deliveryInfo"
+                  control={control}
+                  render={({
+                    field: { onChange, value },
+                    fieldState: { error },
+                  }) => (
+                    <TextField
+                      multiline={true}
+                      minRows={4}
+                      helperText={error ? error.message : null}
+                      error={!!error}
+                      onChange={onChange}
+                      value={value}
+                      fullWidth
+                      disabled={disabled}
+                      sx={{
+                        ".MuiInputBase-root": {
+                          borderRadius: "6px",
+                          background: "#FFF4EA",
+                          border: "none",
+                          padding: "0",
+                          fontSize: "14px",
+                        },
+                        ".MuiInputBase-input, .MuiInputBase-input:focus": {
+                          padding: "16px",
+                          color: "#CC6E0F",
+                          textDecoration: "none",
+                          lineHeight: "20px",
+                        },
+                        ".MuiInputBase-input.MuiInput-input:focus": {
+                          padding: "16px",
+                          color: "#CC6E0F",
+                          textDecoration: "none",
+                        },
+                        ".MuiInputBase-root.Mui-disabled": {
+                          padding: "16px",
+                          color: "#CC6E0F",
+                          opacity: "0.5",
+                        },
+                        ".MuiInputBase-input-MuiInput-input.Mui-disabled": {
+                          WebkitTextFillColor: "#CC6E0F!important;",
+                        },
+                      }}
+                    />
+                  )}
+                />
+                // <div className={styles.info}>
+                //   En adelante todos los cheques que se envie por Servientrega
+                //   debe salir a nombre de MILTON PACHECO C.I 05018970011 CEL.
+                //   0982520282 Servientrega Latacunga ELOY ALFARO S/N Y GENERAL
+                //   JUAN MONTERO, LATACUNGA
+                // </div>
               )}
             </div>
           )}
