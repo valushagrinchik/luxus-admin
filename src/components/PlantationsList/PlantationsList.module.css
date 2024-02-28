@@ -11,7 +11,7 @@
   background: var(--Base-White, #fff);
   /* Shadow */
   box-shadow: 0px 0px 16px 0px rgba(0, 20, 61, 0.08);
-  height: 48px;
+  min-height: 48px;
   padding: 4px 8px;
   align-items: center;
   & .actions_area {

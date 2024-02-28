@@ -114,43 +114,6 @@ export const EditPlantationForm = ({
     keyName: "sid",
   });
 
-  methods.watch("legalEntities");
-  methods.watch("transferDetails");
-  methods.watch("checks");
-  methods.watch("financialContacts");
-  methods.watch("salesContacts");
-
-  const validate = () => {
-    const values = methods.getValues();
-
-    return (
-      values.checks.length >= values.legalEntities.length &&
-      values.transferDetails.length >= values.legalEntities.length &&
-      values.legalEntities.length > 0 &&
-      values.financialContacts.length > 0 &&
-      values.salesContacts.length > 0 &&
-      values.generalInfo.country &&
-      values.generalInfo.name &&
-      values.generalInfo.deliveryMethod &&
-      values.generalInfo.termsOfPayment &&
-      (values.generalInfo.termsOfPayment === TermsOfPayment.POSTPAID
-        ? values.generalInfo.postpaidCredit && values.generalInfo.postpaidDays
-        : true) &&
-      values.transferDetails.reduce(
-        (valid, tr) =>
-          valid &&
-          !!tr.bank &&
-          !!tr.bankAccountNumber &&
-          !!tr.bankAccountType &&
-          !!tr.name &&
-          !!tr.beneficiary,
-        true
-      )
-    );
-  };
-
-  const isValid = validate();
-
   if (mode !== Mode.create && isLoading) {
     return <div>Cargando...</div>;
   }
@@ -202,7 +165,7 @@ export const EditPlantationForm = ({
                 <Button
                   color="base"
                   onClick={methods.handleSubmit(onSubmit)}
-                  disabled={!isValid}
+                  disabled={!methods.formState.isValid}
                 >
                   <OkIcon width={16} height={16} />
                   Guardar

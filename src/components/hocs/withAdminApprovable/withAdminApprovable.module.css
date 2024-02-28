@@ -2,7 +2,7 @@
   position: relative;
 }
 .not_approved_yet {
-  height: var(--row-height);
+  height: 100%;
   z-index: 10;
   position: absolute;
   display: flex;

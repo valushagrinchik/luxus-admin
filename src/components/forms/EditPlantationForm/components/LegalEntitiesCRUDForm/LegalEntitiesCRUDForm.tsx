@@ -16,6 +16,7 @@ import { EditLegalEntityForm } from "./components/EditLegalEntityForm/EditLegalE
 import styles from "./LegalEntitiesCRUDForm.module.css";
 import { CountryCode, ListActionType, Mode } from "../../../../../lib/types";
 import { AdminConfirmationForm } from "../../../AdminConfirmationForm/AdminConfirmationForm";
+import { SHARED_ADDRESS_KEY } from "../../../../../lib/constants";
 
 export const LegalEntitiesCRUDForm = ({
   mode,
@@ -72,13 +73,20 @@ export const LegalEntitiesCRUDForm = ({
       );
 
       legalEntities.replace(result);
+      transferDetails.replace(
+        [...transferDetails.fields].map((tr) =>
+          tr.plantationLegalEntityId === data.id && tr.name === tr.beneficiary
+            ? { ...tr, beneficiaryAddress: data[SHARED_ADDRESS_KEY] }
+            : tr
+        )
+      );
     } else {
       legalEntities.append(data);
       transferDetails.append({
         id: uuid(),
         name: data.name,
         beneficiary: data.name,
-        beneficiaryAddress: data.legalAddress,
+        beneficiaryAddress: data[SHARED_ADDRESS_KEY],
         favourite: !legalEntities.fields.length,
         bank: "",
         bankAccountNumber: "",

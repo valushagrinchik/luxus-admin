@@ -57,7 +57,7 @@ const Row = ({
         clickable: !!onShow,
       })}
       style={{ ...rowStyle, backgroundColor: bgColor }}
-      onClick={(event) => onShow?.call(this, data)}
+      onDoubleClick={(event) => onShow?.call(this, data)}
     >
       <div className={styles.checkbox_area}>{renderCheckbox(data)}</div>
       {Object.entries(data).map(([key, value], index) => (
@@ -132,9 +132,7 @@ export const PlantationsList = ({
           ([key, value]) => {
             return [
               key,
-              ["id", "name", "legalEntityName", "postpaidCredit"].includes(
-                key
-              ) ? (
+              ["id", "name", "postpaidCredit"].includes(key) ? (
                 <SortableTitle
                   title={value}
                   onChange={(up: boolean) => {
@@ -189,15 +187,21 @@ export const PlantationsList = ({
     id: record.id,
     country: <CountryIcon countryCode={record.country} />,
     name: record.name,
-    legalEntityName: orderBy(record.legalEntitiesNames, (name) =>
-      name.toLowerCase()
-    ).join(", "),
+    legalEntityName: (
+      <>
+        {orderBy(record.legalEntitiesNames, (name) => name.toLowerCase()).map(
+          (name) => (
+            <div key={`${name}_${record.id}`}>{name}</div>
+          )
+        )}
+      </>
+    ),
     termsOfPayment: (
       <span className={classNames(styles.tag, styles[record.termsOfPayment])}>
         {termsOfPayments[record.termsOfPayment]}
       </span>
     ),
-    postpaidCredit: record.postpaidCredit,
+    postpaidCredit: record.postpaidCredit || "",
     comments: record.comments,
   });
 

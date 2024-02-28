@@ -153,12 +153,6 @@ export const FinancialDataForm = ({
                     />
                   )}
                 />
-                // <div className={styles.info}>
-                //   En adelante todos los cheques que se envie por Servientrega
-                //   debe salir a nombre de MILTON PACHECO C.I 05018970011 CEL.
-                //   0982520282 Servientrega Latacunga ELOY ALFARO S/N Y GENERAL
-                //   JUAN MONTERO, LATACUNGA
-                // </div>
               )}
             </div>
           )}

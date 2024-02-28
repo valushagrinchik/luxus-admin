@@ -34,7 +34,7 @@ export const withAdminApprovable = <T,>(Component: FC<T>) => {
           <Button
             color="red"
             className={styles.admin_action_btn}
-            onClick={(event) => {
+            onClick={(event: any) => {
               event.stopPropagation();
               onAdminRefuse(data);
             }}
@@ -44,7 +44,7 @@ export const withAdminApprovable = <T,>(Component: FC<T>) => {
           <Button
             color="green"
             className={styles.admin_action_btn}
-            onClick={(event) => {
+            onClick={(event: any) => {
               event.stopPropagation();
               onAdminApprove(data);
             }}

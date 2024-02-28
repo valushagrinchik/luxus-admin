@@ -15,6 +15,7 @@ import { DocumentFileUpload } from "../../../../../../../controls/DocumentFileUp
 import { Document } from "../../../../../../../api/interfaces";
 import styles from "./EditTransferDetailsForm.module.css";
 import { Mode } from "../../../../../../../lib/types";
+import { SHARED_ADDRESS_KEY } from "../../../../../../../lib/constants";
 
 export const EditTransferDetailsForm = ({
   onReset,
@@ -31,7 +32,7 @@ export const EditTransferDetailsForm = ({
 }) => {
   const disabled = mode === Mode.preview;
   const [document, setDocument] = useState<Document | null>(data.document);
-  const { getValues: getGlobalValues } = useFormContext();
+  const { getValues: getGlobalValues, watch: globalWatch } = useFormContext();
   const [resetAddress, setResetAddress] = useState(true);
 
   const { control, handleSubmit, watch, setValue, getValues } =
@@ -127,8 +128,9 @@ export const EditTransferDetailsForm = ({
                 setValue("beneficiary", legalEntitiesMap[id]);
                 setValue(
                   "beneficiaryAddress",
-                  getGlobalValues().legalEntities.find((e: any) => e.id === id)
-                    ?.actualAddress
+                  getGlobalValues().legalEntities.find(
+                    (e: any) => e.id === id
+                  )?.[SHARED_ADDRESS_KEY]
                 );
                 setResetAddress(true);
                 setDocument(null);
