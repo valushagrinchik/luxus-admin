@@ -5,6 +5,7 @@ import { baseQueryWithReauth } from "./utils";
 import { transformPlantationDataBack } from "../lib/utils";
 import { EditPlantationInput } from "../components/forms/EditPlantationForm/interfaces";
 import { CatalogState } from "../redux/reducer/catalogReducer";
+import { v4 as uuid } from "uuid";
 
 // Define a service using a base URL and expected endpoints
 export const plantationsApi = createApi({
@@ -39,6 +40,7 @@ export const plantationsApi = createApi({
           ...params.search,
         },
       }),
+      // keepUnusedDataFor: 0,
       providesTags: () => [{ type: "Plantation", id: "LIST" }],
     }),
 

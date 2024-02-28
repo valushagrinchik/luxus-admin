@@ -34,7 +34,6 @@ export const sortsApi = createApi({
     >({
       query: (params) => ({
         url: `/groups/search`,
-
         params: { ...params, ...params.search },
       }),
       // transformResponse: (response: Group[]) => {

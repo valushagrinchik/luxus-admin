@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { PlantationsFilters } from "../components/PlantationsFilters/PlantationsFilters";
-import { PlantationsList } from "../components/PlantationsList/PlantationsList";
+import { PaginatedPlantationsList } from "../components/PlantationsList/PlantationsList";
 import { Modal } from "../controls/Modal";
 import { ModelType, PlantationFilters, SharedActionType } from "../lib/types";
 import { ConfirmationForm } from "../components/forms/ConfirmationForm/ConfirmationForm";
@@ -15,31 +15,35 @@ import {
 } from "../redux/reducer/catalogReducer";
 import { AdminConfirmationForm } from "../components/forms/AdminConfirmationForm/AdminConfirmationForm";
 import { useNavigate } from "react-router-dom";
-import { AdminConfirmationFormPlantationTitle } from "../lib/constants";
+import {
+  AdminConfirmationFormPlantationTitle,
+  PLANTATIONS_LIST_LIMIT,
+} from "../lib/constants";
 import { useAuth } from "../lib/auth";
 import { useWS } from "../hooks/useWS";
+import { useRefetch } from "../hooks/useRefetch";
 
 type ModalType = "create" | "update" | "delete" | "admin_approve";
 
 const PlantationsListPage = () => {
   const navigate = useNavigate();
   const appDispatch = useAppDispatch();
-
-  const { user, isAdmin } = useAuth();
-
-  const { event, emitEvent } = useWS();
-  useEffect(() => {
-    if (event && [ModelType.Plantation].includes(event.type)) {
-      setRefetch(true);
-    }
-  }, [event]);
-
+  const { isAdmin } = useAuth();
   const [open, setOpen] = useState(false);
-  const [refetch, setRefetch] = useState(false);
+
+  const { refetch, triggerRefetch } = useRefetch();
+
   const [modalConfig, setModalConfig] = useState<{
     modalType: ModalType;
     data: any;
   } | null>(null);
+
+  const { event, emitEvent } = useWS();
+  useEffect(() => {
+    if (event && [ModelType.Plantation].includes(event.type)) {
+      triggerRefetch();
+    }
+  }, [event]);
 
   const [filters, setFilters] = useState<PlantationFilters | null>(null);
   const selectedPlantations = useAppSelector(selectSelectedPlantations);
@@ -55,7 +59,7 @@ const PlantationsListPage = () => {
     setOpen(true);
   };
   const handleClose = () => {
-    setRefetch(true);
+    triggerRefetch();
     setOpen(false);
   };
 
@@ -133,20 +137,24 @@ const PlantationsListPage = () => {
       navigate("/plantations/create");
     },
     onDeleteBtnClick: async () => {
-      if (user.id && isAdmin) {
+      if (isAdmin) {
         await handleDelete();
         return;
       }
       handleOpen("delete", {});
     },
   };
-
   return (
     <div className="container">
       <h1>Fincas</h1>
 
       <PlantationsFilters filters={filters} actions={filterActions} />
-      <PlantationsList refetch={refetch} filters={filters} actions={actions} />
+      <PaginatedPlantationsList
+        refetch={refetch.current}
+        filters={filters}
+        actions={actions}
+        limit={PLANTATIONS_LIST_LIMIT}
+      />
       <Modal open={open} onClose={handleClose}>
         {renderActionForm()}
       </Modal>

@@ -67,6 +67,6 @@ export const AdminConfirmationFormPlantationTitle =
 
 export const LIST_LIMIT = 20;
 export const SORTS_LIST_LIMIT = LIST_LIMIT;
-export const PLANTATIONS_LIST_LIMIT = LIST_LIMIT;
+export const PLANTATIONS_LIST_LIMIT = 4; //LIST_LIMIT;
 
 export const SHARED_ADDRESS_KEY = "legalAddress";

@@ -44,6 +44,11 @@
   align-self: flex-start;
 }
 
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
 .tag {
   border-radius: 4px;
   padding: 4px 8px;
