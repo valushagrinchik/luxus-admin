@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlantationsFilters } from "../components/PlantationsFilters/PlantationsFilters";
 import { PlantationsList } from "../components/PlantationsList/PlantationsList";
 import { Modal } from "../controls/Modal";
-import { PlantationFilters } from "../lib/types";
+import { ModelType, PlantationFilters, SharedActionType } from "../lib/types";
 import { ConfirmationForm } from "../components/forms/ConfirmationForm/ConfirmationForm";
 import {
   useCancelPlantationMutation,
@@ -17,6 +17,7 @@ import { AdminConfirmationForm } from "../components/forms/AdminConfirmationForm
 import { useNavigate } from "react-router-dom";
 import { AdminConfirmationFormPlantationTitle } from "../lib/constants";
 import { useAuth } from "../lib/auth";
+import { useWS } from "../hooks/useWS";
 
 type ModalType = "create" | "update" | "delete" | "admin_approve";
 
@@ -25,6 +26,13 @@ const PlantationsListPage = () => {
   const appDispatch = useAppDispatch();
 
   const { user, isAdmin } = useAuth();
+
+  const { event, emitEvent } = useWS();
+  useEffect(() => {
+    if (event && [ModelType.Plantation].includes(event.type)) {
+      setRefetch(true);
+    }
+  }, [event]);
 
   const [open, setOpen] = useState(false);
   const [refetch, setRefetch] = useState(false);
@@ -55,11 +63,21 @@ const PlantationsListPage = () => {
     const promises = selectedPlantations.map((id) => deletePlantation(id));
     await Promise.allSettled(promises);
     appDispatch(setSelectedPlantations([]));
+    emitEvent({
+      type: ModelType.Plantation,
+      id: selectedPlantations,
+      action: SharedActionType.delete,
+    });
     handleClose();
   };
 
   const handleAdminDelete = async () => {
     await deletePlantation(modalConfig?.data.id);
+    emitEvent({
+      type: ModelType.Plantation,
+      id: [modalConfig?.data.id],
+      action: SharedActionType.admin_approve,
+    });
     handleClose();
   };
 
@@ -90,9 +108,19 @@ const PlantationsListPage = () => {
     },
     onCancel: async (data: any) => {
       await cancelPlantation(data.id);
+      emitEvent({
+        type: ModelType.Plantation,
+        id: [data.id],
+        action: SharedActionType.cancel,
+      });
     },
     onAdminRefuse: async (data: any) => {
       await cancelPlantation(data.id);
+      emitEvent({
+        type: ModelType.Plantation,
+        id: [data.id],
+        action: SharedActionType.admin_refuse,
+      });
     },
     onAdminApprove: async (data: any) => {
       handleOpen("admin_approve", data);

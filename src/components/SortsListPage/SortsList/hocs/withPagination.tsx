@@ -19,11 +19,14 @@ export const withPagination =
     const appDispatch = useAppDispatch();
     const page = useAppSelector(selectSortsListPage);
     const search = useAppSelector(selectSortsSearch);
-    const { data: total, isSuccess } = useSearchGroupsTotalQuery({ ...search });
+    const { data: total, isSuccess } = useSearchGroupsTotalQuery(
+      search?.search ? { search } : {}
+    );
 
     useEffect(() => {
       if (isSuccess) {
         appDispatch(setSortsListTotal(total.total));
+        appDispatch(setSortsListPage(1));
       }
     }, [total?.total, isSuccess, appDispatch]);
     return (

@@ -19,17 +19,24 @@ export const sortsApi = createApi({
   endpoints: (builder) => ({
     searchGroupsTotal: builder.query<
       { total: number },
-      CatalogState["sortsSearch"]
+      { search?: CatalogState["sortsSearch"] }
     >({
-      query: (params) => ({ url: `/groups/search/total`, params }),
+      query: (params) => ({
+        url: `/groups/search/total`,
+        params: { ...params.search },
+      }),
       providesTags: () => [{ type: "Sort", id: "LIST" }],
     }),
 
     searchGroups: builder.query<
       Group[],
-      { offset: number; limit: number } & CatalogState["sortsSearch"]
+      { offset: number; limit: number; search?: CatalogState["sortsSearch"] }
     >({
-      query: (params) => ({ url: `/groups/search`, params }),
+      query: (params) => ({
+        url: `/groups/search`,
+
+        params: { ...params, ...params.search },
+      }),
       // transformResponse: (response: Group[]) => {
       //   return orderBy(
       //     response,

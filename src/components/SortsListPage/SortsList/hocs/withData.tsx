@@ -24,7 +24,7 @@ export const withData =
       refetch: searchGroups,
       isLoading,
     } = useSearchGroupsQuery({
-      ...search,
+      ...(search?.search ? { search } : {}),
       offset: (page - 1) * limit,
       limit,
     });

@@ -4,6 +4,7 @@ import { CreatePlantationBody, UpdatePlantationBody } from "./interfaces";
 import { baseQueryWithReauth } from "./utils";
 import { transformPlantationDataBack } from "../lib/utils";
 import { EditPlantationInput } from "../components/forms/EditPlantationForm/interfaces";
+import { CatalogState } from "../redux/reducer/catalogReducer";
 
 // Define a service using a base URL and expected endpoints
 export const plantationsApi = createApi({
@@ -11,18 +12,33 @@ export const plantationsApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Plantation"],
   endpoints: (builder) => ({
-    searchPlantationsTotal: builder.query<{ total: number }, PlantationFilters>(
-      {
-        query: (params) => ({ url: `/plantations/search/total`, params }),
-        providesTags: () => [{ type: "Plantation", id: "LIST" }],
-      }
-    ),
+    searchPlantationsTotal: builder.query<
+      { total: number },
+      PlantationFilters & { search?: CatalogState["plantationsSearch"] }
+    >({
+      query: (params) => ({
+        url: `/plantations/search/total`,
+        params: {
+          ...params,
+          ...params.search,
+        },
+      }),
+      providesTags: () => [{ type: "Plantation", id: "LIST" }],
+    }),
 
     searchPlantations: builder.query<
       PlantationThin[],
-      { offset: number; limit: number } & PlantationFilters
+      { offset: number; limit: number } & PlantationFilters & {
+          search?: CatalogState["plantationsSearch"];
+        }
     >({
-      query: (params) => ({ url: `/plantations/search`, params }),
+      query: (params) => ({
+        url: `/plantations/search`,
+        params: {
+          ...params,
+          ...params.search,
+        },
+      }),
       providesTags: () => [{ type: "Plantation", id: "LIST" }],
     }),
 

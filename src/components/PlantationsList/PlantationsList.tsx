@@ -14,8 +14,10 @@ import {
 import { Checkbox } from "../../controls/Checkbox";
 import { CountryIcon } from "../../controls/icons/CountryIcon";
 import {
+  selectPlantationsListPage,
   selectPlantationsSearch,
   selectSelectedPlantations,
+  setPlantationsListPage,
   setPlantationsListTotal,
   setSelectedPlantations,
 } from "../../redux/reducer/catalogReducer";
@@ -23,6 +25,7 @@ import { orderBy, pick, uniq } from "lodash";
 import { withAdminApprovable } from "../hocs/withAdminApprovable/withAdminApprovable";
 import { FullArrowUpIcon } from "../../controls/icons/FullArrowUpIcon";
 import Box from "../../controls/Box";
+import { PLANTATIONS_LIST_LIMIT } from "../../lib/constants";
 interface RowProps {
   data: EditBaseInput;
   className?: string;
@@ -119,6 +122,10 @@ export const PlantationsList = ({
 }: PlantationsListProps) => {
   const appDispatch = useAppDispatch();
   const selectedPlantations = useAppSelector(selectSelectedPlantations);
+  const termsOfPayments = L18nEs.constants.termsOfPayments;
+  const limit = PLANTATIONS_LIST_LIMIT;
+  const page = useAppSelector(selectPlantationsListPage);
+  const search = useAppSelector(selectPlantationsSearch);
 
   const [sortBy, setSortBy] = useState<{
     field: keyof PlantationThin;
@@ -151,20 +158,12 @@ export const PlantationsList = ({
     []
   );
 
-  const termsOfPayments = L18nEs.constants.termsOfPayments;
-
-  const limit = 10;
-
-  const [page, setPage] = useState(1);
-
-  const search = useAppSelector(selectPlantationsSearch);
-
   const {
     data,
     refetch: searchPlantations,
     isLoading,
   } = useSearchPlantationsQuery({
-    ...search,
+    ...(search?.search ? { search } : {}),
     ...filters,
     offset: (page - 1) * limit,
     limit,
@@ -177,13 +176,14 @@ export const PlantationsList = ({
   }, [refetch, searchPlantations]);
 
   const { data: total, isSuccess } = useSearchPlantationsTotalQuery({
-    ...search,
+    ...(search?.search ? { search } : {}),
     ...filters,
   });
 
   useEffect(() => {
     if (isSuccess) {
       appDispatch(setPlantationsListTotal(total?.total));
+      appDispatch(setPlantationsListPage(1));
     }
   }, [total?.total, isSuccess, appDispatch]);
 
@@ -334,7 +334,7 @@ export const PlantationsList = ({
         count={total?.total ? Math.ceil(total.total / limit) : 0}
         page={page}
         onChange={(event, page) => {
-          setPage(page);
+          appDispatch(setPlantationsListPage(page));
         }}
         variant="outlined"
         shape="rounded"
