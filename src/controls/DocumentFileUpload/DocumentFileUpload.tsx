@@ -62,7 +62,7 @@ export const DocumentFileUpload = ({
           e.preventDefault();
         }}
         icon={
-          document ? (
+          document?.id ? (
             <DownloadBtn
               url={`/api/upload/${document.id}`}
               filename={document.name}
@@ -78,7 +78,7 @@ export const DocumentFileUpload = ({
               userSelect: "none",
             },
           },
-          ...(document && !disabled
+          ...(document?.id && !disabled
             ? {
                 endAdornment: (
                   <InputAdornment position="end">
@@ -98,7 +98,7 @@ export const DocumentFileUpload = ({
 
       <Button
         color="base"
-        disabled={disabled}
+        disabled={disabled || document?.id}
         onClick={() => {
           if (!fileInputRef.current) {
             return;
