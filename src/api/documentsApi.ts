@@ -7,10 +7,8 @@ export const documentsApi = createApi({
   reducerPath: "documentsApi",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
-    uploadFile: builder.mutation<Document, File>({
-      query: (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
+    uploadFile: builder.mutation<Document, FormData>({
+      query: (formData) => {
         return {
           url: `/upload`,
           method: "POST",

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../Button/Button";
 import { TextField } from "../TextField";
 import { AddFileIcon } from "../icons/AddFileIcon";
@@ -12,16 +12,24 @@ import { CloseIconSmall } from "../icons/CloseIconSmall";
 import { DownloadBtn } from "../DownloadBtn";
 
 export const DocumentFileUpload = ({
+  open,
   value,
   disabled = false,
   onChange,
 }: {
+  open: boolean;
   value: Document | null;
   disabled?: boolean;
   onChange: (document: Document | null) => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [document, setDocument] = useState<Document | null>(value);
+
+  useEffect(() => {
+    if (!value) {
+      handleFileRemove();
+    }
+  }, [value]);
 
   const [uploadDocument] = useUploadFileMutation();
   const [removeDocument] = useRemoveFileMutation();
@@ -32,7 +40,10 @@ export const DocumentFileUpload = ({
     } catch (error) {
       console.log(error);
     }
-    const res: any = await uploadDocument(event.target.files[0]);
+    const formData = new FormData();
+    formData.append("file", event.target.files[0]);
+
+    const res: any = await uploadDocument(formData);
 
     if (res.data) {
       setDocument(res.data || null);
@@ -46,7 +57,14 @@ export const DocumentFileUpload = ({
     }
     await removeDocument(document.id);
     setDocument(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
+
+  if (!open) {
+    return <></>;
+  }
 
   return (
     <div
@@ -98,7 +116,7 @@ export const DocumentFileUpload = ({
 
       <Button
         color="base"
-        disabled={disabled || document?.id}
+        disabled={disabled || !!document?.id}
         onClick={() => {
           if (!fileInputRef.current) {
             return;

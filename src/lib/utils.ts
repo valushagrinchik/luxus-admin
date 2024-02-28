@@ -2,7 +2,7 @@ import { pick } from "lodash";
 import { CreatePlantationBody } from "../api/interfaces";
 import { EditPlantationInput } from "../components/forms/EditPlantationForm/interfaces";
 import { PlantationDepartment, SortListGroup } from "./constants";
-import { Plantation } from "./types";
+import { ChecksDeliveryMethod, CountryCode, Plantation } from "./types";
 
 export const transformPlantationData = (
   input: EditPlantationInput
@@ -27,14 +27,17 @@ export const transformPlantationDataBack = (
     generalInfo: {
       ...pick(data, [
         "name",
-        "country",
         "comments",
-        "deliveryMethod",
+        // "deliveryMethod",
         "deliveryInfo",
         "termsOfPayment",
         "postpaidCredit",
         "postpaidDays",
       ]),
+      deliveryMethod: data?.deliveryMethod
+        ? (data?.deliveryMethod as ChecksDeliveryMethod)
+        : undefined,
+      country: data.country as CountryCode,
       postpaidCredit: (data.postpaidCredit || "").toString(),
       postpaidDays: (data.postpaidDays || "").toString(),
       id: data.id.toString(),

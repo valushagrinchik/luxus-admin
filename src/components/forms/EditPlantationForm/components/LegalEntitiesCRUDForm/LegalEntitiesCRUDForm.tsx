@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../../../../../controls/Button/Button";
 import { Modal } from "../../../../../controls/Modal";
 import { PlusIcon } from "../../../../../controls/icons/PlusIcon";
@@ -93,13 +93,15 @@ export const LegalEntitiesCRUDForm = ({
         bankAccountType: "",
         plantationLegalEntityId: data.id,
       });
-      checks.append({
-        id: uuid(),
-        name: data.name,
-        beneficiary: data.name,
-        favourite: !legalEntities.fields.length,
-        plantationLegalEntityId: data.id,
-      });
+      if (country !== CountryCode.co) {
+        checks.append({
+          id: uuid(),
+          name: data.name,
+          beneficiary: data.name,
+          favourite: !legalEntities.fields.length,
+          plantationLegalEntityId: data.id,
+        });
+      }
     }
 
     setOpen(false);

@@ -118,6 +118,7 @@ export const EditCheckForm = ({
               if ((event.target as any).value !== name) {
                 setShowFileField(true);
               } else {
+                setDocument(null);
                 setShowFileField(false);
               }
               onChange(event);
@@ -128,13 +129,13 @@ export const EditCheckForm = ({
           />
         )}
       />
-      {showFileField && (
-        <DocumentFileUpload
-          value={document}
-          disabled={disabled}
-          onChange={setDocument}
-        />
-      )}
+
+      <DocumentFileUpload
+        open={showFileField}
+        value={document}
+        disabled={disabled}
+        onChange={setDocument}
+      />
 
       <div className={styles.actions}>
         <Button color="gray" onClick={() => onReset()}>

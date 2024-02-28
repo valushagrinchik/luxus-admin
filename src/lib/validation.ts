@@ -103,21 +103,22 @@ export const schemaEditPlantation = yup
     generalInfo: yup.object<EditPlantationInput>().shape({
       id: yup.string().required(ErrorMessages.reqiuredField),
       name: yup.string().required(ErrorMessages.reqiuredField),
-      country: yup
-        .string()
-        .oneOf([""].concat(Object.values(CountryCode)))
-        .required(ErrorMessages.reqiuredField),
+      country: yup.string().required(ErrorMessages.reqiuredField),
       comments: yup.string().default(""),
-      deliveryMethod: yup
-        .string()
-        .oneOf(Object.values(ChecksDeliveryMethod))
-        .required(ErrorMessages.reqiuredField),
+      deliveryMethod: yup.string().when("country", ([country], field) => {
+        return country && country !== CountryCode.co
+          ? field
+              .oneOf(Object.values(ChecksDeliveryMethod))
+              .required(ErrorMessages.reqiuredField)
+          : field;
+      }),
       deliveryInfo: yup
         .string()
         .when("deliveryMethod", ([deliveryMethod], field) => {
-          return deliveryMethod === ChecksDeliveryMethod.SERVIENTREGA
+          return deliveryMethod &&
+            deliveryMethod === ChecksDeliveryMethod.SERVIENTREGA
             ? field.required(ErrorMessages.reqiuredField)
-            : field;
+            : field.notRequired();
         }),
       termsOfPayment: yup
         .string()
@@ -150,10 +151,17 @@ export const schemaEditPlantation = yup
       .required(),
     checks: yup
       .array()
-      .of(schemaAddCheck)
-      .when("legalEntities", ([legalEntities], field) => {
-        return field.min(legalEntities.length, "legalEntities length");
-      })
+      .when(
+        ["legalEntities", "generalInfo"],
+        ([legalEntities, generalInfo], field) => {
+          if (generalInfo.country !== CountryCode.co) {
+            return field
+              .of(schemaAddCheck)
+              .min(legalEntities.length, "legalEntities length");
+          }
+          return field;
+        }
+      )
       .required(),
     financialContacts: yup
       .array()

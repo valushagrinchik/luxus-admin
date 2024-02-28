@@ -162,6 +162,7 @@ export const EditTransferDetailsForm = ({
                   resetAddress && setValue("beneficiaryAddress", "");
                   setResetAddress(false);
                 } else {
+                  setDocument(null);
                   setShowFileField(false);
                 }
 
@@ -175,13 +176,12 @@ export const EditTransferDetailsForm = ({
           )}
         />
       </div>
-      {showFileField && (
-        <DocumentFileUpload
-          value={document}
-          disabled={disabled}
-          onChange={setDocument}
-        />
-      )}
+      <DocumentFileUpload
+        open={showFileField}
+        value={document}
+        disabled={disabled}
+        onChange={setDocument}
+      />
 
       <div className={styles.row}>
         <Controller

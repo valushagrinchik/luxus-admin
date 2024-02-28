@@ -59,9 +59,9 @@ export type EditPlantationInput = {
   generalInfo: {
     id: string;
     name: string;
-    country: CountryCode | string;
+    country: string;
     comments: string;
-    deliveryMethod: ChecksDeliveryMethod;
+    deliveryMethod?: string;
     deliveryInfo?: string;
     termsOfPayment: TermsOfPayment;
     postpaidCredit?: string;

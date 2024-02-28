@@ -50,7 +50,8 @@
   }
   &:disabled {
     border: 1px solid var(--Gray-200, #eaecf0);
-    color: var(--Gray-300, #d0d5dd);
+    background: var(--Gray-100, #f2f4f7);
+    color: var(--Gray-400);
   }
 }
 

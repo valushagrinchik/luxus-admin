@@ -10,7 +10,7 @@ import {
   EditContactInput,
   EditPlantationInput,
 } from "../../interfaces";
-import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
+import { UseFieldArrayReturn } from "react-hook-form";
 import { FavouriteBox } from "../../../../../controls/FavouriteBox";
 import { EditCheckForm } from "./components/EditCheckForm/EditCheckForm";
 import { v4 as uuid } from "uuid";
@@ -29,8 +29,6 @@ export const ChecksCRUDForm = ({
   checks: UseFieldArrayReturn<EditPlantationInput, "checks", "id">;
 }) => {
   const disabled = mode === Mode.preview;
-  const { watch } = useFormContext();
-  const country = watch("generalInfo.country");
 
   const [open, setOpen] = useState(false);
 
@@ -80,7 +78,7 @@ export const ChecksCRUDForm = ({
               color="gray"
               onClick={() => handleOpen({ id: uuid() })}
               className={styles.add_btn}
-              disabled={!country}
+              disabled={!Object.keys(legalEntitiesMap).length}
             >
               <PlusIcon width={16} height={16} />
             </Button>

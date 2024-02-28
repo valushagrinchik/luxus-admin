@@ -10,7 +10,7 @@ import {
   EditTransferDetailsInput,
   EditPlantationInput,
 } from "../../interfaces";
-import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
+import { UseFieldArrayReturn } from "react-hook-form";
 import { EditTransferDetailsForm } from "./components/EditTransferDetailsForm/EditTransferDetailsForm";
 import L18nEs from "../../../../../lib/l18n";
 import { FavouriteBox } from "../../../../../controls/FavouriteBox";
@@ -33,9 +33,6 @@ export const TransferDetailsCRUDForm = ({
   >;
 }) => {
   const disabled = mode === Mode.preview;
-
-  const { watch } = useFormContext();
-  const country = watch("generalInfo.country");
 
   const [open, setOpen] = useState(false);
 
@@ -93,7 +90,7 @@ export const TransferDetailsCRUDForm = ({
               color="gray"
               onClick={() => handleOpen({ id: uuid() }, Mode.create)}
               className={styles.add_btn}
-              disabled={!country}
+              disabled={!Object.keys(legalEntitiesMap).length}
             >
               <PlusIcon width={16} height={16} />
             </Button>

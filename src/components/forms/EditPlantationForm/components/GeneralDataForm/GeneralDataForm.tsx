@@ -7,10 +7,14 @@ import Box from "../../../../../controls/Box";
 import { TextField } from "../../../../../controls/TextField";
 import { EditPlantationInput } from "../../interfaces";
 import { LegalEntitiesCRUDForm } from "../LegalEntitiesCRUDForm/LegalEntitiesCRUDForm";
-
+import { v4 as uuid } from "uuid";
 import L18nEs from "../../../../../lib/l18n";
 import styles from "./GeneralDataForm.module.css";
-import { Mode } from "../../../../../lib/types";
+import {
+  ChecksDeliveryMethod,
+  CountryCode,
+  Mode,
+} from "../../../../../lib/types";
 
 export const GeneralDataForm = ({
   mode,
@@ -31,11 +35,29 @@ export const GeneralDataForm = ({
     "id"
   >;
 }) => {
-  const { getValues, control } = useFormContext();
+  const { getValues, control, setValue } = useFormContext();
 
   const disabled = mode === Mode.preview;
 
   const data = getValues().generalInfo;
+
+  const handleCountryChange = (country: CountryCode) => {
+    if (country !== CountryCode.co) {
+      setValue("generalInfo.deliveryMethod", ChecksDeliveryMethod.PERSONALLY);
+      legalEntities.fields.forEach((l) => {
+        checks.append({
+          id: uuid(),
+          name: l.name,
+          beneficiary: l.name,
+          favourite: false,
+          plantationLegalEntityId: l.id,
+        });
+      });
+    } else {
+      setValue("generalInfo.deliveryMethod", undefined);
+      checks.replace([]);
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -57,7 +79,11 @@ export const GeneralDataForm = ({
               placeholder="País"
               helperText={error ? error.message : null}
               error={!!error}
-              onChange={onChange}
+              // onChange={onChange}
+              onChange={(event: any) => {
+                handleCountryChange(event.target.value);
+                onChange(event);
+              }}
               value={value}
               options={L18nEs.constants.countries}
               style={{ width: "318px" }}

@@ -11,7 +11,7 @@ import { CloseIcon } from "../../../controls/icons/CloseIcon";
 import { OkIcon } from "../../../controls/icons/OkIcon";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../controls/Button/Button";
-import { ChecksDeliveryMethod, Mode, TermsOfPayment } from "../../../lib/types";
+import { Mode, TermsOfPayment } from "../../../lib/types";
 import { Modal } from "../../../controls/Modal";
 import { AdminConfirmationForm } from "../AdminConfirmationForm/AdminConfirmationForm";
 import L18nEs from "../../../lib/l18n";
@@ -59,13 +59,18 @@ export const EditPlantationForm = ({
   };
 
   const methods = useForm<EditPlantationInput>({
-    resolver: yupResolver(schemaEditPlantation),
+    resolver: async (values, ctx, options) => {
+      const res = await yupResolver(schemaEditPlantation)(values, ctx, options);
+      // To debug schema: console.log(res, "res");
+      return res;
+    },
     defaultValues: {
       generalInfo: {
         id: plantationId,
         name: "",
         country: "",
         comments: "",
+        deliveryMethod: "",
         deliveryInfo: "",
         postpaidCredit: "",
         postpaidDays: "",
@@ -82,9 +87,8 @@ export const EditPlantationForm = ({
         name: data?.generalInfo?.name || "",
         country: data?.generalInfo?.country || "",
         comments: data?.generalInfo?.comments || "",
-        deliveryMethod:
-          data?.generalInfo?.deliveryMethod || ChecksDeliveryMethod.PERSONALLY,
-        deliveryInfo: data?.generalInfo?.deliveryInfo || "",
+        deliveryMethod: data?.generalInfo?.deliveryMethod || "",
+        deliveryInfo: data?.generalInfo?.deliveryInfo,
         termsOfPayment:
           data?.generalInfo?.termsOfPayment || TermsOfPayment.POSTPAID,
         postpaidCredit: data?.generalInfo?.postpaidCredit || "",
@@ -136,6 +140,9 @@ export const EditPlantationForm = ({
         : {},
   };
 
+  const isDirty = methods.formState.isDirty;
+  const isValid = methods.formState.isValid;
+
   return (
     <FormProvider {...methods}>
       <form>
@@ -156,6 +163,10 @@ export const EditPlantationForm = ({
                 <Button
                   color="gray"
                   onClick={() => {
+                    if (!isDirty) {
+                      navigateToList();
+                      return;
+                    }
                     setOpen(true);
                   }}
                 >
@@ -165,7 +176,7 @@ export const EditPlantationForm = ({
                 <Button
                   color="base"
                   onClick={methods.handleSubmit(onSubmit)}
-                  disabled={!methods.formState.isValid}
+                  disabled={!isDirty || (isDirty && !isValid)}
                 >
                   <OkIcon width={16} height={16} />
                   Guardar

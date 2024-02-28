@@ -29,7 +29,8 @@ export type CreatePlantationBody = {
   name: string;
   country: string;
   comments?: string;
-  deliveryMethod: string;
+  deliveryMethod?: string;
+  deliveryInfo?: string;
   termsOfPayment: string;
   postpaidCredit?: string;
   postpaidDays?: string;
