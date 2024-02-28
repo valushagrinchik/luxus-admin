@@ -15,6 +15,7 @@ import { CloseIconSmall } from "../../controls/icons/CloseIconSmall";
 import { PlantationFilters } from "../../lib/types";
 import { ExcelDownloadBtn } from "../../controls/DownloadBtn";
 import { isEmpty, omitBy } from "lodash";
+import { PlantationsSearch } from "./components/PlantationsSearch/PlantationsSearch";
 
 interface PlantationsFiltersProps {
   filters: PlantationFilters | null;
@@ -118,6 +119,7 @@ export const PlantationsFilters = ({
       </div>
 
       <div className={styles.actions_group}>
+        <PlantationsSearch />
         <Button
           color="base"
           onClick={onCreateBtnClick}

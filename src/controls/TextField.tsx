@@ -46,6 +46,7 @@ export const TextField = React.forwardRef(function MyTextField(
       InputLabelProps={{ shrink: true }}
       sx={{
         minWidth: "200px",
+
         ".MuiInputBase-root": {
           backgroundColor: "white !important",
           paddingLeft: "6px",
@@ -54,24 +55,36 @@ export const TextField = React.forwardRef(function MyTextField(
           overflow: "hidden",
         },
         ".MuiInputBase-input": {
+          color: "var(--Gray-900, #101828)",
           fontFamily: "Roboto Condensed",
           padding: "6px 10px",
           paddingLeft: "0",
+          opacity: 1,
         },
+        // ".MuiInputBase-multiline": {
+        //   padding: "6px 10px",
+        // },
+        "textarea.MuiInputBase-input": {
+          color: "var(--Gray-500, #101828)",
+          padding: 0,
+        },
+        ".MuiInputBase-root.Mui-disabled": {
+          border: "1px solid var(--Gray-300, #D0D5DD)!important",
+          background: "var(--Primary-50, #EFF4FF) !important",
+          opacity: "0.5",
+        },
+        ".MuiInputBase-input.Mui-disabled": {
+          " -webkit-text-fill-color": "black",
+          color: "black",
+        },
+
         ".MuiInputBase-input.MuiInput-input:focus": {
           backgroundColor: "white",
         },
         ".MuiOutlinedInput-notchedOutline": {
           border: "none !important",
         },
-        ".MuiInputBase-root.Mui-disabled": {
-          border: "1px solid var(--Gray-300, #D0D5DD)",
-          background: "var(--Primary-50, #EFF4FF) !important",
-          opacity: "0.5",
-        },
-        ".MuiInputBase-input-MuiInput-input.Mui-disabled": {
-          color: "var(--Gray-500, #667085) !important",
-        },
+
         ".MuiFormHelperText-root": {
           marginLeft: 0,
         },
@@ -102,7 +115,7 @@ export const TextField = React.forwardRef(function MyTextField(
                 lineHeight: "24px",
               }
             : {},
-        ".MuiSelect-nativeInput:placeholder": {
+        ".MuiSelect-nativeInput::placeholder": {
           color: "var(--Gray-500, #667085)",
         },
         ".MuiSelect-icon": {

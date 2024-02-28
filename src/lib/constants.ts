@@ -23,6 +23,11 @@ export const SortsFiltersSearchByMap = {
   [SortListGroup.sort]: "Por variedad",
 };
 
+export const PlantationsFiltersSearchByMap = {
+  name: "Por nombre comercial",
+  legalEntityName: "Por razón social",
+};
+
 export const SortsFiltersCreateOptions = [
   {
     label: "Crear grupo",

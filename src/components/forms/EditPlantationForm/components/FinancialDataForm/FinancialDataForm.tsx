@@ -127,6 +127,9 @@ export const FinancialDataForm = ({
                         fullWidth
                         disabled={disabled}
                         sx={{
+                          ".MuiInputBase-multiline": {
+                            padding: "16px",
+                          },
                           ".MuiInputBase-root": {
                             borderRadius: "6px",
                             background: "#FFF4EA",
@@ -134,24 +137,18 @@ export const FinancialDataForm = ({
                             padding: "0",
                             fontSize: "14px",
                           },
-                          ".MuiInputBase-input, .MuiInputBase-input:focus": {
-                            padding: "16px",
-                            color: "#CC6E0F",
-                            textDecoration: "none",
-                            lineHeight: "20px",
-                          },
-                          ".MuiInputBase-input.MuiInput-input:focus": {
-                            padding: "16px",
-                            color: "#CC6E0F",
-                            textDecoration: "none",
-                          },
+                          ".MuiInputBase-input.MuiInput-input, .MuiInputBase-input.MuiInput-input:focus":
+                            {
+                              background: "#FFF4EA",
+                              color: "#CC6E0F",
+                            },
                           ".MuiInputBase-root.Mui-disabled": {
-                            padding: "16px",
-                            color: "#CC6E0F",
-                            opacity: "0.5",
+                            background: "#FFF4EA !important",
+                            // opacity: "0.5",
                           },
-                          ".MuiInputBase-input-MuiInput-input.Mui-disabled": {
-                            WebkitTextFillColor: "#CC6E0F!important;",
+                          ".MuiInputBase-input.Mui-disabled": {
+                            " -webkit-text-fill-color": "#CC6E0F",
+                            color: "#CC6E0F",
                           },
                         }}
                       />

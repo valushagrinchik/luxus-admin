@@ -103,7 +103,7 @@ const L18nEs = {
             id: "№",
             country: "País",
             name: "Nombre comercial",
-            legalEntityName: "Razón social",
+            legalEntitiesNames: "Razón social",
             termsOfPayment: "Condiciones de pago",
             postpaidCredit: "Monto de crédito",
             comments: "Observaciones",

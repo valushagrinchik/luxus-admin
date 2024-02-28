@@ -14,15 +14,15 @@ import {
 import { Checkbox } from "../../controls/Checkbox";
 import { CountryIcon } from "../../controls/icons/CountryIcon";
 import {
+  selectPlantationsSearch,
   selectSelectedPlantations,
   setPlantationsListTotal,
   setSelectedPlantations,
 } from "../../redux/reducer/catalogReducer";
-import { orderBy, uniq } from "lodash";
+import { orderBy, pick, uniq } from "lodash";
 import { withAdminApprovable } from "../hocs/withAdminApprovable/withAdminApprovable";
 import { FullArrowUpIcon } from "../../controls/icons/FullArrowUpIcon";
 import Box from "../../controls/Box";
-
 interface RowProps {
   data: EditBaseInput;
   className?: string;
@@ -30,26 +30,24 @@ interface RowProps {
   renderActions?: (data: EditBaseInput) => ReactNode;
   onShow?: (data: EditBaseInput) => void;
   bgColor?: string;
+  columnsWidth?: string;
+  renderCell?: (key: string, value: any) => ReactNode;
 }
 
 const Row = ({
+  columnsWidth,
   bgColor = "white",
   data,
   className,
   renderCheckbox = () => <></>,
   renderActions = () => <></>,
   onShow,
+  renderCell,
 }: RowProps) => {
-  const isCheckable = !!renderCheckbox;
-  const rowStyle = isCheckable
-    ? {
-        gridTemplateColumns: `40px repeat(${
-          Object.keys(data).length + 1
-        }, 1fr)`,
-      }
-    : {
-        gridTemplateColumns: `repeat(${Object.keys(data).length + 1}, 1fr)`,
-      };
+  const rowStyle = {
+    gridTemplateColumns:
+      columnsWidth || `repeat(${Object.keys(data).length + 1}, 1fr)`,
+  };
 
   return (
     <div
@@ -61,7 +59,9 @@ const Row = ({
     >
       <div className={styles.checkbox_area}>{renderCheckbox(data)}</div>
       {Object.entries(data).map(([key, value], index) => (
-        <div key={`${key}_${index}`}>{value}</div>
+        <div key={`${key}_${index}`}>
+          {renderCell ? renderCell(key, value) : value}
+        </div>
       ))}
       <div className={styles.actions_area}>{renderActions(data)}</div>
     </div>
@@ -132,7 +132,9 @@ export const PlantationsList = ({
           ([key, value]) => {
             return [
               key,
-              ["id", "name", "postpaidCredit"].includes(key) ? (
+              ["id", "name", "legalEntitiesNames", "postpaidCredit"].includes(
+                key
+              ) ? (
                 <SortableTitle
                   title={value}
                   onChange={(up: boolean) => {
@@ -152,14 +154,17 @@ export const PlantationsList = ({
   const termsOfPayments = L18nEs.constants.termsOfPayments;
 
   const limit = 10;
-  const search = {};
+
   const [page, setPage] = useState(1);
+
+  const search = useAppSelector(selectPlantationsSearch);
 
   const {
     data,
     refetch: searchPlantations,
     isLoading,
   } = useSearchPlantationsQuery({
+    ...search,
     ...filters,
     offset: (page - 1) * limit,
     limit,
@@ -173,6 +178,7 @@ export const PlantationsList = ({
 
   const { data: total, isSuccess } = useSearchPlantationsTotalQuery({
     ...search,
+    ...filters,
   });
 
   useEffect(() => {
@@ -180,30 +186,6 @@ export const PlantationsList = ({
       appDispatch(setPlantationsListTotal(total?.total));
     }
   }, [total?.total, isSuccess, appDispatch]);
-
-  const recordToRender = (
-    record: PlantationThin
-  ): Record<keyof typeof headers, any> => ({
-    id: record.id,
-    country: <CountryIcon countryCode={record.country} />,
-    name: record.name,
-    legalEntityName: (
-      <>
-        {orderBy(record.legalEntitiesNames, (name) => name.toLowerCase()).map(
-          (name) => (
-            <div key={`${name}_${record.id}`}>{name}</div>
-          )
-        )}
-      </>
-    ),
-    termsOfPayment: (
-      <span className={classNames(styles.tag, styles[record.termsOfPayment])}>
-        {termsOfPayments[record.termsOfPayment]}
-      </span>
-    ),
-    postpaidCredit: record.postpaidCredit || "",
-    comments: record.comments,
-  });
 
   const renderCheckbox = (data: any) => {
     return (
@@ -256,26 +238,73 @@ export const PlantationsList = ({
   const sortData = sortBy
     ? orderBy(
         data,
-        [(record) => recordToRender(record)[sortBy.field]],
+        [(record) => record[sortBy.field]],
         [sortBy.up ? "desc" : "asc"]
       )
     : data;
 
+  const columnsWidth = "20px 40px 40px 200px 1fr 150px 120px 1fr 40px";
+
+  const renderCell = (key: string, value: any) => {
+    switch (key) {
+      case "legalEntitiesNames":
+        return <span style={{ whiteSpace: "pre" }}>{value}</span>;
+      case "country":
+        return (
+          <span style={{ display: "flex" }}>
+            <CountryIcon countryCode={value} />
+          </span>
+        );
+      case "termsOfPayment":
+        return (
+          <span className={classNames(styles.tag, styles[value])}>
+            {termsOfPayments[value as keyof typeof termsOfPayments]}
+          </span>
+        );
+      case "postpaidCredit": {
+        return value || "";
+      }
+      case "comments": {
+        return <span className={styles.comments}>{value}</span>;
+      }
+
+      default:
+        return value;
+    }
+  };
+
+  const fieldsToRender = [
+    "id",
+    "country",
+    "name",
+    "legalEntitiesNames",
+    "termsOfPayment",
+    "postpaidCredit",
+    "comments",
+  ];
+
   return (
     <>
       <Table>
-        <Row key={"headers"} className={styles.headers} data={headers}></Row>
+        <Row
+          key={"headers"}
+          className={styles.headers}
+          data={headers}
+          columnsWidth={columnsWidth}
+        ></Row>
         {sortData?.map((record) => (
           <AdminApprovableRow
+            columnsWidth={columnsWidth}
             onShow={() => actions.onShow(record)}
             key={`row_${record.id}`}
-            data={recordToRender(record)}
+            data={pick(record, fieldsToRender)}
             renderCheckbox={renderCheckbox}
             renderActions={renderRowActions}
             rawData={record}
             onCancel={actions.onCancel}
             onAdminRefuse={actions.onAdminRefuse}
             onAdminApprove={actions.onAdminApprove}
+            renderCell={renderCell}
           ></AdminApprovableRow>
         ))}
       </Table>

@@ -5,7 +5,7 @@ import {
   SortListGroup,
   SortsFiltersSearchByMap,
 } from "../../../../../lib/constants";
-import { setSearch } from "../../../../../redux/reducer/catalogReducer";
+import { setSortsSearch } from "../../../../../redux/reducer/catalogReducer";
 import { useAppDispatch } from "../../../../../redux/store";
 
 export const SortsSearch = () => {
@@ -20,7 +20,7 @@ export const SortsSearch = () => {
         placeholder="Encontrar..."
         defaultValue=""
         onChange={(e) => {
-          appDispatch(setSearch({ search: e.target.value }));
+          appDispatch(setSortsSearch({ search: e.target.value }));
         }}
         icon={<SearchIcon color="var(--Gray-400)" />}
       />
@@ -33,7 +33,7 @@ export const SortsSearch = () => {
         placeholder="Por variedad"
         onChange={(event) => {
           setSearchBy(event.target.value as SortListGroup);
-          appDispatch(setSearch({ type: event.target.value as SortListGroup }));
+          appDispatch(setSortsSearch({ type: event.target.value as SortListGroup }));
         }}
       />
     </div>

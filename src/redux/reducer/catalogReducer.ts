@@ -1,7 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { SortListGroup } from "../../lib/constants";
+import {
+  PlantationsFiltersSearchByMap,
+  SortListGroup,
+} from "../../lib/constants";
 
 // Define a type for the slice state
 export interface CatalogState {
@@ -18,6 +21,10 @@ export interface CatalogState {
   selectedPlantations: number[];
   plantationsListPage: number;
   plantationsListTotal: number;
+  plantationsSearch: {
+    search?: string;
+    type: keyof typeof PlantationsFiltersSearchByMap;
+  };
 }
 
 // Define the initial state using that type
@@ -35,6 +42,10 @@ const initialState: CatalogState = {
   selectedPlantations: [],
   plantationsListPage: 1,
   plantationsListTotal: 0,
+  plantationsSearch: {
+    search: undefined,
+    type: "name",
+  },
 };
 
 export const catalogSlice = createSlice({
@@ -47,7 +58,7 @@ export const catalogSlice = createSlice({
     ) => {
       state.sortsGroupBy = action.payload;
     },
-    setSearch: (
+    setSortsSearch: (
       state,
       action: PayloadAction<Partial<CatalogState["sortsSearch"]>>
     ) => {
@@ -79,12 +90,21 @@ export const catalogSlice = createSlice({
     setPlantationsListTotal: (state, action: PayloadAction<number>) => {
       state.plantationsListTotal = action.payload;
     },
+    setPlantationsSearch: (
+      state,
+      action: PayloadAction<Partial<CatalogState["plantationsSearch"]>>
+    ) => {
+      state.plantationsSearch = {
+        ...state.plantationsSearch,
+        ...action.payload,
+      };
+    },
   },
 });
 
 export const {
   setSortsGroupBy,
-  setSearch,
+  setSortsSearch,
   setSelectedSorts,
   setSortsToggleMap,
   setSortsListPage,
@@ -93,6 +113,7 @@ export const {
   setSelectedPlantations,
   setPlantationsListPage,
   setPlantationsListTotal,
+  setPlantationsSearch,
 } = catalogSlice.actions;
 
 export const selectSortsGroupBy = (state: RootState) =>
@@ -121,5 +142,8 @@ export const selectPlantationsListPage = (state: RootState) =>
 
 export const selectPlantationsListTotal = (state: RootState) =>
   state.catalog.plantationsListTotal;
+
+export const selectPlantationsSearch = (state: RootState) =>
+  state.catalog.plantationsSearch;
 
 export default catalogSlice.reducer;
